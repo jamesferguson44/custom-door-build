@@ -1,5 +1,4 @@
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 
 type Props = {
   width: number;
@@ -8,46 +7,51 @@ type Props = {
 };
 
 export function SizeInputs({ width, height, onChange }: Props) {
+  const invalid = width <= 0 || height <= 0;
   return (
     <div>
-      <div className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-        Measurements (inches)
+      <div className="mb-3 flex items-baseline justify-between">
+        <h3 className="text-base font-semibold tracking-tight">Dimensions</h3>
+        <span className="text-xs text-muted-foreground">inches</span>
       </div>
       <div className="grid grid-cols-2 gap-3">
-        <div>
-          <Label htmlFor="w" className="mb-1 text-xs text-muted-foreground">
-            Width
-          </Label>
-          <Input
-            id="w"
-            type="number"
-            min={1}
-            max={240}
-            value={width || ""}
-            onChange={(e) => onChange(Number(e.target.value), height)}
-            className="h-11"
-          />
-        </div>
-        <div>
-          <Label htmlFor="h" className="mb-1 text-xs text-muted-foreground">
-            Height
-          </Label>
-          <Input
-            id="h"
-            type="number"
-            min={1}
-            max={240}
-            value={height || ""}
-            onChange={(e) => onChange(width, Number(e.target.value))}
-            className="h-11"
-          />
-        </div>
+        <NumberField label="Width" value={width} onChange={(v) => onChange(v, height)} />
+        <NumberField label="Height" value={height} onChange={(v) => onChange(width, v)} />
       </div>
-      {(width <= 0 || height <= 0) && (
+      {invalid && (
         <p className="mt-2 text-xs text-destructive">
           Width and height must be greater than zero.
         </p>
       )}
     </div>
+  );
+}
+
+function NumberField({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: number;
+  onChange: (v: number) => void;
+}) {
+  return (
+    <label className="block rounded-xl border border-border bg-card px-4 py-3 transition focus-within:border-foreground focus-within:ring-1 focus-within:ring-foreground/40">
+      <div className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+        {label}
+      </div>
+      <div className="mt-1 flex items-baseline gap-1">
+        <Input
+          type="number"
+          min={1}
+          max={240}
+          value={value || ""}
+          onChange={(e) => onChange(Number(e.target.value))}
+          className="h-8 border-0 bg-transparent p-0 text-2xl font-semibold tabular-nums shadow-none focus-visible:ring-0 md:text-2xl"
+        />
+        <span className="text-sm text-muted-foreground">in</span>
+      </div>
+    </label>
   );
 }

@@ -5,15 +5,23 @@ type Props<T extends string> = {
   value: T;
   options: readonly T[];
   onChange: (v: T) => void;
+  descriptions?: Partial<Record<T, string>>;
 };
 
-export function OptionGroup<T extends string>({ label, value, options, onChange }: Props<T>) {
+export function OptionGroup<T extends string>({
+  label,
+  value,
+  options,
+  onChange,
+  descriptions,
+}: Props<T>) {
   return (
     <div>
-      <div className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-        {label}
+      <div className="mb-3 flex items-baseline justify-between">
+        <h3 className="text-base font-semibold tracking-tight">{label}</h3>
+        <span className="text-xs text-muted-foreground">{value}</span>
       </div>
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
         {options.map((opt) => {
           const selected = opt === value;
           return (
@@ -22,14 +30,19 @@ export function OptionGroup<T extends string>({ label, value, options, onChange 
               type="button"
               onClick={() => onChange(opt)}
               className={cn(
-                "rounded-lg border px-4 py-3 text-sm font-medium transition-all",
-                "hover:border-foreground/40",
+                "group relative rounded-xl border bg-card px-4 py-3.5 text-left transition-all",
+                "hover:border-foreground/30 hover:shadow-sm",
                 selected
-                  ? "border-foreground bg-foreground text-background shadow-sm"
-                  : "border-border bg-card text-foreground"
+                  ? "border-foreground ring-1 ring-foreground/80 shadow-sm"
+                  : "border-border"
               )}
             >
-              {opt}
+              <div className="text-sm font-medium">{opt}</div>
+              {descriptions?.[opt] && (
+                <div className="mt-0.5 text-[11px] leading-tight text-muted-foreground">
+                  {descriptions[opt]}
+                </div>
+              )}
             </button>
           );
         })}
