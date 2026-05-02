@@ -26,7 +26,7 @@ export function PriceSummary({ productType, config, price, valid }: Props) {
   };
 
   return (
-    <aside className="lg:sticky lg:top-20">
+    <aside>
       <div className="overflow-hidden rounded-2xl border border-border bg-card">
         <div className="px-6 py-6">
           <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
