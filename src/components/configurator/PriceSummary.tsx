@@ -2,8 +2,9 @@ import type { PriceBreakdown, ProductType, AnyConfig } from "@/lib/pricing";
 import { formatUSD, productLabel } from "@/lib/pricing";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "@tanstack/react-router";
-import { saveCurrentQuote } from "@/lib/quote-storage";
-import { ArrowRight } from "lucide-react";
+import { addToCart } from "@/lib/quote-storage";
+import { ArrowRight, Plus } from "lucide-react";
+import { toast } from "sonner";
 
 type Props = {
   productType: ProductType;
@@ -15,9 +16,13 @@ type Props = {
 export function PriceSummary({ productType, config, price, valid }: Props) {
   const navigate = useNavigate();
 
-  const handleContinue = () => {
-    saveCurrentQuote({ productType, config, price });
-    navigate({ to: "/quote" });
+  const handleAdd = (goToQuote: boolean) => {
+    addToCart({ productType, config, price });
+    if (goToQuote) {
+      navigate({ to: "/quote" });
+    } else {
+      toast.success(`${productLabel(productType)} added to your quote`);
+    }
   };
 
   return (
@@ -84,13 +89,23 @@ export function PriceSummary({ productType, config, price, valid }: Props) {
         </div>
 
         <div className="border-t border-border px-6 py-5">
-          <Button
-            className="h-12 w-full rounded-full text-sm font-semibold"
-            disabled={!valid}
-            onClick={handleContinue}
-          >
-            Continue <ArrowRight className="ml-1 h-4 w-4" />
-          </Button>
+          <div className="space-y-2">
+            <Button
+              className="h-12 w-full rounded-full text-sm font-semibold"
+              disabled={!valid}
+              onClick={() => handleAdd(false)}
+            >
+              <Plus className="mr-1 h-4 w-4" /> Add to Quote
+            </Button>
+            <Button
+              variant="outline"
+              className="h-11 w-full rounded-full text-sm font-medium"
+              disabled={!valid}
+              onClick={() => handleAdd(true)}
+            >
+              Add &amp; Review Quote <ArrowRight className="ml-1 h-4 w-4" />
+            </Button>
+          </div>
           <p className="mt-3 text-center text-[11px] text-muted-foreground">
             Final price subject to on-site verification
           </p>
