@@ -1,9 +1,9 @@
 import type { PriceBreakdown, ProductType, AnyConfig } from "@/lib/pricing";
 import { formatUSD, productLabel } from "@/lib/pricing";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { useNavigate } from "@tanstack/react-router";
 import { saveCurrentQuote } from "@/lib/quote-storage";
+import { ArrowRight } from "lucide-react";
 
 type Props = {
   productType: ProductType;
@@ -21,57 +21,54 @@ export function PriceSummary({ productType, config, price, valid }: Props) {
   };
 
   return (
-    <aside className="lg:sticky lg:top-24">
-      <div className="overflow-hidden rounded-2xl border bg-card shadow-[var(--shadow-card)]">
-        <div className="border-b bg-muted/40 px-6 py-5">
-          <div className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
-            Live Estimate
+    <aside className="lg:sticky lg:top-20">
+      <div className="overflow-hidden rounded-2xl border border-border bg-card">
+        <div className="px-6 py-6">
+          <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+            Estimated Price
           </div>
-          <div className="mt-1 text-sm text-muted-foreground">
+          <div className="mt-2 flex items-baseline gap-1">
+            <span className="text-5xl font-semibold tracking-tight tabular-nums">
+              {valid ? formatUSD(price.total) : "—"}
+            </span>
+          </div>
+          <div className="mt-2 text-xs text-muted-foreground">
             {productLabel(productType)} · {config.width}″ × {config.height}″
+            {valid && ` · ${price.squareFeet.toFixed(1)} sq ft`}
           </div>
-          <div className="mt-3 text-4xl font-bold tracking-tight tabular-nums">
-            {valid ? formatUSD(price.total) : "—"}
-          </div>
-          <div className="mt-1 text-xs text-muted-foreground">
-            {valid ? `${price.squareFeet.toFixed(2)} sq ft · includes labor & margin` : "Enter valid measurements"}
+          <div className="mt-1 text-[11px] text-muted-foreground">
+            Includes labor, hardware &amp; warranty
           </div>
         </div>
 
-        <div className="space-y-3 px-6 py-5 text-sm">
-          <Row label="Base price" value={formatUSD(price.basePrice)} />
-          {price.addonItems.length > 0 && (
-            <>
-              <div className="pt-1 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                Add-ons
-              </div>
-              {price.addonItems.map((a) => (
-                <Row key={a.label} label={a.label} value={formatUSD(a.amount)} muted />
-              ))}
-            </>
-          )}
+        <div className="border-t border-border px-6 py-5 text-[13px]">
+          <Row label="Base" value={formatUSD(price.basePrice)} />
+          {price.addonItems.map((a) => (
+            <Row key={a.label} label={a.label} value={formatUSD(a.amount)} />
+          ))}
           <Row label="Labor" value={formatUSD(price.laborPrice)} />
-          <Separator />
+          <div className="my-3 border-t border-border" />
           <Row label="Subtotal" value={formatUSD(price.subtotal)} muted />
-          <Row label="Margin (20%)" value={formatUSD(price.margin)} muted />
-          <Separator />
-          <div className="flex items-center justify-between text-base font-semibold">
-            <span>Total</span>
-            <span className="tabular-nums">{formatUSD(price.total)}</span>
+          <Row label="Service margin" value={formatUSD(price.margin)} muted />
+          <div className="my-3 border-t border-border" />
+          <div className="flex items-baseline justify-between">
+            <span className="text-sm font-semibold">Total</span>
+            <span className="text-lg font-semibold tabular-nums">
+              {formatUSD(price.total)}
+            </span>
           </div>
         </div>
 
-        <div className="border-t bg-muted/30 px-6 py-5">
+        <div className="border-t border-border px-6 py-5">
           <Button
-            className="w-full"
-            size="lg"
+            className="h-12 w-full rounded-full text-sm font-semibold"
             disabled={!valid}
             onClick={handleContinue}
           >
-            Review &amp; Quote
+            Continue <ArrowRight className="ml-1 h-4 w-4" />
           </Button>
           <p className="mt-3 text-center text-[11px] text-muted-foreground">
-            Final price subject to measurement verification
+            Final price subject to on-site verification
           </p>
         </div>
       </div>
@@ -82,9 +79,9 @@ export function PriceSummary({ productType, config, price, valid }: Props) {
 function Row({ label, value, muted }: { label: string; value: string; muted?: boolean }) {
   return (
     <div
-      className={`flex items-center justify-between ${muted ? "text-muted-foreground" : ""}`}
+      className={`flex items-center justify-between py-1 ${muted ? "text-muted-foreground" : ""}`}
     >
-      <span>{label}</span>
+      <span className="truncate pr-2">{label}</span>
       <span className="tabular-nums">{value}</span>
     </div>
   );
