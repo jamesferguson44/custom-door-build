@@ -5,6 +5,7 @@ import { ProductTypeTabs } from "@/components/configurator/ProductTypeTabs";
 import { OptionGroup } from "@/components/configurator/OptionGroup";
 import { SizeInputs } from "@/components/configurator/SizeInputs";
 import { PriceSummary } from "@/components/configurator/PriceSummary";
+import { ProductPreview } from "@/components/configurator/ProductPreview";
 import {
   DEFAULT_DOOR,
   DEFAULT_WINDOW,
@@ -212,7 +213,10 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
           />
         </StepSection>
       </div>
-      <PriceSummary productType={productType} config={config} price={price} valid={valid} />
+      <div className="space-y-6 lg:sticky lg:top-20">
+        <ProductPreview productType={productType} config={config} />
+        <PriceSummary productType={productType} config={config} price={price} valid={valid} />
+      </div>
     </Shell>
   );
 }
@@ -272,7 +276,10 @@ function DoorConfigurator({ productType }: { productType: ProductType }) {
           />
         </StepSection>
       </div>
-      <PriceSummary productType={productType} config={config} price={price} valid={valid} />
+      <div className="space-y-6 lg:sticky lg:top-20">
+        <ProductPreview productType={productType} config={config} />
+        <PriceSummary productType={productType} config={config} price={price} valid={valid} />
+      </div>
     </Shell>
   );
 }
