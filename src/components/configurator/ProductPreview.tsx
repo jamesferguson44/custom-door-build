@@ -1,0 +1,498 @@
+import type {
+  AnyConfig,
+  DoorConfig,
+  ProductType,
+  WindowConfig,
+} from "@/lib/pricing";
+import { productLabel } from "@/lib/pricing";
+
+type Props = {
+  productType: ProductType;
+  config: AnyConfig;
+};
+
+/**
+ * Dynamic visual preview of the configured window/door.
+ * Pure SVG — re-renders instantly on any config change.
+ */
+export function ProductPreview({ productType, config }: Props) {
+  return (
+    <div className="overflow-hidden rounded-2xl border border-border bg-gradient-to-b from-muted/40 to-muted/10">
+      <div className="flex items-center justify-between border-b border-border px-5 py-3">
+        <div className="text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+          Live Preview
+        </div>
+        <div className="text-[11px] tabular-nums text-muted-foreground">
+          {config.width}″ × {config.height}″
+        </div>
+      </div>
+      <div className="flex aspect-[4/3] items-center justify-center p-6">
+        {productType === "window" ? (
+          <WindowPreview config={config as WindowConfig} />
+        ) : (
+          <DoorPreview config={config as DoorConfig} isSliding={productType === "sliding_door"} />
+        )}
+      </div>
+      <div className="border-t border-border bg-card/50 px-5 py-3 text-[11px] text-muted-foreground">
+        {productLabel(productType)} · live preview updates with your selections
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------- WINDOW ------------------------- */
+
+function WindowPreview({ config }: { config: WindowConfig }) {
+  // Maintain real proportions while fitting into a 320x240 viewBox.
+  const maxW = 280;
+  const maxH = 200;
+  const ratio = config.width / config.height;
+  let w = maxW;
+  let h = maxW / ratio;
+  if (h > maxH) {
+    h = maxH;
+    w = maxH * ratio;
+  }
+  const x = (320 - w) / 2;
+  const y = (240 - h) / 2;
+
+  const frameColor =
+    config.color === "Black"
+      ? "#1a1a1a"
+      : config.color === "Custom"
+      ? "#6b5b4a"
+      : "#f4f4f2";
+  const frameStroke = config.color === "Black" ? "#000" : "#cfcfca";
+  const frameInner = config.color === "Black" ? "#0d0d0d" : "#e9e9e4";
+
+  // Glass tint based on glass type
+  const glassFill =
+    config.glassType === "Triple Pane"
+      ? "url(#glass-triple)"
+      : config.glassType === "Low-E"
+      ? "url(#glass-lowe)"
+      : "url(#glass-std)";
+
+  const frameThick = 10;
+  const gx = x + frameThick;
+  const gy = y + frameThick;
+  const gw = w - frameThick * 2;
+  const gh = h - frameThick * 2;
+
+  return (
+    <svg
+      viewBox="0 0 320 240"
+      className="h-full w-full"
+      role="img"
+      aria-label="Window preview"
+    >
+      <defs>
+        <linearGradient id="glass-std" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#dbe7ee" />
+          <stop offset="100%" stopColor="#aac3d1" />
+        </linearGradient>
+        <linearGradient id="glass-lowe" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#cfe4dd" />
+          <stop offset="100%" stopColor="#7fb0a3" />
+        </linearGradient>
+        <linearGradient id="glass-triple" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#c7d8e6" />
+          <stop offset="100%" stopColor="#6b8aa4" />
+        </linearGradient>
+        <linearGradient id="shine" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.55" />
+          <stop offset="60%" stopColor="#ffffff" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+
+      {/* Drop shadow */}
+      <rect
+        x={x + 4}
+        y={y + 6}
+        width={w}
+        height={h}
+        rx={4}
+        fill="#000"
+        opacity={0.08}
+      />
+
+      {/* Frame */}
+      <rect
+        x={x}
+        y={y}
+        width={w}
+        height={h}
+        rx={3}
+        fill={frameColor}
+        stroke={frameStroke}
+        strokeWidth={1}
+      />
+      {/* Inner frame bevel */}
+      <rect
+        x={x + 3}
+        y={y + 3}
+        width={w - 6}
+        height={h - 6}
+        rx={2}
+        fill="none"
+        stroke={frameInner}
+        strokeWidth={1}
+      />
+
+      {/* Glass */}
+      <rect x={gx} y={gy} width={gw} height={gh} fill={glassFill} />
+      {/* Glass shine */}
+      <rect x={gx} y={gy} width={gw} height={gh} fill="url(#shine)" />
+
+      {/* Grid overlay */}
+      <GridOverlay
+        style={config.gridStyle}
+        x={gx}
+        y={gy}
+        w={gw}
+        h={gh}
+        color={frameColor}
+        stroke={frameStroke}
+      />
+    </svg>
+  );
+}
+
+function GridOverlay({
+  style,
+  x,
+  y,
+  w,
+  h,
+  color,
+  stroke,
+}: {
+  style: WindowConfig["gridStyle"];
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  color: string;
+  stroke: string;
+}) {
+  if (style === "None") return null;
+  const t = 3; // grid bar thickness
+
+  if (style === "Colonial") {
+    // 2x3 grid -> 1 vertical, 2 horizontal
+    const vx = x + w / 2 - t / 2;
+    const h1y = y + h / 3 - t / 2;
+    const h2y = y + (2 * h) / 3 - t / 2;
+    return (
+      <g>
+        <rect x={vx} y={y} width={t} height={h} fill={color} stroke={stroke} strokeWidth={0.5} />
+        <rect x={x} y={h1y} width={w} height={t} fill={color} stroke={stroke} strokeWidth={0.5} />
+        <rect x={x} y={h2y} width={w} height={t} fill={color} stroke={stroke} strokeWidth={0.5} />
+      </g>
+    );
+  }
+
+  // Prairie: border-style grid set in from edges
+  const inset = Math.min(w, h) * 0.18;
+  return (
+    <g>
+      <rect
+        x={x + inset}
+        y={y}
+        width={t}
+        height={h}
+        fill={color}
+        stroke={stroke}
+        strokeWidth={0.5}
+      />
+      <rect
+        x={x + w - inset - t}
+        y={y}
+        width={t}
+        height={h}
+        fill={color}
+        stroke={stroke}
+        strokeWidth={0.5}
+      />
+      <rect
+        x={x}
+        y={y + inset}
+        width={w}
+        height={t}
+        fill={color}
+        stroke={stroke}
+        strokeWidth={0.5}
+      />
+      <rect
+        x={x}
+        y={y + h - inset - t}
+        width={w}
+        height={t}
+        fill={color}
+        stroke={stroke}
+        strokeWidth={0.5}
+      />
+    </g>
+  );
+}
+
+/* ------------------------- DOOR ------------------------- */
+
+function DoorPreview({ config, isSliding }: { config: DoorConfig; isSliding: boolean }) {
+  const maxW = 200;
+  const maxH = 220;
+  const ratio = config.width / config.height;
+  let w = maxW;
+  let h = maxW / ratio;
+  if (h > maxH) {
+    h = maxH;
+    w = maxH * ratio;
+  }
+  // Sliding doors are typically wider — give them a bit more room
+  if (isSliding) {
+    w = Math.min(280, w * 1.6);
+  }
+  const x = (320 - w) / 2;
+  const y = (240 - h) / 2;
+
+  // Material/finish color
+  const woodPainted = "#ececea";
+  const woodStained = "#7a4a26";
+  const fiberglassPainted = "#e2e0db";
+  const fiberglassStained = "#8a5a32";
+  const steelPainted = "#cfd2d4";
+  const steelStained = "#3a3a3a";
+
+  const doorColor =
+    config.material === "Wood"
+      ? config.finish === "Stained"
+        ? woodStained
+        : woodPainted
+      : config.material === "Steel"
+      ? config.finish === "Stained"
+        ? steelStained
+        : steelPainted
+      : config.finish === "Stained"
+      ? fiberglassStained
+      : fiberglassPainted;
+
+  const stroke = "#2a2a2a33";
+  const handleColor = config.hardware === "Premium" ? "#c9a24b" : "#9a9a9a";
+
+  return (
+    <svg
+      viewBox="0 0 320 240"
+      className="h-full w-full"
+      role="img"
+      aria-label="Door preview"
+    >
+      <defs>
+        <linearGradient id="door-glass" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#dbe7ee" />
+          <stop offset="100%" stopColor="#90b0c2" />
+        </linearGradient>
+        <linearGradient id="door-shine" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.18" />
+          <stop offset="100%" stopColor="#000000" stopOpacity="0.12" />
+        </linearGradient>
+      </defs>
+
+      {/* Threshold / floor line */}
+      <rect x={x - 8} y={y + h} width={w + 16} height={3} fill="#999" opacity={0.4} />
+
+      {/* Drop shadow */}
+      <rect x={x + 4} y={y + 6} width={w} height={h} rx={2} fill="#000" opacity={0.1} />
+
+      {isSliding ? (
+        <SlidingDoorBody
+          x={x}
+          y={y}
+          w={w}
+          h={h}
+          doorColor={doorColor}
+          stroke={stroke}
+          handleColor={handleColor}
+          glassOption={config.glassOption}
+        />
+      ) : (
+        <SingleDoorBody
+          x={x}
+          y={y}
+          w={w}
+          h={h}
+          doorColor={doorColor}
+          stroke={stroke}
+          handleColor={handleColor}
+          glassOption={config.glassOption}
+        />
+      )}
+    </svg>
+  );
+}
+
+function SingleDoorBody({
+  x,
+  y,
+  w,
+  h,
+  doorColor,
+  stroke,
+  handleColor,
+  glassOption,
+}: {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  doorColor: string;
+  stroke: string;
+  handleColor: string;
+  glassOption: DoorConfig["glassOption"];
+}) {
+  const pad = 8;
+  const innerX = x + pad;
+  const innerY = y + pad;
+  const innerW = w - pad * 2;
+  const innerH = h - pad * 2;
+
+  return (
+    <g>
+      {/* Door slab */}
+      <rect x={x} y={y} width={w} height={h} rx={2} fill={doorColor} stroke={stroke} />
+      {/* Subtle vertical shading */}
+      <rect x={x} y={y} width={w} height={h} rx={2} fill="url(#door-shine)" />
+
+      {glassOption === "Full" && (
+        <rect
+          x={innerX}
+          y={innerY}
+          width={innerW}
+          height={innerH}
+          fill="url(#door-glass)"
+          stroke={stroke}
+        />
+      )}
+
+      {glassOption === "Half" && (
+        <>
+          <rect
+            x={innerX}
+            y={innerY}
+            width={innerW}
+            height={innerH * 0.5}
+            fill="url(#door-glass)"
+            stroke={stroke}
+          />
+          {/* Lower panels */}
+          <rect
+            x={innerX}
+            y={innerY + innerH * 0.55}
+            width={innerW}
+            height={innerH * 0.45}
+            fill="none"
+            stroke={stroke}
+          />
+        </>
+      )}
+
+      {glassOption === "None" && (
+        <>
+          {/* Decorative panels */}
+          <rect
+            x={innerX}
+            y={innerY}
+            width={innerW}
+            height={innerH * 0.45}
+            fill="none"
+            stroke={stroke}
+          />
+          <rect
+            x={innerX}
+            y={innerY + innerH * 0.5}
+            width={innerW}
+            height={innerH * 0.5}
+            fill="none"
+            stroke={stroke}
+          />
+        </>
+      )}
+
+      {/* Handle */}
+      <circle cx={x + w - 12} cy={y + h * 0.55} r={2.5} fill={handleColor} />
+      <rect
+        x={x + w - 16}
+        y={y + h * 0.55 - 1.2}
+        width={8}
+        height={2.4}
+        rx={1.2}
+        fill={handleColor}
+      />
+    </g>
+  );
+}
+
+function SlidingDoorBody({
+  x,
+  y,
+  w,
+  h,
+  doorColor,
+  stroke,
+  handleColor,
+  glassOption,
+}: {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  doorColor: string;
+  stroke: string;
+  handleColor: string;
+  glassOption: DoorConfig["glassOption"];
+}) {
+  const panelW = w / 2;
+  const frame = 6;
+  // Glass density depends on glassOption; sliding always shows glass but we vary insets
+  const inset =
+    glassOption === "Full" ? frame : glassOption === "Half" ? frame + 6 : frame + 14;
+
+  const renderPanel = (px: number) => (
+    <g key={px}>
+      <rect x={px} y={y} width={panelW} height={h} fill={doorColor} stroke={stroke} />
+      <rect
+        x={px + inset}
+        y={y + inset}
+        width={panelW - inset * 2}
+        height={h - inset * 2}
+        fill="url(#door-glass)"
+        stroke={stroke}
+      />
+    </g>
+  );
+
+  return (
+    <g>
+      {/* Track */}
+      <rect x={x - 4} y={y - 4} width={w + 8} height={4} fill="#bdbdbd" />
+      {renderPanel(x)}
+      {renderPanel(x + panelW)}
+      {/* Handles */}
+      <rect
+        x={x + panelW - 6}
+        y={y + h * 0.5 - 12}
+        width={3}
+        height={24}
+        rx={1.5}
+        fill={handleColor}
+      />
+      <rect
+        x={x + panelW + 3}
+        y={y + h * 0.5 - 12}
+        width={3}
+        height={24}
+        rx={1.5}
+        fill={handleColor}
+      />
+    </g>
+  );
+}
