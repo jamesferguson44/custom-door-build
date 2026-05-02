@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as QuoteRouteImport } from './routes/quote'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as QuoteSuccessRouteImport } from './routes/quote.success'
 import { Route as ConfigureTypeRouteImport } from './routes/configure.$type'
@@ -17,6 +18,11 @@ import { Route as ConfigureTypeRouteImport } from './routes/configure.$type'
 const QuoteRoute = QuoteRouteImport.update({
   id: '/quote',
   path: '/quote',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -37,12 +43,14 @@ const ConfigureTypeRoute = ConfigureTypeRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/quote': typeof QuoteRouteWithChildren
   '/configure/$type': typeof ConfigureTypeRoute
   '/quote/success': typeof QuoteSuccessRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/quote': typeof QuoteRouteWithChildren
   '/configure/$type': typeof ConfigureTypeRoute
   '/quote/success': typeof QuoteSuccessRoute
@@ -50,20 +58,28 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/quote': typeof QuoteRouteWithChildren
   '/configure/$type': typeof ConfigureTypeRoute
   '/quote/success': typeof QuoteSuccessRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/quote' | '/configure/$type' | '/quote/success'
+  fullPaths: '/' | '/admin' | '/quote' | '/configure/$type' | '/quote/success'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/quote' | '/configure/$type' | '/quote/success'
-  id: '__root__' | '/' | '/quote' | '/configure/$type' | '/quote/success'
+  to: '/' | '/admin' | '/quote' | '/configure/$type' | '/quote/success'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/quote'
+    | '/configure/$type'
+    | '/quote/success'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRoute
   QuoteRoute: typeof QuoteRouteWithChildren
   ConfigureTypeRoute: typeof ConfigureTypeRoute
 }
@@ -75,6 +91,13 @@ declare module '@tanstack/react-router' {
       path: '/quote'
       fullPath: '/quote'
       preLoaderRoute: typeof QuoteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -113,6 +136,7 @@ const QuoteRouteWithChildren = QuoteRoute._addFileChildren(QuoteRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRoute,
   QuoteRoute: QuoteRouteWithChildren,
   ConfigureTypeRoute: ConfigureTypeRoute,
 }
