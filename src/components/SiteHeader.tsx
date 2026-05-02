@@ -1,6 +1,11 @@
 import { Link } from "@tanstack/react-router";
+import { useCart } from "@/hooks/use-cart";
+import { cartCount } from "@/lib/quote-storage";
+import { ShoppingCart } from "lucide-react";
 
 export function SiteHeader() {
+  const cart = useCart();
+  const count = cartCount(cart);
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/70 backdrop-blur-xl">
       <div className="mx-auto flex h-14 max-w-[1400px] items-center justify-between px-6">
@@ -23,6 +28,14 @@ export function SiteHeader() {
             Configure
           </Link>
           <NavItem to="/admin">Admin</NavItem>
+          <Link
+            to="/quote"
+            className="ml-1 inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-muted-foreground transition hover:border-foreground hover:text-foreground"
+            activeProps={{ className: "ml-1 inline-flex items-center gap-1.5 rounded-full border border-foreground bg-foreground text-background px-3 py-1.5 font-medium" }}
+          >
+            <ShoppingCart className="h-3.5 w-3.5" />
+            <span className="tabular-nums">{count}</span>
+          </Link>
         </nav>
       </div>
     </header>
