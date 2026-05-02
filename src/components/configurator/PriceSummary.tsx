@@ -42,14 +42,38 @@ export function PriceSummary({ productType, config, price, valid }: Props) {
         </div>
 
         <div className="border-t border-border px-6 py-5 text-[13px]">
-          <Row label="Base" value={formatUSD(price.basePrice)} />
-          {price.addonItems.map((a) => (
-            <Row key={a.label} label={a.label} value={formatUSD(a.amount)} />
+          <SectionLabel>Base Price</SectionLabel>
+          <Row
+            label={`${price.squareFeet.toFixed(2)} sq ft × $${price.baseRate}/sq ft`}
+            value={formatUSD(price.squareFeet * price.baseRate)}
+            muted
+          />
+          {price.multipliers.map((m) => (
+            <Row
+              key={m.label}
+              label={m.label}
+              value={`× ${m.value.toFixed(2)}`}
+              muted
+            />
           ))}
-          <Row label="Labor" value={formatUSD(price.laborPrice)} />
+          <Row label="Base subtotal" value={formatUSD(price.basePrice)} />
+
+          {price.addonItems.length > 0 && (
+            <>
+              <SectionLabel>Add-ons</SectionLabel>
+              {price.addonItems.map((a) => (
+                <Row key={a.label} label={a.label} value={formatUSD(a.amount)} muted />
+              ))}
+              <Row label="Add-ons subtotal" value={formatUSD(price.addonsPrice)} />
+            </>
+          )}
+
+          <SectionLabel>Labor &amp; Install</SectionLabel>
+          <Row label="Standard labor" value={formatUSD(price.laborPrice)} muted />
+
           <div className="my-3 border-t border-border" />
-          <Row label="Subtotal" value={formatUSD(price.subtotal)} muted />
-          <Row label="Service margin" value={formatUSD(price.margin)} muted />
+          <Row label="Subtotal" value={formatUSD(price.subtotal)} />
+          <Row label="Service & warranty (20%)" value={formatUSD(price.margin)} muted />
           <div className="my-3 border-t border-border" />
           <div className="flex items-baseline justify-between">
             <span className="text-sm font-semibold">Total</span>
@@ -83,6 +107,14 @@ function Row({ label, value, muted }: { label: string; value: string; muted?: bo
     >
       <span className="truncate pr-2">{label}</span>
       <span className="tabular-nums">{value}</span>
+    </div>
+  );
+}
+
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="mb-1 mt-3 text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground first:mt-0">
+      {children}
     </div>
   );
 }
