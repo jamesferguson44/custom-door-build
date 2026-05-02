@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as QuoteRouteImport } from './routes/quote'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as QuoteSuccessRouteImport } from './routes/quote.success'
 import { Route as ConfigureTypeRouteImport } from './routes/configure.$type'
 
 const QuoteRoute = QuoteRouteImport.update({
@@ -23,6 +24,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const QuoteSuccessRoute = QuoteSuccessRouteImport.update({
+  id: '/success',
+  path: '/success',
+  getParentRoute: () => QuoteRoute,
+} as any)
 const ConfigureTypeRoute = ConfigureTypeRouteImport.update({
   id: '/configure/$type',
   path: '/configure/$type',
@@ -31,31 +37,34 @@ const ConfigureTypeRoute = ConfigureTypeRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/quote': typeof QuoteRoute
+  '/quote': typeof QuoteRouteWithChildren
   '/configure/$type': typeof ConfigureTypeRoute
+  '/quote/success': typeof QuoteSuccessRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/quote': typeof QuoteRoute
+  '/quote': typeof QuoteRouteWithChildren
   '/configure/$type': typeof ConfigureTypeRoute
+  '/quote/success': typeof QuoteSuccessRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/quote': typeof QuoteRoute
+  '/quote': typeof QuoteRouteWithChildren
   '/configure/$type': typeof ConfigureTypeRoute
+  '/quote/success': typeof QuoteSuccessRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/quote' | '/configure/$type'
+  fullPaths: '/' | '/quote' | '/configure/$type' | '/quote/success'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/quote' | '/configure/$type'
-  id: '__root__' | '/' | '/quote' | '/configure/$type'
+  to: '/' | '/quote' | '/configure/$type' | '/quote/success'
+  id: '__root__' | '/' | '/quote' | '/configure/$type' | '/quote/success'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  QuoteRoute: typeof QuoteRoute
+  QuoteRoute: typeof QuoteRouteWithChildren
   ConfigureTypeRoute: typeof ConfigureTypeRoute
 }
 
@@ -75,6 +84,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/quote/success': {
+      id: '/quote/success'
+      path: '/success'
+      fullPath: '/quote/success'
+      preLoaderRoute: typeof QuoteSuccessRouteImport
+      parentRoute: typeof QuoteRoute
+    }
     '/configure/$type': {
       id: '/configure/$type'
       path: '/configure/$type'
@@ -85,9 +101,19 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface QuoteRouteChildren {
+  QuoteSuccessRoute: typeof QuoteSuccessRoute
+}
+
+const QuoteRouteChildren: QuoteRouteChildren = {
+  QuoteSuccessRoute: QuoteSuccessRoute,
+}
+
+const QuoteRouteWithChildren = QuoteRoute._addFileChildren(QuoteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  QuoteRoute: QuoteRoute,
+  QuoteRoute: QuoteRouteWithChildren,
   ConfigureTypeRoute: ConfigureTypeRoute,
 }
 export const routeTree = rootRouteImport
