@@ -60,6 +60,7 @@ const DOOR_MATERIAL_MULT: Record<DoorConfig["material"], number> = {
 
 export type PriceBreakdown = {
   squareFeet: number;
+  baseRate: number;
   basePrice: number;
   addonsPrice: number;
   laborPrice: number;
@@ -67,11 +68,15 @@ export type PriceBreakdown = {
   margin: number;
   total: number;
   addonItems: { label: string; amount: number }[];
+  multipliers: { label: string; value: number }[];
 };
 
 export function calculateWindow(c: WindowConfig): PriceBreakdown {
   const sqft = (c.width * c.height) / 144;
-  const base = sqft * 35 * FRAME_MULT[c.frameMaterial] * GLASS_MULT[c.glassType];
+  const baseRate = 35;
+  const frameMult = FRAME_MULT[c.frameMaterial];
+  const glassMult = GLASS_MULT[c.glassType];
+  const base = sqft * baseRate * frameMult * glassMult;
 
   const addonItems: { label: string; amount: number }[] = [];
   if (c.gridStyle !== "None") addonItems.push({ label: `Grid: ${c.gridStyle}`, amount: 75 });
@@ -85,6 +90,7 @@ export function calculateWindow(c: WindowConfig): PriceBreakdown {
   const total = Math.round(subtotal * 1.2);
   return {
     squareFeet: sqft,
+    baseRate,
     basePrice: base,
     addonsPrice,
     laborPrice,
@@ -92,13 +98,18 @@ export function calculateWindow(c: WindowConfig): PriceBreakdown {
     margin: total - subtotal,
     total,
     addonItems,
+    multipliers: [
+      { label: `Frame: ${c.frameMaterial}`, value: frameMult },
+      { label: `Glass: ${c.glassType}`, value: glassMult },
+    ],
   };
 }
 
 export function calculateDoor(c: DoorConfig, isSliding = false): PriceBreakdown {
   const sqft = (c.width * c.height) / 144;
   const baseRate = isSliding ? 50 : 45;
-  const base = sqft * baseRate * DOOR_MATERIAL_MULT[c.material];
+  const matMult = DOOR_MATERIAL_MULT[c.material];
+  const base = sqft * baseRate * matMult;
 
   const addonItems: { label: string; amount: number }[] = [];
   if (c.glassOption === "Half") addonItems.push({ label: "Half Glass", amount: 180 });
@@ -112,6 +123,7 @@ export function calculateDoor(c: DoorConfig, isSliding = false): PriceBreakdown 
   const total = Math.round(subtotal * 1.2);
   return {
     squareFeet: sqft,
+    baseRate,
     basePrice: base,
     addonsPrice,
     laborPrice,
@@ -119,6 +131,7 @@ export function calculateDoor(c: DoorConfig, isSliding = false): PriceBreakdown 
     margin: total - subtotal,
     total,
     addonItems,
+    multipliers: [{ label: `Material: ${c.material}`, value: matMult }],
   };
 }
 
