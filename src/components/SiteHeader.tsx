@@ -2,45 +2,42 @@ import { Link } from "@tanstack/react-router";
 
 export function SiteHeader() {
   return (
-    <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        <Link to="/" className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
-            <span className="text-sm font-bold">UW</span>
+    <header className="sticky top-0 z-40 border-b border-border/60 bg-background/70 backdrop-blur-xl">
+      <div className="mx-auto flex h-14 max-w-[1400px] items-center justify-between px-6">
+        <Link to="/" className="flex items-center gap-2.5">
+          <div className="flex h-7 w-7 items-center justify-center rounded-md bg-foreground text-background">
+            <span className="text-[11px] font-bold tracking-tight">UW</span>
           </div>
-          <div className="leading-tight">
-            <div className="text-sm font-semibold tracking-tight">Utah Window &amp; Door</div>
-            <div className="text-[11px] uppercase tracking-widest text-muted-foreground">
-              Configurator
-            </div>
-          </div>
+          <span className="text-[13px] font-semibold tracking-tight">
+            Utah Window &amp; Door
+          </span>
         </Link>
-        <nav className="flex items-center gap-1 text-sm">
-          <Link
-            to="/"
-            className="rounded-md px-3 py-2 text-muted-foreground transition hover:text-foreground"
-            activeOptions={{ exact: true }}
-            activeProps={{ className: "rounded-md px-3 py-2 text-foreground font-medium" }}
-          >
-            Home
-          </Link>
+        <nav className="flex items-center gap-1 text-[13px]">
+          <NavItem to="/">Home</NavItem>
           <Link
             to="/configure/$type"
             params={{ type: "window" }}
-            className="rounded-md px-3 py-2 text-muted-foreground transition hover:text-foreground"
-            activeProps={{ className: "rounded-md px-3 py-2 text-foreground font-medium" }}
+            className="rounded-full px-4 py-1.5 text-muted-foreground transition hover:text-foreground"
+            activeProps={{ className: "rounded-full px-4 py-1.5 text-foreground font-medium" }}
           >
             Configure
           </Link>
-          <Link
-            to="/admin"
-            className="rounded-md px-3 py-2 text-muted-foreground transition hover:text-foreground"
-            activeProps={{ className: "rounded-md px-3 py-2 text-foreground font-medium" }}
-          >
-            Admin
-          </Link>
+          <NavItem to="/admin">Admin</NavItem>
         </nav>
       </div>
     </header>
+  );
+}
+
+function NavItem({ to, children }: { to: "/" | "/admin"; children: React.ReactNode }) {
+  return (
+    <Link
+      to={to}
+      className="rounded-full px-4 py-1.5 text-muted-foreground transition hover:text-foreground"
+      activeOptions={to === "/" ? { exact: true } : undefined}
+      activeProps={{ className: "rounded-full px-4 py-1.5 text-foreground font-medium" }}
+    >
+      {children}
+    </Link>
   );
 }
