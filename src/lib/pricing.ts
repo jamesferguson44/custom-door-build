@@ -1,3 +1,9 @@
+import {
+  calculateQuote,
+  type QuoteBreakdown,
+} from "./price-calculator";
+import type { BrandTier, InstallDifficulty } from "./pricing-config";
+
 export type ProductType = "window" | "door" | "sliding_door";
 
 export type WindowConfig = {
@@ -40,22 +46,41 @@ export const DEFAULT_DOOR: DoorConfig = {
   hardware: "Basic",
 };
 
-const FRAME_MULT: Record<WindowConfig["frameMaterial"], number> = {
-  Vinyl: 1.0,
-  Fiberglass: 1.25,
-  Aluminum: 1.15,
+/* Map UI configurator options onto the centralized pricing system. */
+
+const WINDOW_FRAME_TIER: Record<WindowConfig["frameMaterial"], BrandTier> = {
+  Vinyl: "Good",
+  Aluminum: "Better",
+  Fiberglass: "Best",
 };
 
-const GLASS_MULT: Record<WindowConfig["glassType"], number> = {
-  Standard: 1.0,
-  "Low-E": 1.2,
-  "Triple Pane": 1.4,
+const WINDOW_GLASS_ADDON: Record<WindowConfig["glassType"], string | null> = {
+  Standard: null,
+  "Low-E": "low-e",
+  "Triple Pane": "triple-pane",
 };
 
-const DOOR_MATERIAL_MULT: Record<DoorConfig["material"], number> = {
-  Wood: 1.2,
-  Fiberglass: 1.15,
-  Steel: 1.0,
+const WINDOW_GRID_ADDON: Record<WindowConfig["gridStyle"], string | null> = {
+  None: null,
+  Colonial: "grid-colonial",
+  Prairie: "grid-prairie",
+};
+
+const WINDOW_INSTALL: Record<WindowConfig["installation"], InstallDifficulty> = {
+  Retrofit: "Retrofit",
+  "Full Frame": "FullFrame",
+};
+
+const DOOR_MATERIAL_TIER: Record<DoorConfig["material"], BrandTier> = {
+  Steel: "Good",
+  Fiberglass: "Better",
+  Wood: "Best",
+};
+
+const DOOR_GLASS_ADDON: Record<DoorConfig["glassOption"], string | null> = {
+  None: null,
+  Half: "half-glass",
+  Full: "full-glass",
 };
 
 export type PriceBreakdown = {
@@ -67,72 +92,80 @@ export type PriceBreakdown = {
   subtotal: number;
   margin: number;
   total: number;
+  /** Low/high range for display (±8%). */
+  low: number;
+  high: number;
   addonItems: { label: string; amount: number }[];
   multipliers: { label: string; value: number }[];
 };
 
-export function calculateWindow(c: WindowConfig): PriceBreakdown {
-  const sqft = (c.width * c.height) / 144;
-  const baseRate = 35;
-  const frameMult = FRAME_MULT[c.frameMaterial];
-  const glassMult = GLASS_MULT[c.glassType];
-  const base = sqft * baseRate * frameMult * glassMult;
+/** Display spread around the calculated total (±8%). */
+const RANGE_SPREAD = 0.08;
 
-  const addonItems: { label: string; amount: number }[] = [];
-  if (c.gridStyle !== "None") addonItems.push({ label: `Grid: ${c.gridStyle}`, amount: 75 });
-  if (c.color === "Custom") addonItems.push({ label: "Custom Color", amount: 150 });
-  if (c.installation === "Full Frame")
-    addonItems.push({ label: "Full Frame Install", amount: 200 });
-
-  const addonsPrice = addonItems.reduce((s, a) => s + a.amount, 0);
-  const laborPrice = 250;
-  const subtotal = base + addonsPrice + laborPrice;
-  const total = Math.round(subtotal * 1.2);
+function toBreakdown(
+  q: QuoteBreakdown,
+  multipliers: { label: string; value: number }[],
+): PriceBreakdown {
+  const subtotal = q.tieredBase + q.laborTotal + q.addOnsTotal;
   return {
-    squareFeet: sqft,
-    baseRate,
-    basePrice: base,
-    addonsPrice,
-    laborPrice,
+    squareFeet: q.squareFeet,
+    baseRate: q.bucketRate,
+    basePrice: q.tieredBase,
+    addonsPrice: q.addOnsTotal,
+    laborPrice: q.laborTotal,
     subtotal,
-    margin: total - subtotal,
-    total,
-    addonItems,
-    multipliers: [
-      { label: `Frame: ${c.frameMaterial}`, value: frameMult },
-      { label: `Glass: ${c.glassType}`, value: glassMult },
-    ],
+    margin: q.unitTotal - subtotal,
+    total: q.unitTotal,
+    low: Math.round((q.unitTotal * (1 - RANGE_SPREAD)) / 10) * 10,
+    high: Math.round((q.unitTotal * (1 + RANGE_SPREAD)) / 10) * 10,
+    addonItems: q.addOnItems.map((i) => ({ label: i.label, amount: Math.round(i.amount) })),
+    multipliers,
   };
 }
 
+export function calculateWindow(c: WindowConfig): PriceBreakdown {
+  const tier = WINDOW_FRAME_TIER[c.frameMaterial];
+  const addOnIds = [
+    WINDOW_GLASS_ADDON[c.glassType],
+    WINDOW_GRID_ADDON[c.gridStyle],
+    c.color === "Custom" ? "custom-color" : null,
+  ].filter((x): x is string => Boolean(x));
+
+  const q = calculateQuote({
+    productType: "window",
+    width: c.width,
+    height: c.height,
+    tier,
+    installation: WINDOW_INSTALL[c.installation],
+    addOnIds,
+  });
+
+  return toBreakdown(q, [
+    { label: `Frame: ${c.frameMaterial} (${tier})`, value: q.tierMultiplier },
+    { label: `Install: ${c.installation}`, value: q.installLaborMultiplier },
+  ]);
+}
+
 export function calculateDoor(c: DoorConfig, isSliding = false): PriceBreakdown {
-  const sqft = (c.width * c.height) / 144;
-  const baseRate = isSliding ? 50 : 45;
-  const matMult = DOOR_MATERIAL_MULT[c.material];
-  const base = sqft * baseRate * matMult;
+  const tier = DOOR_MATERIAL_TIER[c.material];
+  const addOnIds = [
+    DOOR_GLASS_ADDON[c.glassOption],
+    !isSliding && c.finish === "Stained" ? "stained-finish" : null,
+    c.hardware === "Premium" ? "premium-hardware" : null,
+  ].filter((x): x is string => Boolean(x));
 
-  const addonItems: { label: string; amount: number }[] = [];
-  if (c.glassOption === "Half") addonItems.push({ label: "Half Glass", amount: 180 });
-  if (c.glassOption === "Full") addonItems.push({ label: "Full Glass", amount: 320 });
-  if (c.finish === "Stained") addonItems.push({ label: "Stained Finish", amount: 100 });
-  if (c.hardware === "Premium") addonItems.push({ label: "Premium Hardware", amount: 120 });
+  const q = calculateQuote({
+    productType: isSliding ? "sliding_door" : "door",
+    width: c.width,
+    height: c.height,
+    tier,
+    installation: "Standard",
+    addOnIds,
+  });
 
-  const addonsPrice = addonItems.reduce((s, a) => s + a.amount, 0);
-  const laborPrice = 400;
-  const subtotal = base + addonsPrice + laborPrice;
-  const total = Math.round(subtotal * 1.2);
-  return {
-    squareFeet: sqft,
-    baseRate,
-    basePrice: base,
-    addonsPrice,
-    laborPrice,
-    subtotal,
-    margin: total - subtotal,
-    total,
-    addonItems,
-    multipliers: [{ label: `Material: ${c.material}`, value: matMult }],
-  };
+  return toBreakdown(q, [
+    { label: `Material: ${c.material} (${tier})`, value: q.tierMultiplier },
+  ]);
 }
 
 export function calculatePrice(type: ProductType, c: AnyConfig): PriceBreakdown {
