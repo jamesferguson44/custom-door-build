@@ -30,58 +30,49 @@ export function PriceSummary({ productType, config, price, valid }: Props) {
       <div className="overflow-hidden rounded-2xl border border-border bg-card">
         <div className="px-6 py-6">
           <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
-            Estimated Price
+            Estimated Price Range
           </div>
-          <div className="mt-2 flex items-baseline gap-1">
-            <span className="text-5xl font-semibold tracking-tight tabular-nums">
-              {valid ? formatUSD(price.total) : "—"}
-            </span>
+          <div className="mt-2 flex items-baseline gap-2 flex-wrap">
+            {valid ? (
+              <>
+                <span className="text-4xl font-semibold tracking-tight tabular-nums">
+                  {formatUSD(price.low)}
+                </span>
+                <span className="text-2xl text-muted-foreground">–</span>
+                <span className="text-4xl font-semibold tracking-tight tabular-nums">
+                  {formatUSD(price.high)}
+                </span>
+              </>
+            ) : (
+              <span className="text-4xl font-semibold tracking-tight">—</span>
+            )}
           </div>
           <div className="mt-2 text-xs text-muted-foreground">
             {productLabel(productType)} · {config.width}″ × {config.height}″
             {valid && ` · ${price.squareFeet.toFixed(1)} sq ft`}
           </div>
           <div className="mt-1 text-[11px] text-muted-foreground">
-            Includes labor, hardware &amp; warranty
+            Includes labor, hardware &amp; warranty · midpoint {formatUSD(price.total)}
           </div>
         </div>
 
         <div className="border-t border-border px-6 py-5 text-[13px]">
-          <SectionLabel>Base Price</SectionLabel>
-          <Row
-            label={`${price.squareFeet.toFixed(2)} sq ft × $${price.baseRate}/sq ft`}
-            value={formatUSD(price.squareFeet * price.baseRate)}
-            muted
-          />
-          {price.multipliers.map((m) => (
-            <Row
-              key={m.label}
-              label={m.label}
-              value={`× ${m.value.toFixed(2)}`}
-              muted
-            />
-          ))}
-          <Row label="Base subtotal" value={formatUSD(price.basePrice)} />
-
+          <SectionLabel>Cost Breakdown</SectionLabel>
+          <Row label="Product & materials" value={formatUSD(price.basePrice)} />
+          <Row label="Installation & labor" value={formatUSD(price.laborPrice)} />
           {price.addonItems.length > 0 && (
             <>
-              <SectionLabel>Add-ons</SectionLabel>
-              {price.addonItems.map((a) => (
-                <Row key={a.label} label={a.label} value={formatUSD(a.amount)} muted />
-              ))}
-              <Row label="Add-ons subtotal" value={formatUSD(price.addonsPrice)} />
+              <Row label={`Add-ons (${price.addonItems.length})`} value={formatUSD(price.addonsPrice)} />
+              <div className="ml-3 mt-1 space-y-0.5">
+                {price.addonItems.map((a) => (
+                  <Row key={a.label} label={`· ${a.label}`} value={formatUSD(a.amount)} muted />
+                ))}
+              </div>
             </>
           )}
-
-          <SectionLabel>Labor &amp; Install</SectionLabel>
-          <Row label="Standard labor" value={formatUSD(price.laborPrice)} muted />
-
-          <div className="my-3 border-t border-border" />
-          <Row label="Subtotal" value={formatUSD(price.subtotal)} />
-          <Row label="Service & warranty (20%)" value={formatUSD(price.margin)} muted />
           <div className="my-3 border-t border-border" />
           <div className="flex items-baseline justify-between">
-            <span className="text-sm font-semibold">Total</span>
+            <span className="text-sm font-semibold">Estimated Total</span>
             <span className="text-lg font-semibold tabular-nums">
               {formatUSD(price.total)}
             </span>
