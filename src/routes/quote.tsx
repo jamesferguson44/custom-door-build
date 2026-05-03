@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Trash2, Minus, Plus } from "lucide-react";
+import { ScheduleMeasurementDialog } from "@/components/ScheduleMeasurementDialog";
 import { supabase } from "@/integrations/supabase/client";
 import {
   cartTotal,
@@ -219,9 +220,13 @@ function QuotePage() {
               </div>
 
               <div className="space-y-2 border-t border-border bg-muted/30 px-6 py-5">
-                <Button className="h-12 w-full rounded-full text-sm font-semibold" disabled={loading} onClick={() => submit("install")}>
-                  Request Installation
-                </Button>
+                <ScheduleMeasurementDialog
+                  trigger={
+                    <Button className="h-12 w-full rounded-full text-sm font-semibold">
+                      Schedule Measurement
+                    </Button>
+                  }
+                />
                 <Button variant="outline" className="h-11 w-full rounded-full" disabled={loading} onClick={() => submit("save")}>
                   Save Quote
                 </Button>
