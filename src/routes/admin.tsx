@@ -25,7 +25,7 @@ const STATUSES: QuoteStatus[] = ["new", "contacted", "scheduled", "completed"];
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
-    meta: [{ title: "Admin — Utah Window & Door" }],
+    meta: [{ title: "Admin — Pane & Simple" }],
   }),
   component: AdminPage,
 });
