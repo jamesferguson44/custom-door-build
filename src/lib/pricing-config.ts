@@ -1,5 +1,5 @@
 /**
- * Centralized pricing configuration for Utah Window & Door.
+ * Centralized pricing configuration for Pane & Simple.
  *
  * Edit this file to update prices, tiers, add-ons, and labor adjustments
  * without touching UI or calculation code. The pricing engine in
