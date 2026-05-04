@@ -10,7 +10,7 @@ import type { ProductType } from "@/lib/pricing";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Utah Window & Door — Instant Configurator & Quotes" },
+      { title: "Pane & Simple — Instant Configurator & Quotes" },
       {
         name: "description",
         content:
@@ -47,7 +47,7 @@ function Home() {
             Design your view.
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-sm text-foreground/80 sm:text-base">
-            Configure windows and doors built for Utah homes. Instant pricing.
+            Configure windows and doors with Pane &amp; Simple. Instant pricing.
             No sales pressure.
           </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
@@ -124,13 +124,13 @@ function Home() {
             Every product is built to your exact opening dimensions.
           </Feature>
           <Feature icon={<Shield className="h-5 w-5" />} title="Lifetime Workmanship">
-            Backed by our installation warranty across the Wasatch Front.
+            Backed by our installation warranty.
           </Feature>
         </div>
       </section>
 
       <footer className="border-t border-border py-8 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} Utah Window &amp; Door
+        © {new Date().getFullYear()} Pane &amp; Simple
       </footer>
     </div>
   );

@@ -44,7 +44,7 @@ export const Route = createFileRoute("/configure/$type")({
     const label = productLabel(t);
     return {
       meta: [
-        { title: `Configure ${label} — Utah Window & Door` },
+        { title: `Configure ${label} — Pane & Simple` },
         {
           name: "description",
           content: `Build your custom ${label.toLowerCase()} and see live pricing instantly.`,
@@ -201,18 +201,6 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
           />
         </StepSection>
 
-        <StepSection step={4} title="Installation">
-          <OptionGroup
-            label="Install Type"
-            value={config.installation}
-            options={["Retrofit", "Full Frame"] as const}
-            onChange={(v) => setConfig({ ...config, installation: v })}
-            descriptions={{
-              Retrofit: "Insert into existing frame",
-              "Full Frame": "Complete tear-out & rebuild",
-            }}
-          />
-        </StepSection>
       </div>
       <div className="space-y-6 lg:sticky lg:top-20">
         <ProductPreview productType={productType} config={config} />
@@ -222,7 +210,7 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
           price={price}
           valid={valid}
           onAddedToProject={() =>
-            setConfig({ ...config, width: DEFAULT_WINDOW.width, height: DEFAULT_WINDOW.height })
+            setConfig({ ...config, width: 0, height: 0 })
           }
         />
         <ProjectSummary />
@@ -294,7 +282,7 @@ function DoorConfigurator({ productType }: { productType: ProductType }) {
           price={price}
           valid={valid}
           onAddedToProject={() =>
-            setConfig({ ...config, width: DEFAULT_DOOR.width, height: DEFAULT_DOOR.height })
+            setConfig({ ...config, width: 0, height: 0 })
           }
         />
         <ProjectSummary />

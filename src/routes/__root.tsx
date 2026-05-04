@@ -29,13 +29,13 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Utah Window & Door Configurator" },
+      { title: "Pane & Simple Configurator" },
       {
         name: "description",
         content:
-          "Configure custom windows and doors and get an instant price quote from Utah Window & Door.",
+          "Configure custom windows and doors and get an instant price quote from Pane & Simple.",
       },
-      { property: "og:title", content: "Utah Window & Door Configurator" },
+      { property: "og:title", content: "Pane & Simple Configurator" },
       {
         property: "og:description",
         content: "Build, price, and request your custom windows and doors in minutes.",

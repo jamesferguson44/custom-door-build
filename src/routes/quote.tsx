@@ -23,7 +23,7 @@ import { formatUSD, productLabel, sendToShopifyCheckout } from "@/lib/pricing";
 export const Route = createFileRoute("/quote")({
   head: () => ({
     meta: [
-      { title: "Your Quote — Utah Window & Door" },
+      { title: "Your Quote — Pane & Simple" },
       { name: "description", content: "Review your configurations and request installation." },
     ],
   }),

@@ -11,10 +11,10 @@ export function SiteHeader() {
       <div className="mx-auto flex h-14 max-w-[1400px] items-center justify-between px-6">
         <Link to="/" className="flex items-center gap-2.5">
           <div className="flex h-7 w-7 items-center justify-center rounded-md bg-foreground text-background">
-            <span className="text-[11px] font-bold tracking-tight">UW</span>
+            <span className="text-[11px] font-bold tracking-tight">P&amp;S</span>
           </div>
           <span className="text-[13px] font-semibold tracking-tight">
-            Utah Window &amp; Door
+            Pane &amp; Simple
           </span>
         </Link>
         <nav className="flex items-center gap-1 text-[13px]">
