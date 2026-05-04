@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/quote/success")({
   validateSearch: z.object({ id: z.string().optional() }),
   head: () => ({
-    meta: [{ title: "Quote Submitted — Utah Window & Door" }],
+    meta: [{ title: "Quote Submitted — Pane & Simple" }],
   }),
   component: SuccessPage,
 });
