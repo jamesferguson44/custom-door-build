@@ -282,7 +282,7 @@ function DoorConfigurator({ productType }: { productType: ProductType }) {
           price={price}
           valid={valid}
           onAddedToProject={() =>
-            setConfig({ ...config, width: DEFAULT_DOOR.width, height: DEFAULT_DOOR.height })
+            setConfig({ ...config, width: 0, height: 0 })
           }
         />
         <ProjectSummary />
