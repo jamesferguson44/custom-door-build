@@ -6,6 +6,7 @@ import { OptionGroup } from "@/components/configurator/OptionGroup";
 import { SizeInputs } from "@/components/configurator/SizeInputs";
 import { PriceSummary } from "@/components/configurator/PriceSummary";
 import { ProductPreview } from "@/components/configurator/ProductPreview";
+import { ProjectSummary } from "@/components/configurator/ProjectSummary";
 import {
   DEFAULT_DOOR,
   DEFAULT_WINDOW,
@@ -215,7 +216,16 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
       </div>
       <div className="space-y-6 lg:sticky lg:top-20">
         <ProductPreview productType={productType} config={config} />
-        <PriceSummary productType={productType} config={config} price={price} valid={valid} />
+        <PriceSummary
+          productType={productType}
+          config={config}
+          price={price}
+          valid={valid}
+          onAddedToProject={() =>
+            setConfig({ ...config, width: DEFAULT_WINDOW.width, height: DEFAULT_WINDOW.height })
+          }
+        />
+        <ProjectSummary />
       </div>
     </Shell>
   );
@@ -278,7 +288,16 @@ function DoorConfigurator({ productType }: { productType: ProductType }) {
       </div>
       <div className="space-y-6 lg:sticky lg:top-20">
         <ProductPreview productType={productType} config={config} />
-        <PriceSummary productType={productType} config={config} price={price} valid={valid} />
+        <PriceSummary
+          productType={productType}
+          config={config}
+          price={price}
+          valid={valid}
+          onAddedToProject={() =>
+            setConfig({ ...config, width: DEFAULT_DOOR.width, height: DEFAULT_DOOR.height })
+          }
+        />
+        <ProjectSummary />
       </div>
     </Shell>
   );

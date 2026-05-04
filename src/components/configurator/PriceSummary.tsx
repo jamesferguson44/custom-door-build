@@ -11,9 +11,10 @@ type Props = {
   config: AnyConfig;
   price: PriceBreakdown;
   valid: boolean;
+  onAddedToProject?: () => void;
 };
 
-export function PriceSummary({ productType, config, price, valid }: Props) {
+export function PriceSummary({ productType, config, price, valid, onAddedToProject }: Props) {
   const navigate = useNavigate();
 
   const handleAdd = (goToQuote: boolean) => {
@@ -21,7 +22,8 @@ export function PriceSummary({ productType, config, price, valid }: Props) {
     if (goToQuote) {
       navigate({ to: "/quote" });
     } else {
-      toast.success(`${productLabel(productType)} added to your quote`);
+      toast.success(`${productLabel(productType)} added to your project`);
+      onAddedToProject?.();
     }
   };
 
@@ -86,7 +88,7 @@ export function PriceSummary({ productType, config, price, valid }: Props) {
               disabled={!valid}
               onClick={() => handleAdd(false)}
             >
-              <Plus className="mr-1 h-4 w-4" /> Add to Quote
+              <Plus className="mr-1 h-4 w-4" /> Add to Project
             </Button>
             <Button
               variant="outline"
