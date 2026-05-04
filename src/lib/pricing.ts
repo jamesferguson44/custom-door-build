@@ -13,7 +13,6 @@ export type WindowConfig = {
   glassType: "Standard" | "Low-E" | "Triple Pane";
   gridStyle: "None" | "Colonial" | "Prairie";
   color: "White" | "Black" | "Custom";
-  installation: "Retrofit" | "Full Frame";
 };
 
 export type DoorConfig = {
@@ -34,7 +33,6 @@ export const DEFAULT_WINDOW: WindowConfig = {
   glassType: "Standard",
   gridStyle: "None",
   color: "White",
-  installation: "Retrofit",
 };
 
 export const DEFAULT_DOOR: DoorConfig = {
@@ -64,11 +62,6 @@ const WINDOW_GRID_ADDON: Record<WindowConfig["gridStyle"], string | null> = {
   None: null,
   Colonial: "grid-colonial",
   Prairie: "grid-prairie",
-};
-
-const WINDOW_INSTALL: Record<WindowConfig["installation"], InstallDifficulty> = {
-  Retrofit: "Retrofit",
-  "Full Frame": "FullFrame",
 };
 
 const DOOR_MATERIAL_TIER: Record<DoorConfig["material"], BrandTier> = {
@@ -136,13 +129,12 @@ export function calculateWindow(c: WindowConfig): PriceBreakdown {
     width: c.width,
     height: c.height,
     tier,
-    installation: WINDOW_INSTALL[c.installation],
+    installation: "Standard",
     addOnIds,
   });
 
   return toBreakdown(q, [
     { label: `Frame: ${c.frameMaterial} (${tier})`, value: q.tierMultiplier },
-    { label: `Install: ${c.installation}`, value: q.installLaborMultiplier },
   ]);
 }
 
