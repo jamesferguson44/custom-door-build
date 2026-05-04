@@ -9,6 +9,7 @@ export type CartItem = {
   price: PriceBreakdown;
   qty: number;
   addedAt: number;
+  location?: string;
 };
 
 export type Cart = {
@@ -56,6 +57,7 @@ export function addToCart(item: Omit<CartItem, "id" | "addedAt" | "qty"> & { qty
     productType: item.productType,
     config: item.config,
     price: item.price,
+    location: item.location,
   };
   cart.items.push(newItem);
   write(cart);
