@@ -34,7 +34,7 @@ function CustomBrandRequest({
   value: string;
   onChange: (v: string) => void;
 }) {
-  const [open, setOpen] = useReactState(Boolean(value));
+  const [open, setOpen] = useState<boolean>(Boolean(value));
   return (
     <div className="rounded-xl border border-border bg-muted/30 p-4">
       <button
