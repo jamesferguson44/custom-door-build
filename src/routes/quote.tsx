@@ -82,8 +82,8 @@ function QuotePage() {
         Array.from({ length: item.qty }).map(() => ({
           product_type: item.productType,
           configuration: item.config as never,
-          width_inches: item.config.width,
-          height_inches: item.config.height,
+          width_inches: item.config.width ?? 0,
+          height_inches: item.config.height ?? 0,
           base_price: Math.round(item.price.basePrice),
           addons_price: item.price.addonsPrice,
           labor_price: item.price.laborPrice,
