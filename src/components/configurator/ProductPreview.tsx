@@ -5,6 +5,23 @@ import type {
   WindowConfig,
 } from "@/lib/pricing";
 import { productLabel } from "@/lib/pricing";
+import windowPicture from "@/assets/window-picture.jpg";
+import windowSingleHung from "@/assets/window-single-hung.jpg";
+import windowDoubleHung from "@/assets/window-double-hung.jpg";
+import windowSlider from "@/assets/window-slider.jpg";
+import windowCasement from "@/assets/window-casement.jpg";
+import windowAwning from "@/assets/window-awning.jpg";
+import windowSpecialty from "@/assets/window-specialty.jpg";
+
+const WINDOW_STYLE_IMAGE: Record<WindowConfig["windowStyle"], string> = {
+  Picture: windowPicture,
+  "Single Hung": windowSingleHung,
+  "Double Hung": windowDoubleHung,
+  Slider: windowSlider,
+  Casement: windowCasement,
+  Awning: windowAwning,
+  Specialty: windowSpecialty,
+};
 
 type Props = {
   productType: ProductType;
@@ -28,7 +45,7 @@ export function ProductPreview({ productType, config }: Props) {
       </div>
       <div className="flex aspect-[4/3] items-center justify-center p-6">
         {productType === "window" ? (
-          <WindowPreview config={config as WindowConfig} />
+          <WindowStylePreview config={config as WindowConfig} />
         ) : (
           <DoorPreview config={config as DoorConfig} isSliding={productType === "sliding_door"} />
         )}
@@ -37,6 +54,20 @@ export function ProductPreview({ productType, config }: Props) {
         {productLabel(productType)} · live preview updates with your selections
       </div>
     </div>
+  );
+}
+
+function WindowStylePreview({ config }: { config: WindowConfig }) {
+  const src = WINDOW_STYLE_IMAGE[config.windowStyle];
+  return (
+    <img
+      src={src}
+      alt={`${config.windowStyle} window preview`}
+      width={768}
+      height={576}
+      loading="lazy"
+      className="h-full w-full object-contain"
+    />
   );
 }
 
