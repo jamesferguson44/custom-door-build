@@ -22,8 +22,46 @@ import {
 import heroWindow from "@/assets/hero-window.jpg";
 import heroDoor from "@/assets/hero-door.jpg";
 import heroSliding from "@/assets/hero-sliding.jpg";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 
 const VALID_TYPES: ProductType[] = ["window", "door", "sliding_door"];
+
+function CustomBrandRequest({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  const [open, setOpen] = useState<boolean>(Boolean(value));
+  return (
+    <div className="rounded-xl border border-border bg-muted/30 p-4">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className="flex w-full items-center justify-between text-left text-sm font-medium"
+      >
+        Need a specific brand or specialty product?
+        <span className="text-muted-foreground text-xs">{open ? "Hide" : "Add request"}</span>
+      </button>
+      {open && (
+        <div className="mt-3 space-y-2">
+          <Label htmlFor="custom-brand" className="text-xs text-muted-foreground">
+            Tell us what you're looking for
+          </Label>
+          <Textarea
+            id="custom-brand"
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder="e.g. Andersen 400 Series, Pella Reserve, custom shape, etc."
+            className="min-h-[80px]"
+          />
+        </div>
+      )}
+    </div>
+  );
+}
 
 const HERO: Record<ProductType, string> = {
   window: heroWindow,
@@ -180,9 +218,13 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
             onChange={(v) => setConfig({ ...config, productLine: v })}
             descriptions={{
               "Good — AMSCO": "Affordable and energy efficient",
-              "Better — Milgard / ProVia Endure": "Upgraded efficiency and appearance",
-              "Best — ProVia Aeris": "Premium wood interior and maximum performance",
+              "Better — ProVia": "Upgraded efficiency and premium vinyl performance",
+              "Best — ProVia Aeris": "Real wood interior and maximum performance",
             }}
+          />
+          <CustomBrandRequest
+            value={config.customRequest ?? ""}
+            onChange={(v) => setConfig({ ...config, customRequest: v })}
           />
         </StepSection>
 

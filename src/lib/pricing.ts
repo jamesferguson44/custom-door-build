@@ -19,7 +19,7 @@ export type WindowStyle = (typeof WINDOW_STYLES)[number];
 
 export const PRODUCT_LINES = [
   "Good — AMSCO",
-  "Better — Milgard / ProVia Endure",
+  "Better — ProVia",
   "Best — ProVia Aeris",
 ] as const;
 export type ProductLine = (typeof PRODUCT_LINES)[number];
@@ -32,6 +32,7 @@ export type WindowConfig = {
   glassType: "Standard" | "Low-E" | "Triple Pane";
   gridStyle: "None" | "Colonial" | "Prairie";
   color: "White" | "Black" | "Custom";
+  customRequest?: string;
 };
 
 export type DoorConfig = {
@@ -49,10 +50,11 @@ export const DEFAULT_WINDOW: WindowConfig = {
   width: null,
   height: null,
   windowStyle: "Single Hung",
-  productLine: "Better — Milgard / ProVia Endure",
+  productLine: "Better — ProVia",
   glassType: "Standard",
   gridStyle: "None",
   color: "White",
+  customRequest: "",
 };
 
 export const DEFAULT_DOOR: DoorConfig = {
@@ -68,7 +70,7 @@ export const DEFAULT_DOOR: DoorConfig = {
 
 const PRODUCT_LINE_TIER: Record<ProductLine, BrandTier> = {
   "Good — AMSCO": "Good",
-  "Better — Milgard / ProVia Endure": "Better",
+  "Better — ProVia": "Better",
   "Best — ProVia Aeris": "Best",
 };
 
