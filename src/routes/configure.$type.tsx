@@ -22,8 +22,48 @@ import {
 import heroWindow from "@/assets/hero-window.jpg";
 import heroDoor from "@/assets/hero-door.jpg";
 import heroSliding from "@/assets/hero-sliding.jpg";
+import { useState as useReactState } from "react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 
 const VALID_TYPES: ProductType[] = ["window", "door", "sliding_door"];
+
+function CustomBrandRequest({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  const [open, setOpen] = useReactState(Boolean(value));
+  return (
+    <div className="rounded-xl border border-border bg-muted/30 p-4">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className="flex w-full items-center justify-between text-left text-sm font-medium"
+      >
+        Need a specific brand or specialty product?
+        <span className="text-muted-foreground text-xs">{open ? "Hide" : "Add request"}</span>
+      </button>
+      {open && (
+        <div className="mt-3 space-y-2">
+          <Label htmlFor="custom-brand" className="text-xs text-muted-foreground">
+            Tell us what you're looking for
+          </Label>
+          <Textarea
+            id="custom-brand"
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder="e.g. Andersen 400 Series, Pella Reserve, custom shape, etc."
+            className="min-h-[80px]"
+          />
+        </div>
+      )}
+    </div>
+  );
+}
 
 const HERO: Record<ProductType, string> = {
   window: heroWindow,
