@@ -180,9 +180,13 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
             onChange={(v) => setConfig({ ...config, productLine: v })}
             descriptions={{
               "Good — AMSCO": "Affordable and energy efficient",
-              "Better — Milgard / ProVia Endure": "Upgraded efficiency and appearance",
-              "Best — ProVia Aeris": "Premium wood interior and maximum performance",
+              "Better — ProVia": "Upgraded efficiency and premium vinyl performance",
+              "Best — ProVia Aeris": "Real wood interior and maximum performance",
             }}
+          />
+          <CustomBrandRequest
+            value={config.customRequest ?? ""}
+            onChange={(v) => setConfig({ ...config, customRequest: v })}
           />
         </StepSection>
 
