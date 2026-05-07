@@ -13,6 +13,8 @@ import {
   calculatePrice,
   isValidSize,
   productLabel,
+  WINDOW_STYLES,
+  PRODUCT_LINES,
   type DoorConfig,
   type ProductType,
   type WindowConfig,
@@ -161,18 +163,30 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
           />
         </StepSection>
 
-        <StepSection step={2} title="Frame & Glass" description="Choose materials that match your home and climate goals.">
+        <StepSection step={2} title="Window Style" description="Choose how your window opens and operates.">
           <OptionGroup
-            label="Frame Material"
-            value={config.frameMaterial}
-            options={["Vinyl", "Fiberglass", "Aluminum"] as const}
-            onChange={(v) => setConfig({ ...config, frameMaterial: v })}
+            label="Window Style"
+            value={config.windowStyle}
+            options={WINDOW_STYLES}
+            onChange={(v) => setConfig({ ...config, windowStyle: v })}
+          />
+        </StepSection>
+
+        <StepSection step={3} title="Product Line" description="Pick the quality tier that fits your project.">
+          <OptionGroup
+            label="Product Line"
+            value={config.productLine}
+            options={PRODUCT_LINES}
+            onChange={(v) => setConfig({ ...config, productLine: v })}
             descriptions={{
-              Vinyl: "Best value, low maintenance",
-              Fiberglass: "Strongest, premium finish",
-              Aluminum: "Slim profile, modern look",
+              "Good — AMSCO": "Affordable and energy efficient",
+              "Better — Milgard / ProVia Endure": "Upgraded efficiency and appearance",
+              "Best — ProVia Aeris": "Premium wood interior and maximum performance",
             }}
           />
+        </StepSection>
+
+        <StepSection step={4} title="Glass" description="Choose glass that matches your climate goals.">
           <OptionGroup
             label="Glass Type"
             value={config.glassType}
@@ -186,7 +200,7 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
           />
         </StepSection>
 
-        <StepSection step={3} title="Style" description="Personalize the look.">
+        <StepSection step={5} title="Style" description="Personalize the look.">
           <OptionGroup
             label="Grid Style"
             value={config.gridStyle}

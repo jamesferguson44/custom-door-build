@@ -50,7 +50,7 @@ export function ProjectSummary() {
           <li key={it.id} className="flex items-center justify-between gap-3 px-6 py-3">
             <div className="min-w-0">
               <div className="truncate text-sm font-medium">
-                {productLabel(it.productType)}
+                {itemTitle(it)}
                 {it.qty > 1 && (
                   <span className="ml-1 text-muted-foreground">× {it.qty}</span>
                 )}
@@ -94,4 +94,21 @@ export function ProjectSummary() {
       </div>
     </aside>
   );
+}
+
+function itemTitle(it: ReturnType<typeof useCart>["items"][number]): string {
+  const parts: string[] = [];
+  if (it.location) parts.push(it.location);
+  if (it.productType === "window") {
+    const cfg = it.config as { windowStyle?: string; productLine?: string };
+    if (cfg.windowStyle) parts.push(`${cfg.windowStyle} Window`);
+    else parts.push(productLabel(it.productType));
+    if (cfg.productLine) {
+      const line = cfg.productLine.split("—").pop()?.trim() ?? cfg.productLine;
+      parts.push(line);
+    }
+  } else {
+    parts.push(productLabel(it.productType));
+  }
+  return parts.join(" — ");
 }

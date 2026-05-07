@@ -6,10 +6,29 @@ import type { BrandTier, InstallDifficulty } from "./pricing-config";
 
 export type ProductType = "window" | "door" | "sliding_door";
 
+export const WINDOW_STYLES = [
+  "Picture",
+  "Single Hung",
+  "Double Hung",
+  "Slider",
+  "Casement",
+  "Awning",
+  "Specialty",
+] as const;
+export type WindowStyle = (typeof WINDOW_STYLES)[number];
+
+export const PRODUCT_LINES = [
+  "Good — AMSCO",
+  "Better — Milgard / ProVia Endure",
+  "Best — ProVia Aeris",
+] as const;
+export type ProductLine = (typeof PRODUCT_LINES)[number];
+
 export type WindowConfig = {
   width: number | null;
   height: number | null;
-  frameMaterial: "Vinyl" | "Fiberglass" | "Aluminum";
+  windowStyle: WindowStyle;
+  productLine: ProductLine;
   glassType: "Standard" | "Low-E" | "Triple Pane";
   gridStyle: "None" | "Colonial" | "Prairie";
   color: "White" | "Black" | "Custom";
@@ -29,7 +48,8 @@ export type AnyConfig = WindowConfig | DoorConfig;
 export const DEFAULT_WINDOW: WindowConfig = {
   width: null,
   height: null,
-  frameMaterial: "Vinyl",
+  windowStyle: "Single Hung",
+  productLine: "Better — Milgard / ProVia Endure",
   glassType: "Standard",
   gridStyle: "None",
   color: "White",
@@ -46,10 +66,20 @@ export const DEFAULT_DOOR: DoorConfig = {
 
 /* Map UI configurator options onto the centralized pricing system. */
 
-const WINDOW_FRAME_TIER: Record<WindowConfig["frameMaterial"], BrandTier> = {
-  Vinyl: "Good",
-  Aluminum: "Better",
-  Fiberglass: "Best",
+const PRODUCT_LINE_TIER: Record<ProductLine, BrandTier> = {
+  "Good — AMSCO": "Good",
+  "Better — Milgard / ProVia Endure": "Better",
+  "Best — ProVia Aeris": "Best",
+};
+
+const WINDOW_STYLE_MULTIPLIER: Record<WindowStyle, number> = {
+  Picture: 0.9,
+  "Single Hung": 1.0,
+  "Double Hung": 1.1,
+  Slider: 1.0,
+  Casement: 1.2,
+  Awning: 1.15,
+  Specialty: 1.35,
 };
 
 const WINDOW_GLASS_ADDON: Record<WindowConfig["glassType"], string | null> = {
@@ -118,7 +148,8 @@ function toBreakdown(
 
 export function calculateWindow(c: WindowConfig): PriceBreakdown {
   if (!isValidSize(c.width, c.height)) return EMPTY_PRICE;
-  const tier = WINDOW_FRAME_TIER[c.frameMaterial];
+  const tier = PRODUCT_LINE_TIER[c.productLine];
+  const styleMult = WINDOW_STYLE_MULTIPLIER[c.windowStyle];
   const addOnIds = [
     WINDOW_GLASS_ADDON[c.glassType],
     WINDOW_GRID_ADDON[c.gridStyle],
@@ -134,9 +165,26 @@ export function calculateWindow(c: WindowConfig): PriceBreakdown {
     addOnIds,
   });
 
-  return toBreakdown(q, [
-    { label: `Frame: ${c.frameMaterial} (${tier})`, value: q.tierMultiplier },
+  const b = toBreakdown(q, [
+    { label: `Product Line: ${c.productLine}`, value: q.tierMultiplier },
+    { label: `Style: ${c.windowStyle}`, value: styleMult },
   ]);
+  return scalePrice(b, styleMult);
+}
+
+function scalePrice(b: PriceBreakdown, m: number): PriceBreakdown {
+  if (m === 1) return b;
+  return {
+    ...b,
+    basePrice: Math.round(b.basePrice * m),
+    addonsPrice: Math.round(b.addonsPrice * m),
+    laborPrice: b.laborPrice,
+    subtotal: Math.round(b.subtotal * m),
+    margin: Math.round(b.margin * m),
+    total: Math.round(b.total * m),
+    low: Math.round((b.low * m) / 10) * 10,
+    high: Math.round((b.high * m) / 10) * 10,
+  };
 }
 
 export function calculateDoor(c: DoorConfig, isSliding = false): PriceBreakdown {
