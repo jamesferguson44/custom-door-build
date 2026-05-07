@@ -1,13 +1,13 @@
 import { Input } from "@/components/ui/input";
 
 type Props = {
-  width: number;
-  height: number;
-  onChange: (w: number, h: number) => void;
+  width: number | null;
+  height: number | null;
+  onChange: (w: number | null, h: number | null) => void;
 };
 
 export function SizeInputs({ width, height, onChange }: Props) {
-  const invalid = width <= 0 || height <= 0;
+  const invalid = width != null && height != null && (width <= 0 || height <= 0);
   return (
     <div>
       <div className="mb-3 flex items-baseline justify-between">
@@ -33,8 +33,8 @@ function NumberField({
   onChange,
 }: {
   label: string;
-  value: number;
-  onChange: (v: number) => void;
+  value: number | null;
+  onChange: (v: number | null) => void;
 }) {
   return (
     <label className="block rounded-xl border border-border bg-card px-4 py-3 transition focus-within:border-foreground focus-within:ring-1 focus-within:ring-foreground/40">
@@ -46,8 +46,11 @@ function NumberField({
           type="number"
           min={1}
           max={240}
-          value={value || ""}
-          onChange={(e) => onChange(Number(e.target.value))}
+          value={value ?? ""}
+          onChange={(e) => {
+            const raw = e.target.value;
+            onChange(raw === "" ? null : Number(raw));
+          }}
           className="h-8 border-0 bg-transparent p-0 text-2xl font-semibold tabular-nums shadow-none focus-visible:ring-0 md:text-2xl"
         />
         <span className="text-sm text-muted-foreground">in</span>
