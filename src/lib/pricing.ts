@@ -7,8 +7,8 @@ import type { BrandTier, InstallDifficulty } from "./pricing-config";
 export type ProductType = "window" | "door" | "sliding_door";
 
 export type WindowConfig = {
-  width: number;
-  height: number;
+  width: number | null;
+  height: number | null;
   frameMaterial: "Vinyl" | "Fiberglass" | "Aluminum";
   glassType: "Standard" | "Low-E" | "Triple Pane";
   gridStyle: "None" | "Colonial" | "Prairie";
@@ -16,8 +16,8 @@ export type WindowConfig = {
 };
 
 export type DoorConfig = {
-  width: number;
-  height: number;
+  width: number | null;
+  height: number | null;
   material: "Wood" | "Fiberglass" | "Steel";
   glassOption: "None" | "Half" | "Full";
   finish: "Painted" | "Stained";
@@ -27,8 +27,8 @@ export type DoorConfig = {
 export type AnyConfig = WindowConfig | DoorConfig;
 
 export const DEFAULT_WINDOW: WindowConfig = {
-  width: 36,
-  height: 48,
+  width: null,
+  height: null,
   frameMaterial: "Vinyl",
   glassType: "Standard",
   gridStyle: "None",
@@ -36,8 +36,8 @@ export const DEFAULT_WINDOW: WindowConfig = {
 };
 
 export const DEFAULT_DOOR: DoorConfig = {
-  width: 36,
-  height: 80,
+  width: null,
+  height: null,
   material: "Fiberglass",
   glassOption: "None",
   finish: "Painted",
@@ -117,6 +117,7 @@ function toBreakdown(
 }
 
 export function calculateWindow(c: WindowConfig): PriceBreakdown {
+  if (!isValidSize(c.width, c.height)) return EMPTY_PRICE;
   const tier = WINDOW_FRAME_TIER[c.frameMaterial];
   const addOnIds = [
     WINDOW_GLASS_ADDON[c.glassType],
@@ -126,8 +127,8 @@ export function calculateWindow(c: WindowConfig): PriceBreakdown {
 
   const q = calculateQuote({
     productType: "window",
-    width: c.width,
-    height: c.height,
+    width: c.width as number,
+    height: c.height as number,
     tier,
     installation: "Standard",
     addOnIds,
@@ -139,6 +140,7 @@ export function calculateWindow(c: WindowConfig): PriceBreakdown {
 }
 
 export function calculateDoor(c: DoorConfig, isSliding = false): PriceBreakdown {
+  if (!isValidSize(c.width, c.height)) return EMPTY_PRICE;
   const tier = DOOR_MATERIAL_TIER[c.material];
   const addOnIds = [
     DOOR_GLASS_ADDON[c.glassOption],
@@ -148,8 +150,8 @@ export function calculateDoor(c: DoorConfig, isSliding = false): PriceBreakdown 
 
   const q = calculateQuote({
     productType: isSliding ? "sliding_door" : "door",
-    width: c.width,
-    height: c.height,
+    width: c.width as number,
+    height: c.height as number,
     tier,
     installation: "Standard",
     addOnIds,
@@ -165,9 +167,25 @@ export function calculatePrice(type: ProductType, c: AnyConfig): PriceBreakdown 
   return calculateDoor(c as DoorConfig, type === "sliding_door");
 }
 
-export function isValidSize(width: number, height: number): boolean {
+export function isValidSize(width: number | null, height: number | null): boolean {
+  if (width == null || height == null) return false;
   return width > 0 && height > 0 && width <= 240 && height <= 240;
 }
+
+const EMPTY_PRICE: PriceBreakdown = {
+  squareFeet: 0,
+  baseRate: 0,
+  basePrice: 0,
+  addonsPrice: 0,
+  laborPrice: 0,
+  subtotal: 0,
+  margin: 0,
+  total: 0,
+  low: 0,
+  high: 0,
+  addonItems: [],
+  multipliers: [],
+};
 
 export function formatUSD(n: number): string {
   return new Intl.NumberFormat("en-US", {
