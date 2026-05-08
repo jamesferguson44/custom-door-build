@@ -56,7 +56,6 @@ export function PriceSummary({ productType, config, price, valid, onAddedToProje
           </div>
           <div className="mt-2 text-xs text-muted-foreground">
             {productLabel(productType)} · {config.width}″ × {config.height}″
-            {valid && ` · ${price.squareFeet.toFixed(1)} sq ft`}
           </div>
         </div>
 
