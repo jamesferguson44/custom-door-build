@@ -27,6 +27,15 @@ import { Textarea } from "@/components/ui/textarea";
 
 const VALID_TYPES: ProductType[] = ["window", "door", "sliding_door"];
 
+type TemplateId = "best-value" | "most-popular" | "max-efficiency" | "modern-upgrade";
+
+const WINDOW_TEMPLATES: Record<TemplateId, Partial<WindowConfig>> = {
+  "best-value": { productLine: "Good — AMSCO", glassType: "Standard", windowStyle: "Single Hung", color: "White" },
+  "most-popular": { productLine: "Better — ProVia", glassType: "Low-E", windowStyle: "Double Hung", color: "White" },
+  "max-efficiency": { productLine: "Best — ProVia Aeris", glassType: "Triple Pane", windowStyle: "Casement", color: "White" },
+  "modern-upgrade": { productLine: "Better — ProVia", glassType: "Low-E", windowStyle: "Picture", color: "Black" },
+};
+
 function CustomBrandRequest({
   value,
   onChange,
@@ -79,6 +88,9 @@ export const Route = createFileRoute("/configure/$type")({
   beforeLoad: ({ params }) => {
     if (!VALID_TYPES.includes(params.type as ProductType)) throw notFound();
   },
+  validateSearch: (s: Record<string, unknown>) => ({
+    template: typeof s.template === "string" ? (s.template as TemplateId) : undefined,
+  }),
   head: ({ params }) => {
     const t = params.type as ProductType;
     const label = productLabel(t);
@@ -186,7 +198,11 @@ function StepSection({
 }
 
 function WindowConfigurator({ productType }: { productType: ProductType }) {
-  const [config, setConfig] = useState<WindowConfig>(DEFAULT_WINDOW);
+  const { template } = Route.useSearch();
+  const [config, setConfig] = useState<WindowConfig>(() => {
+    const preset = template ? WINDOW_TEMPLATES[template as TemplateId] : undefined;
+    return { ...DEFAULT_WINDOW, ...(preset ?? {}) };
+  });
   const valid = isValidSize(config.width, config.height);
   const price = useMemo(() => calculatePrice("window", config), [config]);
 
