@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Ruler, Shield, Zap, PencilRuler, DollarSign, ClipboardCheck, Hammer, CheckCircle2 } from "lucide-react";
+import { ArrowRight, Shield, Zap, PencilRuler, DollarSign, ClipboardCheck, Hammer, CheckCircle2, Ruler } from "lucide-react";
 import heroWindow from "@/assets/hero-window.jpg";
 import windowPicture from "@/assets/window-picture.jpg";
 import windowDoubleHung from "@/assets/window-double-hung.jpg";
@@ -26,12 +26,13 @@ const templates: {
   id: "best-value" | "most-popular" | "max-efficiency" | "modern-upgrade";
   title: string;
   blurb: string;
+  priceHint: string;
   image: string;
 }[] = [
-  { id: "best-value", title: "Best Value", blurb: "Energy-efficient vinyl windows at our most accessible price.", image: windowSingleHung },
-  { id: "most-popular", title: "Most Popular", blurb: "Premium ProVia frames with Low-E glass — the sweet spot.", image: windowDoubleHung },
-  { id: "max-efficiency", title: "Maximum Efficiency", blurb: "Triple pane glass and our highest-performing frames.", image: windowCasement },
-  { id: "modern-upgrade", title: "Modern Upgrade", blurb: "Sleek black picture windows for a contemporary look.", image: windowPicture },
+  { id: "best-value", title: "Best Value", blurb: "Energy-efficient vinyl windows at our most accessible price.", priceHint: "Typically $650–$900 per window installed", image: windowSingleHung },
+  { id: "most-popular", title: "Most Popular", blurb: "Premium ProVia frames with Low-E glass — the sweet spot.", priceHint: "Typically $800–$1,200 per window installed", image: windowDoubleHung },
+  { id: "max-efficiency", title: "Maximum Efficiency", blurb: "Triple pane glass and our highest-performing frames.", priceHint: "Typically $1,100–$1,600 per window installed", image: windowCasement },
+  { id: "modern-upgrade", title: "Modern Upgrade", blurb: "Sleek black picture windows for a contemporary look.", priceHint: "Typically $950–$1,500 per window installed", image: windowPicture },
 ];
 
 function Home() {
@@ -46,18 +47,20 @@ function Home() {
           alt="Floor-to-ceiling window with mountain view"
           width={1920}
           height={1080}
-          className="h-[78vh] w-full object-cover"
+          className="h-[88vh] w-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/10 via-background/0 to-background" />
-        <div className="absolute inset-x-0 top-[14%] mx-auto max-w-[1400px] px-6 text-center">
-          <h1 className="text-4xl font-semibold tracking-tight sm:text-6xl lg:text-7xl">
+        {/* Strong overlay for guaranteed contrast */}
+        <div className="absolute inset-0 bg-black/55" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-background" />
+        <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 mx-auto max-w-[1400px] px-6 text-center text-white">
+          <h1 className="text-4xl font-semibold tracking-tight drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)] sm:text-6xl lg:text-7xl">
             Design &amp; Price Your Windows<br className="hidden sm:block" /> Online in Minutes
           </h1>
-          <p className="mx-auto mt-5 max-w-2xl text-sm text-foreground/80 sm:text-base">
-            No sales reps. No guesswork. We handle everything from measurement to installation.
+          <p className="mx-auto mt-6 max-w-2xl text-base text-white/90 drop-shadow-[0_1px_8px_rgba(0,0,0,0.4)] sm:text-lg">
+            Get real window pricing instantly. We verify your measurements and handle everything from start to finish.
           </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-            <Button asChild size="lg" className="h-12 rounded-full px-8 text-sm font-semibold">
+            <Button asChild size="lg" className="h-12 rounded-full bg-white px-8 text-sm font-semibold text-black shadow-lg hover:bg-white/90">
               <Link to="/configure/$type" params={{ type: "window" }}>
                 Start Designing
               </Link>
@@ -66,10 +69,16 @@ function Home() {
               asChild
               size="lg"
               variant="outline"
-              className="h-12 rounded-full border-foreground/30 bg-background/70 px-8 text-sm font-semibold backdrop-blur"
+              className="h-12 rounded-full border-white/40 bg-white/10 px-8 text-sm font-semibold text-white backdrop-blur hover:bg-white/20 hover:text-white"
             >
               <a href="#how-it-works">See How It Works</a>
             </Button>
+          </div>
+          <p className="mt-4 text-xs text-white/80">Takes about 2 minutes. No commitment required.</p>
+          <div className="mx-auto mt-8 flex max-w-3xl flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-white/85 sm:text-sm">
+            <span className="inline-flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4" /> No obligation</span>
+            <span className="inline-flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4" /> Measurements verified before ordering</span>
+            <span className="inline-flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4" /> Fully installed by professionals</span>
           </div>
         </div>
       </section>
@@ -87,7 +96,7 @@ function Home() {
         <ol className="grid gap-6 md:grid-cols-4">
           {[
             { icon: <PencilRuler className="h-5 w-5" />, title: "Design Your Windows", body: "Pick style, glass, and finish in our online configurator." },
-            { icon: <DollarSign className="h-5 w-5" />, title: "Get Instant Pricing", body: "See a real price range — no waiting on a sales rep." },
+            { icon: <DollarSign className="h-5 w-5" />, title: "Get Instant Pricing", body: "See your price instantly as you design — no waiting, no calls." },
             { icon: <ClipboardCheck className="h-5 w-5" />, title: "We Verify Measurements", body: "A pro confirms every dimension before production." },
             { icon: <Hammer className="h-5 w-5" />, title: "We Install", body: "Professional install backed by our workmanship warranty." },
           ].map((s, i) => (
@@ -121,6 +130,7 @@ function Home() {
               "Deposit applied to your order",
               "We verify all measurements before production",
               "Perfect fit guarantee",
+              "Final price rarely changes after verification",
             ].map((t) => (
               <div key={t} className="flex items-start gap-3 rounded-xl border border-border bg-background p-5">
                 <CheckCircle2 className="mt-0.5 h-5 w-5 text-foreground" />
@@ -169,6 +179,9 @@ function Home() {
                   <ArrowRight className="h-4 w-4 text-muted-foreground transition group-hover:translate-x-0.5 group-hover:text-foreground" />
                 </div>
                 <p className="mt-1.5 text-xs text-muted-foreground">{t.blurb}</p>
+                <p className="mt-3 text-[11px] font-medium uppercase tracking-[0.14em] text-foreground/80">
+                  {t.priceHint}
+                </p>
               </div>
             </Link>
           ))}
@@ -180,16 +193,16 @@ function Home() {
         <div className="mx-auto max-w-[1400px] px-6 py-20">
           <div className="mb-10 text-center">
             <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
-              Example Pricing
+              Pricing
             </div>
             <h2 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
-              What people typically pay.
+              What Most Customers Pay
             </h2>
             <p className="mx-auto mt-3 max-w-xl text-sm text-muted-foreground">
-              Real, transparent ranges based on recent installs. Your exact price comes straight from the configurator.
+              Real ranges based on recent projects. Your exact price updates instantly as you design.
             </p>
           </div>
-          <div className="grid gap-5 md:grid-cols-2">
+          <div className="grid gap-5 md:grid-cols-3">
             <div className="rounded-2xl border border-border bg-background p-8">
               <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
                 Per window installed
@@ -201,11 +214,20 @@ function Home() {
             </div>
             <div className="rounded-2xl border border-border bg-background p-8">
               <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
-                Most full projects
+                Typical full project
               </div>
               <div className="mt-3 text-4xl font-semibold tracking-tight">$6,000 – $25,000</div>
               <p className="mt-3 text-sm text-muted-foreground">
                 Whole-home replacements typically land in this range depending on size and finishes.
+              </p>
+            </div>
+            <div className="rounded-2xl border border-border bg-background p-8">
+              <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+                Estimated monthly payment
+              </div>
+              <div className="mt-3 text-4xl font-semibold tracking-tight">$75 – $400<span className="text-base font-normal text-muted-foreground"> / mo</span></div>
+              <p className="mt-3 text-sm text-muted-foreground">
+                Based on typical financing. Final terms vary.
               </p>
             </div>
           </div>
@@ -215,7 +237,7 @@ function Home() {
       {/* Final CTA */}
       <section className="mx-auto max-w-[1400px] px-6 py-24 text-center">
         <h2 className="text-3xl font-semibold tracking-tight sm:text-5xl">
-          Get your exact window pricing in minutes.
+          Get your exact window pricing in under 2 minutes.
         </h2>
         <div className="mt-8">
           <Button asChild size="lg" className="h-12 rounded-full px-8 text-sm font-semibold">
@@ -229,14 +251,14 @@ function Home() {
       {/* Features */}
       <section className="border-t border-border bg-muted/30">
         <div className="mx-auto grid max-w-[1400px] gap-10 px-6 py-20 md:grid-cols-3">
-          <Feature icon={<Zap className="h-5 w-5" />} title="Instant Quotes">
-            Real pricing as you configure — no waiting for a sales rep.
+          <Feature icon={<Zap className="h-5 w-5" />} title="Instant Pricing">
+            See real pricing as you design — no waiting.
           </Feature>
-          <Feature icon={<Ruler className="h-5 w-5" />} title="Made to Measure">
-            Every product is built to your exact opening dimensions.
+          <Feature icon={<ClipboardCheck className="h-5 w-5" />} title="We Verify Measurements">
+            We double-check everything before ordering.
           </Feature>
-          <Feature icon={<Shield className="h-5 w-5" />} title="Lifetime Workmanship">
-            Backed by our installation warranty.
+          <Feature icon={<Shield className="h-5 w-5" />} title="Professional Installation">
+            Installed by experienced professionals.
           </Feature>
         </div>
       </section>
