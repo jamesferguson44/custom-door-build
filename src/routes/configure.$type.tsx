@@ -199,10 +199,10 @@ function StepSection({
 
 function WindowConfigurator({ productType }: { productType: ProductType }) {
   const { template } = Route.useSearch();
-  const [config, setConfig] = useState<WindowConfig>(() => ({
-    ...DEFAULT_WINDOW,
-    ...(template && WINDOW_TEMPLATES[template] ? WINDOW_TEMPLATES[template] : {}),
-  }));
+  const [config, setConfig] = useState<WindowConfig>(() => {
+    const preset = template ? WINDOW_TEMPLATES[template as TemplateId] : undefined;
+    return { ...DEFAULT_WINDOW, ...(preset ?? {}) };
+  });
   const valid = isValidSize(config.width, config.height);
   const price = useMemo(() => calculatePrice("window", config), [config]);
 
