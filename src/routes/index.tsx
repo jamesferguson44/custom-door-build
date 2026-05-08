@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Shield, Zap, PencilRuler, DollarSign, ClipboardCheck, Hammer, CheckCircle2, Ruler } from "lucide-react";
+import { ArrowRight, Shield, Zap, PencilRuler, DollarSign, ClipboardCheck, Hammer, CheckCircle2 } from "lucide-react";
 import heroWindow from "@/assets/hero-window.jpg";
 import windowPicture from "@/assets/window-picture.jpg";
 import windowDoubleHung from "@/assets/window-double-hung.jpg";
