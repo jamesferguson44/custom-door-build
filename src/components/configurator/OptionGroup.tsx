@@ -6,6 +6,7 @@ type Props<T extends string> = {
   options: readonly T[];
   onChange: (v: T) => void;
   descriptions?: Partial<Record<T, string>>;
+  badges?: Partial<Record<T, string>>;
 };
 
 export function OptionGroup<T extends string>({
@@ -14,6 +15,7 @@ export function OptionGroup<T extends string>({
   options,
   onChange,
   descriptions,
+  badges,
 }: Props<T>) {
   return (
     <div>
@@ -24,6 +26,7 @@ export function OptionGroup<T extends string>({
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
         {options.map((opt) => {
           const selected = opt === value;
+          const badge = badges?.[opt];
           return (
             <button
               key={opt}
@@ -37,6 +40,11 @@ export function OptionGroup<T extends string>({
                   : "border-border"
               )}
             >
+              {badge && (
+                <span className="absolute -top-2 right-3 rounded-full border border-foreground/15 bg-foreground px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-background shadow-sm">
+                  {badge}
+                </span>
+              )}
               <div className="text-sm font-medium">{opt}</div>
               {descriptions?.[opt] && (
                 <div className="mt-0.5 text-[11px] leading-tight text-muted-foreground">

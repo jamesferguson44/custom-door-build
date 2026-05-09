@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useNavigate } from "@tanstack/react-router";
 import { addToCart } from "@/lib/quote-storage";
-import { ArrowRight, Plus } from "lucide-react";
+import { ArrowRight, Plus, ShieldCheck, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
 
@@ -61,8 +61,27 @@ export function PriceSummary({ productType, config, price, valid, onAddedToProje
 
         <div className="border-t border-border px-6 py-5 text-[13px] space-y-1.5">
           <p className="text-foreground">Includes product, installation, and standard materials</p>
-          <p className="text-muted-foreground">Final price confirmed after in-home measurement</p>
           <p className="text-muted-foreground">Most projects fall within 10–15% of this estimate</p>
+        </div>
+
+        <div className="border-t border-border bg-muted/30 px-6 py-4">
+          <div className="mb-2 flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+            <ShieldCheck className="h-3.5 w-3.5" /> Our Promise
+          </div>
+          <ul className="space-y-1.5 text-[12px] text-muted-foreground">
+            <li className="flex items-start gap-1.5">
+              <CheckCircle2 className="mt-0.5 h-3 w-3 flex-shrink-0 text-foreground/70" />
+              Final pricing confirmed after professional measurement
+            </li>
+            <li className="flex items-start gap-1.5">
+              <CheckCircle2 className="mt-0.5 h-3 w-3 flex-shrink-0 text-foreground/70" />
+              Nothing is ordered until measurements are verified
+            </li>
+            <li className="flex items-start gap-1.5">
+              <CheckCircle2 className="mt-0.5 h-3 w-3 flex-shrink-0 text-foreground/70" />
+              No-obligation quote — no sales calls
+            </li>
+          </ul>
         </div>
 
         <div className="border-t border-border px-6 py-5">

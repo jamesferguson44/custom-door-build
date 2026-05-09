@@ -1,4 +1,5 @@
 import { Input } from "@/components/ui/input";
+import { ShieldCheck } from "lucide-react";
 
 type Props = {
   width: number | null;
@@ -14,6 +15,9 @@ export function SizeInputs({ width, height, onChange }: Props) {
         <h3 className="text-base font-semibold tracking-tight">Dimensions</h3>
         <span className="text-xs text-muted-foreground">inches</span>
       </div>
+      <p className="mb-3 text-xs text-muted-foreground">
+        Approximate measurements are completely fine for quoting — you don't need to be exact.
+      </p>
       <div className="grid grid-cols-2 gap-3">
         <NumberField label="Width" value={width} onChange={(v) => onChange(v, height)} />
         <NumberField label="Height" value={height} onChange={(v) => onChange(width, v)} />
@@ -23,6 +27,13 @@ export function SizeInputs({ width, height, onChange }: Props) {
           Width and height must be greater than zero.
         </p>
       )}
+      <div className="mt-4 flex items-start gap-2 rounded-lg border border-border bg-muted/40 px-3 py-2.5 text-xs text-muted-foreground">
+        <ShieldCheck className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-foreground/70" />
+        <span>
+          We professionally verify every measurement before anything is ordered. Your quote
+          adjusts automatically if dimensions change.
+        </span>
+      </div>
     </div>
   );
 }

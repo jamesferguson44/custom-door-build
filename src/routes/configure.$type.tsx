@@ -24,6 +24,8 @@ import heroDoor from "@/assets/hero-door.jpg";
 import heroSliding from "@/assets/hero-sliding.jpg";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { ChevronDown, Check } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const VALID_TYPES: ProductType[] = ["window", "door", "sliding_door"];
 
@@ -174,25 +176,56 @@ function StepSection({
   step,
   title,
   description,
+  summary,
+  complete,
   children,
 }: {
   step: number;
   title: string;
   description?: string;
+  summary?: string;
+  complete?: boolean;
   children: React.ReactNode;
 }) {
+  const [open, setOpen] = useState(true);
+  const collapsed = complete && !open;
   return (
     <section className="border-t border-border pt-10 first:border-t-0 first:pt-0">
-      <div className="mb-6 flex items-baseline gap-3">
-        <span className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground tabular-nums">
-          Step {String(step).padStart(2, "0")}
-        </span>
-        <h2 className="text-2xl font-semibold tracking-tight">{title}</h2>
-      </div>
-      {description && (
-        <p className="mb-6 -mt-3 text-sm text-muted-foreground">{description}</p>
+      <button
+        type="button"
+        onClick={() => complete && setOpen((o) => !o)}
+        className={cn(
+          "group mb-6 flex w-full items-center justify-between gap-3 text-left",
+          complete ? "cursor-pointer" : "cursor-default",
+        )}
+      >
+        <div className="flex items-baseline gap-3">
+          <span className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground tabular-nums">
+            {complete && <Check className="h-3 w-3 text-foreground/70" />}
+            Step {String(step).padStart(2, "0")}
+          </span>
+          <h2 className={cn("font-semibold tracking-tight", collapsed ? "text-lg text-muted-foreground" : "text-2xl")}>
+            {title}
+          </h2>
+        </div>
+        {complete && (
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            {collapsed && summary && <span className="hidden sm:inline">{summary}</span>}
+            <span className="inline-flex items-center gap-1 rounded-full border border-border px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider">
+              {collapsed ? "Edit" : "Hide"}
+              <ChevronDown className={cn("h-3 w-3 transition-transform", open && "rotate-180")} />
+            </span>
+          </div>
+        )}
+      </button>
+      {!collapsed && (
+        <>
+          {description && (
+            <p className="mb-6 -mt-3 text-sm text-muted-foreground">{description}</p>
+          )}
+          <div className="space-y-8">{children}</div>
+        </>
       )}
-      <div className="space-y-8">{children}</div>
     </section>
   );
 }
@@ -209,15 +242,13 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
   return (
     <Shell productType={productType}>
       <div>
-        <StepSection step={1} title="Measurements" description="Measure the rough opening, width × height.">
-          <SizeInputs
-            width={config.width}
-            height={config.height}
-            onChange={(width, height) => setConfig({ ...config, width, height })}
-          />
-        </StepSection>
-
-        <StepSection step={2} title="Window Style" description="Choose how your window opens and operates.">
+        <StepSection
+          step={1}
+          title="Window Style"
+          description="Choose how your window opens and operates. You can change this anytime."
+          summary={config.windowStyle}
+          complete={valid}
+        >
           <OptionGroup
             label="Window Style"
             value={config.windowStyle}
@@ -226,7 +257,13 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
           />
         </StepSection>
 
-        <StepSection step={3} title="Product Line" description="Pick the quality tier that fits your project.">
+        <StepSection
+          step={2}
+          title="Product Line"
+          description="Pick the quality tier that fits your project. Most homeowners choose Better."
+          summary={config.productLine}
+          complete={valid}
+        >
           <OptionGroup
             label="Product Line"
             value={config.productLine}
@@ -237,6 +274,9 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
               "Better — ProVia": "Upgraded efficiency and premium vinyl performance",
               "Best — ProVia Aeris": "Real wood interior and maximum performance",
             }}
+            badges={{
+              "Better — ProVia": "Most Popular",
+            }}
           />
           <CustomBrandRequest
             value={config.customRequest ?? ""}
@@ -244,7 +284,13 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
           />
         </StepSection>
 
-        <StepSection step={4} title="Glass" description="Choose glass that matches your climate goals.">
+        <StepSection
+          step={3}
+          title="Glass"
+          description="Choose glass that matches your climate goals. Low-E is the smart default for most homes."
+          summary={config.glassType}
+          complete={valid}
+        >
           <OptionGroup
             label="Glass Type"
             value={config.glassType}
@@ -255,10 +301,19 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
               "Low-E": "Energy efficient",
               "Triple Pane": "Maximum insulation",
             }}
+            badges={{
+              "Low-E": "Recommended",
+            }}
           />
         </StepSection>
 
-        <StepSection step={5} title="Style" description="Personalize the look.">
+        <StepSection
+          step={4}
+          title="Style & Color"
+          description="Personalize the look. Easy to change later."
+          summary={`${config.color} · ${config.gridStyle}`}
+          complete={valid}
+        >
           <OptionGroup
             label="Grid Style"
             value={config.gridStyle}
@@ -270,6 +325,20 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
             value={config.color}
             options={["White", "Black", "Custom"] as const}
             onChange={(v) => setConfig({ ...config, color: v })}
+          />
+        </StepSection>
+
+        <StepSection
+          step={5}
+          title="Measurements"
+          description="Last step. A rough width × height is all we need to give you a price."
+          complete={valid}
+          summary={valid ? `${config.width}″ × ${config.height}″` : undefined}
+        >
+          <SizeInputs
+            width={config.width}
+            height={config.height}
+            onChange={(width, height) => setConfig({ ...config, width, height })}
           />
         </StepSection>
 
