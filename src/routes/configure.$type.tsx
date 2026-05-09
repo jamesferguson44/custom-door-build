@@ -262,8 +262,21 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
     const preset = template ? WINDOW_TEMPLATES[template as TemplateId] : undefined;
     return { ...DEFAULT_WINDOW, ...(preset ?? {}) };
   });
+  const [touched, setTouched] = useState<Record<number, boolean>>(
+    template ? { 1: true, 2: true, 3: true, 4: true } : {},
+  );
+  const mark = (n: number) => setTouched((t) => (t[n] ? t : { ...t, [n]: true }));
   const valid = isValidSize(config.width, config.height);
   const price = useMemo(() => calculatePrice("window", config), [config]);
+
+  const stepDone: Record<number, boolean> = {
+    1: !!touched[1],
+    2: !!touched[2],
+    3: !!touched[3],
+    4: !!touched[4],
+    5: valid,
+  };
+  const activeStep = [1, 2, 3, 4, 5].find((n) => !stepDone[n]) ?? 0;
 
   return (
     <Shell productType={productType}>
@@ -273,13 +286,17 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
           title="Window Style"
           description="Choose how your window opens and operates. You can change this anytime."
           summary={config.windowStyle}
-          complete={valid}
+          complete={stepDone[1]}
+          active={activeStep === 1}
         >
           <OptionGroup
             label="Window Style"
             value={config.windowStyle}
             options={WINDOW_STYLES}
-            onChange={(v) => setConfig({ ...config, windowStyle: v })}
+            onChange={(v) => {
+              setConfig({ ...config, windowStyle: v });
+              mark(1);
+            }}
           />
         </StepSection>
 
@@ -288,13 +305,17 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
           title="Product Line"
           description="Pick the quality tier that fits your project. Most homeowners choose Better."
           summary={config.productLine}
-          complete={valid}
+          complete={stepDone[2]}
+          active={activeStep === 2}
         >
           <OptionGroup
             label="Product Line"
             value={config.productLine}
             options={PRODUCT_LINES}
-            onChange={(v) => setConfig({ ...config, productLine: v })}
+            onChange={(v) => {
+              setConfig({ ...config, productLine: v });
+              mark(2);
+            }}
             descriptions={{
               "Good — AMSCO": "Affordable and energy efficient",
               "Better — ProVia": "Upgraded efficiency and premium vinyl performance",
@@ -313,15 +334,19 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
         <StepSection
           step={3}
           title="Glass"
-          description="Choose glass that matches your climate goals. Low-E is the smart default for most homes."
+          description="Choose glass that matches your climate goals. Low-E is recommended for Utah homes."
           summary={config.glassType}
-          complete={valid}
+          complete={stepDone[3]}
+          active={activeStep === 3}
         >
           <OptionGroup
             label="Glass Type"
             value={config.glassType}
             options={["Standard", "Low-E", "Triple Pane"] as const}
-            onChange={(v) => setConfig({ ...config, glassType: v })}
+            onChange={(v) => {
+              setConfig({ ...config, glassType: v });
+              mark(3);
+            }}
             descriptions={{
               Standard: "Dual pane",
               "Low-E": "Energy efficient",
@@ -336,29 +361,37 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
         <StepSection
           step={4}
           title="Style & Color"
-          description="Personalize the look. Easy to change later."
+          description="Personalize the look. You can change any option later."
           summary={`${config.color} · ${config.gridStyle}`}
-          complete={valid}
+          complete={stepDone[4]}
+          active={activeStep === 4}
         >
           <OptionGroup
             label="Grid Style"
             value={config.gridStyle}
             options={["None", "Colonial", "Prairie"] as const}
-            onChange={(v) => setConfig({ ...config, gridStyle: v })}
+            onChange={(v) => {
+              setConfig({ ...config, gridStyle: v });
+              mark(4);
+            }}
           />
           <OptionGroup
             label="Color"
             value={config.color}
             options={["White", "Black", "Custom"] as const}
-            onChange={(v) => setConfig({ ...config, color: v })}
+            onChange={(v) => {
+              setConfig({ ...config, color: v });
+              mark(4);
+            }}
           />
         </StepSection>
 
         <StepSection
           step={5}
           title="Measurements"
-          description="Last step. A rough width × height is all we need to give you a price."
-          complete={valid}
+          description="Last step. Approximate measurements are completely fine — you don't need exact numbers to receive pricing."
+          complete={stepDone[5]}
+          active={activeStep === 5}
           summary={valid ? `${config.width}″ × ${config.height}″` : undefined}
         >
           <SizeInputs
