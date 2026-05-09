@@ -61,12 +61,13 @@ function WindowStylePreview({ config }: { config: WindowConfig }) {
   const src = WINDOW_STYLE_IMAGE[config.windowStyle];
   return (
     <img
+      key={config.windowStyle}
       src={src}
       alt={`${config.windowStyle} window preview`}
       width={768}
       height={576}
       loading="lazy"
-      className="h-full w-full object-contain"
+      className="h-full w-full object-contain animate-in fade-in zoom-in-95 duration-300"
     />
   );
 }

@@ -57,30 +57,30 @@ export function PriceSummary({ productType, config, price, valid, onAddedToProje
           <div className="mt-2 text-xs text-muted-foreground">
             {productLabel(productType)} · {config.width}″ × {config.height}″
           </div>
+          {valid && (
+            <div className="mt-3 text-xs text-muted-foreground">
+              Estimated payment ~
+              <span className="font-medium text-foreground/80 tabular-nums">
+                {formatUSD(Math.round(((price.low + price.high) / 2) * 0.0125))}
+              </span>
+              /mo with financing
+            </div>
+          )}
         </div>
 
-        <div className="border-t border-border px-6 py-5 text-[13px] space-y-1.5">
-          <p className="text-foreground">Includes product, installation, and standard materials</p>
-          <p className="text-muted-foreground">Most projects fall within 10–15% of this estimate</p>
-        </div>
-
-        <div className="border-t border-border bg-muted/30 px-6 py-4">
-          <div className="mb-2 flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
-            <ShieldCheck className="h-3.5 w-3.5" /> Our Promise
-          </div>
-          <ul className="space-y-1.5 text-[12px] text-muted-foreground">
-            <li className="flex items-start gap-1.5">
-              <CheckCircle2 className="mt-0.5 h-3 w-3 flex-shrink-0 text-foreground/70" />
-              Final pricing confirmed after professional measurement
-            </li>
-            <li className="flex items-start gap-1.5">
-              <CheckCircle2 className="mt-0.5 h-3 w-3 flex-shrink-0 text-foreground/70" />
-              Nothing is ordered until measurements are verified
-            </li>
-            <li className="flex items-start gap-1.5">
-              <CheckCircle2 className="mt-0.5 h-3 w-3 flex-shrink-0 text-foreground/70" />
-              No-obligation quote — no sales calls
-            </li>
+        <div className="border-t border-border bg-muted/20 px-6 py-4">
+          <ul className="space-y-2 text-[12px] text-muted-foreground">
+            {[
+              "Fully installed pricing",
+              "Professional measurement included",
+              "Final pricing verified before ordering",
+              "No-pressure quote — no sales calls",
+            ].map((t) => (
+              <li key={t} className="flex items-start gap-2">
+                <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-foreground/60" />
+                <span>{t}</span>
+              </li>
+            ))}
           </ul>
         </div>
 
@@ -115,8 +115,8 @@ export function PriceSummary({ productType, config, price, valid, onAddedToProje
               Review Project &amp; Schedule Measurement <ArrowRight className="ml-1 h-4 w-4" />
             </Button>
           </div>
-          <p className="mt-3 text-center text-[11px] text-muted-foreground">
-            Final price subject to on-site verification
+          <p className="mt-3 flex items-center justify-center gap-1 text-center text-[11px] text-muted-foreground">
+            <ShieldCheck className="h-3 w-3" /> No commitment. Final price verified on-site.
           </p>
         </div>
       </div>
