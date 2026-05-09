@@ -1,5 +1,5 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { ProductTypeTabs } from "@/components/configurator/ProductTypeTabs";
 import { OptionGroup } from "@/components/configurator/OptionGroup";
@@ -178,6 +178,7 @@ function StepSection({
   description,
   summary,
   complete,
+  active,
   children,
 }: {
   step: number;
@@ -185,12 +186,23 @@ function StepSection({
   description?: string;
   summary?: string;
   complete?: boolean;
+  active?: boolean;
   children: React.ReactNode;
 }) {
   const [open, setOpen] = useState(true);
+  // Auto-collapse the moment a step becomes complete, so the eye is drawn
+  // to the next active section. Users can re-open by clicking Edit.
+  useEffect(() => {
+    if (complete) setOpen(false);
+  }, [complete]);
   const collapsed = complete && !open;
   return (
-    <section className="border-t border-border pt-10 first:border-t-0 first:pt-0">
+    <section
+      className={cn(
+        "border-t border-border pt-10 first:border-t-0 first:pt-0 transition-opacity",
+        collapsed && "opacity-70 hover:opacity-100",
+      )}
+    >
       <button
         type="button"
         onClick={() => complete && setOpen((o) => !o)}
@@ -203,8 +215,22 @@ function StepSection({
           <span className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground tabular-nums">
             {complete && <Check className="h-3 w-3 text-foreground/70" />}
             Step {String(step).padStart(2, "0")}
+            {active && !complete && (
+              <span className="ml-1 rounded-full bg-foreground px-1.5 py-px text-[9px] tracking-wider text-background">
+                NOW
+              </span>
+            )}
           </span>
-          <h2 className={cn("font-semibold tracking-tight", collapsed ? "text-lg text-muted-foreground" : "text-2xl")}>
+          <h2
+            className={cn(
+              "font-semibold tracking-tight transition-colors",
+              collapsed
+                ? "text-lg text-muted-foreground"
+                : active
+                ? "text-2xl text-foreground"
+                : "text-2xl",
+            )}
+          >
             {title}
           </h2>
         </div>
