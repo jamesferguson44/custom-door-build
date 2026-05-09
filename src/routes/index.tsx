@@ -47,7 +47,7 @@ function Home() {
           alt="Floor-to-ceiling window with mountain view"
           width={1920}
           height={1080}
-          className="h-[88vh] w-full object-cover"
+          className="h-[80vh] w-full object-cover"
         />
         {/* Strong overlay for guaranteed contrast */}
         <div className="absolute inset-0 bg-black/55" />
@@ -57,7 +57,7 @@ function Home() {
             Design &amp; Price Your Windows<br className="hidden sm:block" /> Online in Minutes
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-base text-white/90 drop-shadow-[0_1px_8px_rgba(0,0,0,0.4)] sm:text-lg">
-            Get real window pricing instantly. We verify your measurements and handle everything from start to finish.
+            Get real window pricing instantly — no appointments, no sales pressure.
           </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
             <Button asChild size="lg" className="h-12 rounded-full bg-white px-8 text-sm font-semibold text-black shadow-lg hover:bg-white/90">
@@ -75,6 +75,7 @@ function Home() {
             </Button>
           </div>
           <p className="mt-4 text-xs text-white/80">Takes about 2 minutes. No commitment required.</p>
+          <p className="mt-1 text-xs text-white/80">We double-check everything before anything is ordered.</p>
           <div className="mx-auto mt-8 flex max-w-3xl flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-white/85 sm:text-sm">
             <span className="inline-flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4" /> No obligation</span>
             <span className="inline-flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4" /> Measurements verified before ordering</span>
@@ -124,13 +125,13 @@ function Home() {
               Built around your peace of mind.
             </h2>
           </div>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
             {[
               "No pressure, no obligation quotes",
-              "Deposit applied to your order",
               "We verify all measurements before production",
               "Perfect fit guarantee",
               "Final price rarely changes after verification",
+              "Deposit applied to your order",
             ].map((t) => (
               <div key={t} className="flex items-start gap-3 rounded-xl border border-border bg-background p-5">
                 <CheckCircle2 className="mt-0.5 h-5 w-5 text-foreground" />
@@ -138,6 +139,9 @@ function Home() {
               </div>
             ))}
           </div>
+          <p className="mt-8 text-center text-sm font-medium text-foreground">
+            Nothing is ordered until measurements are verified.
+          </p>
         </div>
       </section>
 
@@ -182,6 +186,7 @@ function Home() {
                 <p className="mt-3 text-[11px] font-medium uppercase tracking-[0.14em] text-foreground/80">
                   {t.priceHint}
                 </p>
+                <p className="mt-2 text-xs text-muted-foreground/80">Click to start with this setup</p>
               </div>
             </Link>
           ))}
@@ -227,10 +232,13 @@ function Home() {
               </div>
               <div className="mt-3 text-4xl font-semibold tracking-tight">$75 – $400<span className="text-base font-normal text-muted-foreground"> / mo</span></div>
               <p className="mt-3 text-sm text-muted-foreground">
-                Based on typical financing. Final terms vary.
+                Based on typical financing options. Exact terms provided after your quote.
               </p>
             </div>
           </div>
+          <p className="mt-8 text-center text-xs text-muted-foreground">
+            Final pricing is confirmed after professional measurement.
+          </p>
         </div>
       </section>
 
@@ -246,6 +254,7 @@ function Home() {
             </Link>
           </Button>
         </div>
+        <p className="mt-4 text-xs text-muted-foreground">No commitment. No sales calls.</p>
       </section>
 
       {/* Features */}
