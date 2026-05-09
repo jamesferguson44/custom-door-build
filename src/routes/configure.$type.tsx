@@ -247,6 +247,7 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
           title="Window Style"
           description="Choose how your window opens and operates. You can change this anytime."
           summary={config.windowStyle}
+          complete={valid}
         >
           <OptionGroup
             label="Window Style"
@@ -261,6 +262,7 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
           title="Product Line"
           description="Pick the quality tier that fits your project. Most homeowners choose Better."
           summary={config.productLine}
+          complete={valid}
         >
           <OptionGroup
             label="Product Line"
@@ -287,6 +289,7 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
           title="Glass"
           description="Choose glass that matches your climate goals. Low-E is the smart default for most homes."
           summary={config.glassType}
+          complete={valid}
         >
           <OptionGroup
             label="Glass Type"
@@ -309,6 +312,7 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
           title="Style & Color"
           description="Personalize the look. Easy to change later."
           summary={`${config.color} · ${config.gridStyle}`}
+          complete={valid}
         >
           <OptionGroup
             label="Grid Style"
