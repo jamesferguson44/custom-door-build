@@ -54,10 +54,10 @@ function Home() {
         <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-background" />
         <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 mx-auto max-w-[1400px] px-6 text-center text-white">
           <h1 className="text-4xl font-semibold tracking-tight drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)] sm:text-6xl lg:text-7xl">
-            Design &amp; Price Your Windows<br className="hidden sm:block" /> Online in Minutes
+            Design Your Windows.<br className="hidden sm:block" /> See Pricing Instantly.
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-base text-white/90 drop-shadow-[0_1px_8px_rgba(0,0,0,0.4)] sm:text-lg">
-            Get real window pricing instantly — no appointments, no sales pressure.
+            Built for homeowners who want real pricing without the sales process.
           </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
             <Button asChild size="lg" className="h-12 rounded-full bg-white px-8 text-sm font-semibold text-black shadow-lg hover:bg-white/90">
@@ -74,12 +74,11 @@ function Home() {
               <a href="#how-it-works">See How It Works</a>
             </Button>
           </div>
-          <p className="mt-4 text-xs text-white/80">Takes about 2 minutes. No commitment required.</p>
-          <p className="mt-1 text-xs text-white/80">We double-check everything before anything is ordered.</p>
+          <p className="mt-4 text-xs text-white/80">Takes about 2 minutes.</p>
           <div className="mx-auto mt-8 flex max-w-3xl flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-white/85 sm:text-sm">
-            <span className="inline-flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4" /> No obligation</span>
-            <span className="inline-flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4" /> Measurements verified before ordering</span>
-            <span className="inline-flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4" /> Fully installed by professionals</span>
+            <span className="inline-flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4" /> Transparent pricing</span>
+            <span className="inline-flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4" /> Measurements verified before production</span>
+            <span className="inline-flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4" /> Installed by experienced professionals</span>
           </div>
         </div>
       </section>
@@ -122,15 +121,15 @@ function Home() {
         <div className="mx-auto max-w-[1400px] px-6 py-16">
           <div className="mb-10 text-center">
             <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-              Built around your peace of mind.
+              Built around accuracy and craftsmanship.
             </h2>
           </div>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
             {[
-              "No pressure, no obligation quotes",
-              "We verify all measurements before production",
-              "Perfect fit guarantee",
-              "Final price rarely changes after verification",
+              "Measurements verified before production",
+              "Installed by experienced professionals",
+              "Final fit guarantee",
+              "Workmanship warranty included",
               "Deposit applied to your order",
             ].map((t) => (
               <div key={t} className="flex items-start gap-3 rounded-xl border border-border bg-background p-5">
@@ -140,7 +139,7 @@ function Home() {
             ))}
           </div>
           <p className="mt-8 text-center text-sm font-medium text-foreground">
-            Nothing is ordered until measurements are verified.
+            Every project is professionally measured before production begins.
           </p>
         </div>
       </section>
@@ -201,10 +200,10 @@ function Home() {
               Pricing
             </div>
             <h2 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
-              What Most Customers Pay
+              Real project-based ranges.
             </h2>
             <p className="mx-auto mt-3 max-w-xl text-sm text-muted-foreground">
-              Real ranges based on recent projects. Your exact price updates instantly as you design.
+              Based on recent installs. Your price updates live as you design.
             </p>
           </div>
           <div className="grid gap-5 md:grid-cols-3">
@@ -237,7 +236,7 @@ function Home() {
             </div>
           </div>
           <p className="mt-8 text-center text-xs text-muted-foreground">
-            Final pricing is confirmed after professional measurement.
+            Final pricing confirmed after professional measurement.
           </p>
         </div>
       </section>
@@ -245,7 +244,7 @@ function Home() {
       {/* Final CTA */}
       <section className="mx-auto max-w-[1400px] px-6 py-24 text-center">
         <h2 className="text-3xl font-semibold tracking-tight sm:text-5xl">
-          Get your exact window pricing in under 2 minutes.
+          Your windows. Your price. Two minutes.
         </h2>
         <div className="mt-8">
           <Button asChild size="lg" className="h-12 rounded-full px-8 text-sm font-semibold">
@@ -254,7 +253,6 @@ function Home() {
             </Link>
           </Button>
         </div>
-        <p className="mt-4 text-xs text-muted-foreground">No commitment. No sales calls.</p>
       </section>
 
       {/* Features */}
