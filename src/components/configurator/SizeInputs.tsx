@@ -16,7 +16,7 @@ export function SizeInputs({ width, height, onChange }: Props) {
         <span className="text-xs text-muted-foreground">inches</span>
       </div>
       <p className="mb-3 text-xs text-muted-foreground">
-        Approximate measurements are completely fine for quoting — you don't need to be exact.
+        Rough numbers are enough to generate your quote.
       </p>
       <div className="grid grid-cols-2 gap-3">
         <NumberField label="Width" value={width} onChange={(v) => onChange(v, height)} />
@@ -30,8 +30,7 @@ export function SizeInputs({ width, height, onChange }: Props) {
       <div className="mt-4 flex items-start gap-2 rounded-lg border border-border bg-muted/40 px-3 py-2.5 text-xs text-muted-foreground">
         <ShieldCheck className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-foreground/70" />
         <span>
-          We professionally verify every measurement before anything is ordered. Your quote
-          adjusts automatically if dimensions change.
+          A professional verifies exact measurements on-site. Your quote updates automatically if anything changes.
         </span>
       </div>
     </div>

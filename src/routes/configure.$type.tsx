@@ -27,6 +27,54 @@ import { Textarea } from "@/components/ui/textarea";
 import { ChevronDown, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+const STEP_LABELS = ["Style", "Product Line", "Glass", "Style & Color", "Measurements"];
+
+function ProgressBar({ done, active }: { done: Record<number, boolean>; active: number }) {
+  return (
+    <div className="mb-10 overflow-hidden rounded-2xl border border-border bg-card/60 px-4 py-3 backdrop-blur sm:px-6 sm:py-4">
+      <ol className="flex items-center gap-2 sm:gap-3">
+        {STEP_LABELS.map((label, i) => {
+          const n = i + 1;
+          const isDone = done[n];
+          const isActive = active === n;
+          return (
+            <li key={label} className="flex flex-1 items-center gap-2 sm:gap-3 min-w-0">
+              <div
+                className={cn(
+                  "flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full border text-[10px] font-semibold tabular-nums transition-colors",
+                  isDone
+                    ? "border-foreground bg-foreground text-background"
+                    : isActive
+                    ? "border-foreground text-foreground"
+                    : "border-border text-muted-foreground",
+                )}
+              >
+                {isDone ? <Check className="h-3 w-3" /> : n}
+              </div>
+              <span
+                className={cn(
+                  "truncate text-xs transition-colors sm:text-[13px]",
+                  isActive ? "font-medium text-foreground" : isDone ? "text-muted-foreground" : "text-muted-foreground/70",
+                )}
+              >
+                {label}
+              </span>
+              {i < STEP_LABELS.length - 1 && (
+                <div
+                  className={cn(
+                    "hidden h-px flex-1 transition-colors sm:block",
+                    isDone ? "bg-foreground/60" : "bg-border",
+                  )}
+                />
+              )}
+            </li>
+          );
+        })}
+      </ol>
+    </div>
+  );
+}
+
 const VALID_TYPES: ProductType[] = ["window", "door", "sliding_door"];
 
 type TemplateId = "best-value" | "most-popular" | "max-efficiency" | "modern-upgrade";
@@ -199,8 +247,9 @@ function StepSection({
   return (
     <section
       className={cn(
-        "border-t border-border pt-10 first:border-t-0 first:pt-0 transition-opacity",
-        collapsed && "opacity-70 hover:opacity-100",
+        "border-t border-border pt-10 first:border-t-0 first:pt-0 transition-all duration-300",
+        active && !complete && "rounded-2xl border border-foreground/15 bg-muted/30 px-5 py-6 -mx-5 my-2 first:pt-6",
+        collapsed && "opacity-60 hover:opacity-100 hover:bg-muted/20 rounded-xl -mx-3 px-3 cursor-pointer",
       )}
     >
       <button
@@ -245,12 +294,12 @@ function StepSection({
         )}
       </button>
       {!collapsed && (
-        <>
+        <div className="animate-in fade-in slide-in-from-top-1 duration-300">
           {description && (
             <p className="mb-6 -mt-3 text-sm text-muted-foreground">{description}</p>
           )}
           <div className="space-y-8">{children}</div>
-        </>
+        </div>
       )}
     </section>
   );
@@ -281,10 +330,11 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
   return (
     <Shell productType={productType}>
       <div>
+        <ProgressBar done={stepDone} active={activeStep} />
         <StepSection
           step={1}
           title="Window Style"
-          description="Choose how your window opens and operates. You can change this anytime."
+          description="Choose how your window opens. Change it anytime."
           summary={config.windowStyle}
           complete={stepDone[1]}
           active={activeStep === 1}
@@ -303,7 +353,7 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
         <StepSection
           step={2}
           title="Product Line"
-          description="Pick the quality tier that fits your project. Most homeowners choose Better."
+          description="Most homeowners choose Better — premium vinyl with Low-E glass."
           summary={config.productLine}
           complete={stepDone[2]}
           active={activeStep === 2}
@@ -334,7 +384,7 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
         <StepSection
           step={3}
           title="Glass"
-          description="Choose glass that matches your climate goals. Low-E is recommended for Utah homes."
+          description="Low-E is recommended for Utah's climate and the most common pick."
           summary={config.glassType}
           complete={stepDone[3]}
           active={activeStep === 3}
@@ -361,7 +411,7 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
         <StepSection
           step={4}
           title="Style & Color"
-          description="Personalize the look. You can change any option later."
+          description="Personalize the finish. Easy to change later."
           summary={`${config.color} · ${config.gridStyle}`}
           complete={stepDone[4]}
           active={activeStep === 4}
@@ -389,7 +439,7 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
         <StepSection
           step={5}
           title="Measurements"
-          description="Last step. Approximate measurements are completely fine — you don't need exact numbers to receive pricing."
+          description="Approximate measurements are completely fine — a professional verifies exact numbers before production."
           complete={stepDone[5]}
           active={activeStep === 5}
           summary={valid ? `${config.width}″ × ${config.height}″` : undefined}

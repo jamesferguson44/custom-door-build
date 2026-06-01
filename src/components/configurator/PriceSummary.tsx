@@ -73,8 +73,8 @@ export function PriceSummary({ productType, config, price, valid, onAddedToProje
             {[
               "Fully installed pricing",
               "Professional measurement included",
-              "Final pricing verified before ordering",
-              "No-pressure quote — no sales calls",
+              "Final fit guarantee",
+              "Workmanship warranty",
             ].map((t) => (
               <li key={t} className="flex items-start gap-2">
                 <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-foreground/60" />
@@ -116,7 +116,7 @@ export function PriceSummary({ productType, config, price, valid, onAddedToProje
             </Button>
           </div>
           <p className="mt-3 flex items-center justify-center gap-1 text-center text-[11px] text-muted-foreground">
-            <ShieldCheck className="h-3 w-3" /> No commitment. Final price verified on-site.
+            <ShieldCheck className="h-3 w-3" /> Final price confirmed after on-site measurement.
           </p>
         </div>
       </div>
