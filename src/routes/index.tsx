@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Shield, PencilRuler, DollarSign, ClipboardCheck, Hammer, CheckCircle2, Eye, Ruler, Award, Sparkles, Mountain, Star, Quote } from "lucide-react";
+import { cn } from "@/lib/utils";
 import heroWindow from "@/assets/hero-window.jpg";
 import windowPicture from "@/assets/window-picture.jpg";
 import windowDoubleHung from "@/assets/window-double-hung.jpg";
