@@ -307,8 +307,15 @@ function Home() {
                 See My Window Price
               </Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="h-12 rounded-full px-8 text-sm font-semibold">
-              <Link to="/configure/$type" params={{ type: "window" }}>Build My Project</Link>
+            <Button
+              size="lg"
+              variant="outline"
+              className="h-12 rounded-full px-8 text-sm font-semibold"
+              onClick={() => {
+                document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth", block: "start" });
+              }}
+            >
+              How It Works
             </Button>
           </div>
         </div>
