@@ -18,7 +18,7 @@ import {
   type CartItem,
 } from "@/lib/quote-storage";
 import { useCart } from "@/hooks/use-cart";
-import { formatUSD, productLabel, sendToShopifyCheckout } from "@/lib/pricing";
+import { formatUSD, productLabel } from "@/lib/pricing";
 
 export const Route = createFileRoute("/quote")({
   head: () => ({
