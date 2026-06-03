@@ -455,6 +455,42 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
 }
 
 function DoorConfigurator({ productType }: { productType: ProductType }) {
+  return <DoorConfiguratorInner productType={productType} />;
+}
+
+function CurrentConfigCard({ config, valid }: { config: WindowConfig; valid: boolean }) {
+  const rows = [
+    { label: `${config.windowStyle} Window`, on: !!config.windowStyle },
+    { label: config.productLine, on: !!config.productLine },
+    { label: `${config.glassType} Glass`, on: !!config.glassType },
+    { label: config.color, on: !!config.color },
+    { label: config.gridStyle === "None" ? "No Grids" : `${config.gridStyle} Grids`, on: !!config.gridStyle },
+    { label: valid ? `${config.width}″ × ${config.height}″` : "Measurements pending", on: valid },
+  ];
+  return (
+    <div className="overflow-hidden rounded-2xl border border-border bg-card">
+      <div className="px-6 py-5">
+        <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+          Current Configuration
+        </div>
+        <ul className="mt-3 space-y-1.5 text-sm">
+          {rows.map((r, i) => (
+            <li key={i} className="flex items-center gap-2">
+              {r.on ? (
+                <Check className="h-3.5 w-3.5 text-emerald-600 flex-shrink-0" />
+              ) : (
+                <span className="h-3.5 w-3.5 flex-shrink-0 rounded-full border border-dashed border-muted-foreground/40" />
+              )}
+              <span className={r.on ? "text-foreground" : "text-muted-foreground"}>{r.label}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+function DoorConfiguratorInner({ productType }: { productType: ProductType }) {
   const [config, setConfig] = useState<DoorConfig>(DEFAULT_DOOR);
   const valid = isValidSize(config.width, config.height);
   const price = useMemo(() => calculatePrice(productType, config), [productType, config]);
