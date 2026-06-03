@@ -290,6 +290,7 @@ function StepSection({
 }
 
 function WindowConfigurator({ productType }: { productType: ProductType }) {
+  // (defined below)
   const { template } = Route.useSearch();
   const [config, setConfig] = useState<WindowConfig>(() => {
     const preset = template ? WINDOW_TEMPLATES[template as TemplateId] : undefined;
