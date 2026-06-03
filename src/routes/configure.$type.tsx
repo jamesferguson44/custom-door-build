@@ -1,5 +1,5 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { ProductTypeTabs } from "@/components/configurator/ProductTypeTabs";
 import { OptionGroup } from "@/components/configurator/OptionGroup";
