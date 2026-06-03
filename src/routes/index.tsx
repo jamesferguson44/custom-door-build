@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Shield, PencilRuler, DollarSign, ClipboardCheck, Hammer, CheckCircle2, Eye, Ruler, Award, Mountain, Sparkles } from "lucide-react";
+import { ArrowRight, Shield, PencilRuler, DollarSign, ClipboardCheck, Hammer, CheckCircle2, Eye, Ruler, Award, Sparkles } from "lucide-react";
 import heroWindow from "@/assets/hero-window.jpg";
 import windowPicture from "@/assets/window-picture.jpg";
 import windowDoubleHung from "@/assets/window-double-hung.jpg";
@@ -62,7 +62,7 @@ function Home() {
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
             <Button asChild size="lg" className="h-12 rounded-full bg-white px-8 text-sm font-semibold text-black shadow-lg hover:bg-white/90">
               <Link to="/configure/$type" params={{ type: "window" }}>
-                Start Designing
+                See My Window Price
               </Link>
             </Button>
             <Button
@@ -71,7 +71,7 @@ function Home() {
               variant="outline"
               className="h-12 rounded-full border-white/40 bg-white/10 px-8 text-sm font-semibold text-white backdrop-blur hover:bg-white/20 hover:text-white"
             >
-              <a href="#how-it-works">How It Works</a>
+              <Link to="/configure/$type" params={{ type: "window" }}>Build My Project</Link>
             </Button>
           </div>
           <div className="mx-auto mt-8 flex max-w-3xl flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-white/90 sm:text-sm">
@@ -86,20 +86,20 @@ function Home() {
       <section className="mx-auto max-w-[1400px] px-6 py-20">
         <div className="mb-12 text-center">
           <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
-            Why Pane &amp; Simple
+            A Better Way
           </div>
           <h2 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
-            Why Homeowners Choose Pane &amp; Simple
+            Why Homeowners Prefer This Process
           </h2>
         </div>
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {[
-            { icon: <DollarSign className="h-5 w-5" />, title: "Transparent Pricing", body: "See pricing instantly as you design." },
             { icon: <Eye className="h-5 w-5" />, title: "No In-Home Sales Presentations", body: "Build your project online at your own pace." },
-            { icon: <Ruler className="h-5 w-5" />, title: "Measurements Verified", body: "Every order is professionally measured before production." },
+            { icon: <DollarSign className="h-5 w-5" />, title: "Transparent Pricing", body: "See pricing instantly as you design." },
+            { icon: <Ruler className="h-5 w-5" />, title: "Verified Measurements", body: "Every order is professionally measured before production." },
             { icon: <Hammer className="h-5 w-5" />, title: "Professional Installation", body: "Experienced installers handle the entire project." },
+            { icon: <Shield className="h-5 w-5" />, title: "No Pressure Tactics", body: "Move at your speed. We never push." },
             { icon: <Award className="h-5 w-5" />, title: "Workmanship Warranty", body: "Installation backed by our workmanship guarantee." },
-            { icon: <Mountain className="h-5 w-5" />, title: "Built For Utah Homes", body: "Products selected for Utah weather and energy efficiency." },
           ].map((f) => (
             <div key={f.title} className="rounded-2xl border border-border bg-card p-6">
               <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-full border border-border bg-background">
@@ -279,11 +279,11 @@ function Home() {
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
             <Button asChild size="lg" className="h-12 rounded-full px-8 text-sm font-semibold">
               <Link to="/configure/$type" params={{ type: "window" }}>
-                Start Designing
+                See My Window Price
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="h-12 rounded-full px-8 text-sm font-semibold">
-              <a href="#templates">View Popular Templates</a>
+              <Link to="/configure/$type" params={{ type: "window" }}>Build My Project</Link>
             </Button>
           </div>
         </div>
