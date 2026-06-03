@@ -292,6 +292,49 @@ function Home() {
         </div>
       </section>
 
+      {/* Customer Projects placeholder */}
+      <section className="border-t border-border">
+        <div className="mx-auto max-w-[1400px] px-6 py-20">
+          <div className="mb-10 text-center">
+            <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+              Social Proof
+            </div>
+            <h2 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
+              Customer Projects
+            </h2>
+            <p className="mx-auto mt-3 max-w-xl text-sm text-muted-foreground">
+              Real homeowner projects and reviews coming soon.
+            </p>
+          </div>
+          <div className="grid gap-5 md:grid-cols-3">
+            {[
+              { city: "Salt Lake City, UT", project: "Whole Home Replacement", note: "Review coming soon" },
+              { city: "Park City, UT", project: "Kitchen & Living Room", note: "Review coming soon" },
+              { city: "Provo, UT", project: "5 Window Project", note: "Review coming soon" },
+            ].map((p) => (
+              <div key={p.city} className="rounded-2xl border border-border bg-card p-6">
+                <div className="mb-4 flex items-center gap-1 text-foreground/30">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star key={i} className="h-4 w-4 fill-current" />
+                  ))}
+                </div>
+                <Quote className="mb-3 h-5 w-5 text-muted-foreground/60" />
+                <div className="h-2.5 w-3/4 rounded-full bg-muted" />
+                <div className="mt-2 h-2.5 w-full rounded-full bg-muted" />
+                <div className="mt-2 h-2.5 w-2/3 rounded-full bg-muted" />
+                <div className="mt-6 border-t border-border pt-4">
+                  <div className="text-sm font-semibold tracking-tight">{p.project}</div>
+                  <div className="text-xs text-muted-foreground">{p.city}</div>
+                  <div className="mt-1 text-[11px] uppercase tracking-[0.14em] text-muted-foreground/70">
+                    {p.note}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Final CTA */}
       <section className="border-t border-border bg-muted/30">
         <div className="mx-auto max-w-[1400px] px-6 py-24 text-center">
