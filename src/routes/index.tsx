@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Shield, PencilRuler, DollarSign, ClipboardCheck, Hammer, CheckCircle2, Eye, Ruler, Award, Sparkles } from "lucide-react";
+import { ArrowRight, Shield, PencilRuler, DollarSign, ClipboardCheck, Hammer, CheckCircle2, Eye, Ruler, Award, Sparkles, Mountain, Star, Quote } from "lucide-react";
+import { cn } from "@/lib/utils";
 import heroWindow from "@/assets/hero-window.jpg";
 import windowPicture from "@/assets/window-picture.jpg";
 import windowDoubleHung from "@/assets/window-double-hung.jpg";
@@ -66,17 +67,22 @@ function Home() {
               </Link>
             </Button>
             <Button
-              asChild
               size="lg"
               variant="outline"
               className="h-12 rounded-full border-white/40 bg-white/10 px-8 text-sm font-semibold text-white backdrop-blur hover:bg-white/20 hover:text-white"
+              onClick={() => {
+                document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth", block: "start" });
+              }}
             >
-              <Link to="/configure/$type" params={{ type: "window" }}>Build My Project</Link>
+              How It Works
             </Button>
           </div>
+          <p className="mx-auto mt-6 max-w-xl text-xs text-white/80 sm:text-sm">
+            Installed replacement windows typically start around <span className="font-semibold text-white">$650 per window</span>.
+          </p>
           <div className="mx-auto mt-8 flex max-w-3xl flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-white/90 sm:text-sm">
-            <span className="inline-flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4" /> Transparent Pricing</span>
-            <span className="inline-flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4" /> Measurements Verified Before Ordering</span>
+            <span className="inline-flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4" /> See Pricing Instantly</span>
+            <span className="inline-flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4" /> No Sales Appointments</span>
             <span className="inline-flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4" /> Professional Installation</span>
           </div>
         </div>
@@ -91,15 +97,18 @@ function Home() {
           <h2 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
             Why Homeowners Prefer This Process
           </h2>
+          <p className="mx-auto mt-4 max-w-2xl text-sm text-muted-foreground sm:text-base">
+            Most window companies require phone calls, in-home sales presentations, and high-pressure quotes. Pane &amp; Simple lets homeowners explore options and see pricing online before committing to anything.
+          </p>
         </div>
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {[
-            { icon: <Eye className="h-5 w-5" />, title: "No In-Home Sales Presentations", body: "Build your project online at your own pace." },
-            { icon: <DollarSign className="h-5 w-5" />, title: "Transparent Pricing", body: "See pricing instantly as you design." },
-            { icon: <Ruler className="h-5 w-5" />, title: "Verified Measurements", body: "Every order is professionally measured before production." },
+            { icon: <DollarSign className="h-5 w-5" />, title: "Transparent Pricing", body: "See pricing as you build." },
+            { icon: <Eye className="h-5 w-5" />, title: "No Sales Presentations", body: "No pressure, no lengthy appointments." },
+            { icon: <Ruler className="h-5 w-5" />, title: "Verified Measurements", body: "Every opening is professionally verified before ordering." },
             { icon: <Hammer className="h-5 w-5" />, title: "Professional Installation", body: "Experienced installers handle the entire project." },
-            { icon: <Shield className="h-5 w-5" />, title: "No Pressure Tactics", body: "Move at your speed. We never push." },
             { icon: <Award className="h-5 w-5" />, title: "Workmanship Warranty", body: "Installation backed by our workmanship guarantee." },
+            { icon: <Mountain className="h-5 w-5" />, title: "Built For Utah Homes", body: "Products selected for Utah weather and efficiency." },
           ].map((f) => (
             <div key={f.title} className="rounded-2xl border border-border bg-card p-6">
               <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-full border border-border bg-background">
@@ -122,17 +131,33 @@ function Home() {
           <h2 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
             Four steps. That&apos;s it.
           </h2>
+          <p className="mx-auto mt-4 max-w-xl text-sm text-muted-foreground">
+            From estimate to installation, we&apos;ve simplified the process.
+          </p>
         </div>
         <ol className="grid gap-6 md:grid-cols-4">
           {[
-            { icon: <PencilRuler className="h-5 w-5" />, title: "Design Your Windows", body: "Pick style, glass, and finish in our online configurator." },
-            { icon: <DollarSign className="h-5 w-5" />, title: "Get Instant Pricing", body: "See your price instantly as you design — no waiting, no calls." },
-            { icon: <ClipboardCheck className="h-5 w-5" />, title: "We Verify Measurements", body: "A pro confirms every dimension before production." },
-            { icon: <Hammer className="h-5 w-5" />, title: "We Install", body: "Professional install backed by our workmanship warranty." },
+            { icon: <PencilRuler className="h-5 w-5" />, title: "Design Your Windows", body: "Pick style, glass, and finish in our online configurator.", emphasis: false },
+            { icon: <DollarSign className="h-5 w-5" />, title: "Get Instant Pricing", body: "See your price instantly as you design — no waiting, no calls.", emphasis: false },
+            { icon: <ClipboardCheck className="h-5 w-5" />, title: "We Verify Measurements", body: "A professional confirms every dimension on-site before production begins.", emphasis: true },
+            { icon: <Hammer className="h-5 w-5" />, title: "Professional Installation", body: "Experienced installers handle the entire project — backed by our workmanship warranty.", emphasis: true },
           ].map((s, i) => (
-            <li key={s.title} className="rounded-2xl border border-border bg-background p-6">
+            <li
+              key={s.title}
+              className={cn(
+                "rounded-2xl border p-6 transition",
+                s.emphasis
+                  ? "border-foreground/20 bg-background shadow-[var(--shadow-elegant)] ring-1 ring-foreground/5"
+                  : "border-border bg-background",
+              )}
+            >
               <div className="mb-4 flex items-center justify-between">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-background">
+                <div
+                  className={cn(
+                    "flex h-10 w-10 items-center justify-center rounded-full border",
+                    s.emphasis ? "border-foreground bg-foreground text-background" : "border-border bg-background",
+                  )}
+                >
                   {s.icon}
                 </div>
                 <span className="text-[11px] font-medium tabular-nums uppercase tracking-[0.18em] text-muted-foreground">
@@ -183,10 +208,10 @@ function Home() {
             Starter Templates
           </div>
           <h2 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
-            Start from a popular setup.
+            Popular Starting Points
           </h2>
           <p className="mx-auto mt-3 max-w-xl text-sm text-muted-foreground">
-            Not sure where to start? Choose a popular setup and customize it.
+            Most homeowners start with one of these proven configurations and customize from there.
           </p>
         </div>
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
@@ -267,6 +292,49 @@ function Home() {
         </div>
       </section>
 
+      {/* Customer Projects placeholder */}
+      <section className="border-t border-border">
+        <div className="mx-auto max-w-[1400px] px-6 py-20">
+          <div className="mb-10 text-center">
+            <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+              Social Proof
+            </div>
+            <h2 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
+              Customer Projects
+            </h2>
+            <p className="mx-auto mt-3 max-w-xl text-sm text-muted-foreground">
+              Real homeowner projects and reviews coming soon.
+            </p>
+          </div>
+          <div className="grid gap-5 md:grid-cols-3">
+            {[
+              { city: "Salt Lake City, UT", project: "Whole Home Replacement", note: "Review coming soon" },
+              { city: "Park City, UT", project: "Kitchen & Living Room", note: "Review coming soon" },
+              { city: "Provo, UT", project: "5 Window Project", note: "Review coming soon" },
+            ].map((p) => (
+              <div key={p.city} className="rounded-2xl border border-border bg-card p-6">
+                <div className="mb-4 flex items-center gap-1 text-foreground/30">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star key={i} className="h-4 w-4 fill-current" />
+                  ))}
+                </div>
+                <Quote className="mb-3 h-5 w-5 text-muted-foreground/60" />
+                <div className="h-2.5 w-3/4 rounded-full bg-muted" />
+                <div className="mt-2 h-2.5 w-full rounded-full bg-muted" />
+                <div className="mt-2 h-2.5 w-2/3 rounded-full bg-muted" />
+                <div className="mt-6 border-t border-border pt-4">
+                  <div className="text-sm font-semibold tracking-tight">{p.project}</div>
+                  <div className="text-xs text-muted-foreground">{p.city}</div>
+                  <div className="mt-1 text-[11px] uppercase tracking-[0.14em] text-muted-foreground/70">
+                    {p.note}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Final CTA */}
       <section className="border-t border-border bg-muted/30">
         <div className="mx-auto max-w-[1400px] px-6 py-24 text-center">
@@ -282,8 +350,15 @@ function Home() {
                 See My Window Price
               </Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="h-12 rounded-full px-8 text-sm font-semibold">
-              <Link to="/configure/$type" params={{ type: "window" }}>Build My Project</Link>
+            <Button
+              size="lg"
+              variant="outline"
+              className="h-12 rounded-full px-8 text-sm font-semibold"
+              onClick={() => {
+                document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth", block: "start" });
+              }}
+            >
+              How It Works
             </Button>
           </div>
         </div>
