@@ -1,5 +1,5 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { ProductTypeTabs } from "@/components/configurator/ProductTypeTabs";
 import { OptionGroup } from "@/components/configurator/OptionGroup";
@@ -24,7 +24,7 @@ import heroDoor from "@/assets/hero-door.jpg";
 import heroSliding from "@/assets/hero-sliding.jpg";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { ChevronDown, Check } from "lucide-react";
+import { ChevronDown, Check, Save } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const STEP_LABELS = ["Style", "Product Line", "Glass", "Style & Color", "Measurements"];
@@ -293,11 +293,41 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
   const { template } = Route.useSearch();
   const [config, setConfig] = useState<WindowConfig>(() => {
     const preset = template ? WINDOW_TEMPLATES[template as TemplateId] : undefined;
+    if (!template && typeof window !== "undefined") {
+      try {
+        const raw = localStorage.getItem("uwd_window_config_v1");
+        if (raw) {
+          const saved = JSON.parse(raw) as Partial<WindowConfig>;
+          return { ...DEFAULT_WINDOW, ...saved };
+        }
+      } catch {
+        /* ignore */
+      }
+    }
     return { ...DEFAULT_WINDOW, ...(preset ?? {}) };
   });
-  const [touched, setTouched] = useState<Record<number, boolean>>(
-    template ? { 1: true, 2: true, 3: true, 4: true } : {},
-  );
+  const [touched, setTouched] = useState<Record<number, boolean>>(() => {
+    if (template) return { 1: true, 2: true, 3: true, 4: true };
+    if (typeof window !== "undefined") {
+      try {
+        const raw = localStorage.getItem("uwd_window_touched_v1");
+        if (raw) return JSON.parse(raw) as Record<number, boolean>;
+      } catch {
+        /* ignore */
+      }
+    }
+    return {};
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("uwd_window_config_v1", JSON.stringify(config));
+      localStorage.setItem("uwd_window_touched_v1", JSON.stringify(touched));
+    } catch {
+      /* ignore */
+    }
+  }, [config, touched]);
+
   const mark = (n: number) => setTouched((t) => (t[n] ? t : { ...t, [n]: true }));
   const valid = isValidSize(config.width, config.height);
   const price = useMemo(() => calculatePrice("window", config), [config]);
@@ -439,6 +469,9 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
       <div className="space-y-6 lg:sticky lg:top-20">
         <ProductPreview productType={productType} config={config} />
         <CurrentConfigCard config={config} valid={valid} />
+        <div className="flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
+          <Save className="h-3 w-3" /> Project automatically saved.
+        </div>
         <PriceSummary
           productType={productType}
           config={config}
