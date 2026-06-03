@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Trash2, Minus, Plus } from "lucide-react";
+import { Trash2, Minus, Plus, CheckCircle2, ClipboardCheck, Ruler, Hammer, Package, Calendar, Mail } from "lucide-react";
 import { ScheduleMeasurementDialog } from "@/components/ScheduleMeasurementDialog";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -104,22 +104,11 @@ function QuotePage() {
       if (error) throw error;
 
       if (mode === "checkout") {
-        await sendToShopifyCheckout({
-          productType: cart.items[0].productType,
-          config: cart.items[0].config,
-          price: cart.items[0].price,
-          customer: {
-            name: parsed.data.name,
-            email: parsed.data.email,
-            phone: parsed.data.phone,
-            address: parsed.data.address,
-          },
-        });
-        toast.success("Quote saved. Checkout will open once Shopify is connected.");
+        toast.success("Measurement request submitted. We'll reach out to schedule your visit.");
       } else if (mode === "install") {
         toast.success("Installation request submitted! We'll be in touch shortly.");
       } else {
-        toast.success("Quote saved. Confirmation sent to your email.");
+        toast.success("Estimate emailed. Check your inbox shortly.");
       }
 
       clearCart();
@@ -192,13 +181,31 @@ function QuotePage() {
             <div className="overflow-hidden rounded-2xl border border-border bg-card">
               <div className="px-6 py-6">
                 <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
-                  Combined Total
+                  Estimated Project Investment
                 </div>
                 <div className="mt-2 text-5xl font-semibold tracking-tight tabular-nums">
                   {formatUSD(total)}
                 </div>
                 <div className="mt-2 text-xs text-muted-foreground">
                   {itemCount} {itemCount === 1 ? "item" : "items"} · includes labor &amp; warranty
+                </div>
+                <div className="mt-5 border-t border-border pt-4">
+                  <div className="text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
+                    Includes
+                  </div>
+                  <ul className="mt-2 space-y-1.5 text-[13px]">
+                    {[
+                      "Professional measurement",
+                      "Installation",
+                      "Workmanship warranty",
+                      "Cleanup and disposal",
+                    ].map((t) => (
+                      <li key={t} className="flex items-center gap-2">
+                        <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 flex-shrink-0" />
+                        <span>{t}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               </div>
 
@@ -223,19 +230,42 @@ function QuotePage() {
                 <ScheduleMeasurementDialog
                   trigger={
                     <Button className="h-12 w-full rounded-full text-sm font-semibold">
-                      Schedule Measurement
+                      <Ruler className="mr-1.5 h-4 w-4" /> Request Final Measurement
                     </Button>
                   }
                 />
                 <Button variant="outline" className="h-11 w-full rounded-full" disabled={loading} onClick={() => submit("save")}>
-                  Save Quote
+                  <Mail className="mr-1.5 h-4 w-4" /> Email Me My Estimate
                 </Button>
-                <Button variant="ghost" className="h-11 w-full rounded-full" disabled={loading} onClick={() => submit("checkout")}>
-                  Proceed to Checkout
-                </Button>
-                <p className="pt-2 text-center text-[11px] text-muted-foreground">
-                  Final price subject to measurement verification
+                <p className="pt-1 text-center text-[11px] leading-relaxed text-muted-foreground">
+                  Your measurements don&apos;t need to be perfect.<br />
+                  We verify every opening before ordering your windows.
                 </p>
+              </div>
+            </div>
+
+            {/* What Happens Next */}
+            <div className="mt-6 overflow-hidden rounded-2xl border border-border bg-card">
+              <div className="px-6 py-5">
+                <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+                  What Happens Next?
+                </div>
+                <ol className="mt-4 space-y-3">
+                  {[
+                    { icon: <ClipboardCheck className="h-4 w-4" />, label: "Submit your project" },
+                    { icon: <Calendar className="h-4 w-4" />, label: "We schedule a measurement visit" },
+                    { icon: <Ruler className="h-4 w-4" />, label: "We verify dimensions and final pricing" },
+                    { icon: <Package className="h-4 w-4" />, label: "Your windows are ordered" },
+                    { icon: <Hammer className="h-4 w-4" />, label: "Professional installation" },
+                  ].map((s, i) => (
+                    <li key={i} className="flex items-start gap-3">
+                      <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full border border-border bg-background text-muted-foreground">
+                        {s.icon}
+                      </div>
+                      <div className="pt-1 text-sm">{s.label}</div>
+                    </li>
+                  ))}
+                </ol>
               </div>
             </div>
           </aside>
