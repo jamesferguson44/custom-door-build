@@ -238,65 +238,49 @@ function StepSection({
   children: React.ReactNode;
 }) {
   const [open, setOpen] = useState(true);
-  // Auto-collapse the moment a step becomes complete, so the eye is drawn
-  // to the next active section. Users can re-open by clicking Edit.
-  useEffect(() => {
-    if (complete) setOpen(false);
-  }, [complete]);
-  const collapsed = complete && !open;
+  // Manual collapse only — never auto-hide a customer's selection.
+  const collapsed = !open;
   return (
     <section
       className={cn(
         "border-t border-border pt-10 first:border-t-0 first:pt-0 transition-all duration-300",
-        active && !complete && "rounded-2xl border border-foreground/15 bg-muted/30 px-5 py-6 -mx-5 my-2 first:pt-6",
-        collapsed && "opacity-60 hover:opacity-100 hover:bg-muted/20 rounded-xl -mx-3 px-3 cursor-pointer",
+        active && "rounded-2xl border border-foreground/15 bg-muted/30 px-5 py-6 -mx-5 my-2 first:pt-6 border-l-4 border-l-foreground",
       )}
     >
       <button
         type="button"
-        onClick={() => complete && setOpen((o) => !o)}
-        className={cn(
-          "group mb-6 flex w-full items-center justify-between gap-3 text-left",
-          complete ? "cursor-pointer" : "cursor-default",
-        )}
+        onClick={() => setOpen((o) => !o)}
+        className="group mb-4 flex w-full items-start justify-between gap-3 text-left cursor-pointer"
       >
-        <div className="flex items-baseline gap-3">
+        <div className="min-w-0 flex-1">
           <span className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground tabular-nums">
-            {complete && <Check className="h-3 w-3 text-foreground/70" />}
+            {complete && <Check className="h-3 w-3 text-emerald-600" />}
             Step {String(step).padStart(2, "0")}
-            {active && !complete && (
+            {active && (
               <span className="ml-1 rounded-full bg-foreground px-1.5 py-px text-[9px] tracking-wider text-background">
                 NOW
               </span>
             )}
           </span>
-          <h2
-            className={cn(
-              "font-semibold tracking-tight transition-colors",
-              collapsed
-                ? "text-lg text-muted-foreground"
-                : active
-                ? "text-2xl text-foreground"
-                : "text-2xl",
-            )}
-          >
-            {title}
-          </h2>
-        </div>
-        {complete && (
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            {collapsed && summary && <span className="hidden sm:inline">{summary}</span>}
-            <span className="inline-flex items-center gap-1 rounded-full border border-border px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider">
-              {collapsed ? "Edit" : "Hide"}
-              <ChevronDown className={cn("h-3 w-3 transition-transform", open && "rotate-180")} />
-            </span>
+          <div className="mt-1 flex items-center gap-2">
+            {complete && <Check className="h-4 w-4 text-emerald-600 flex-shrink-0" />}
+            <h2 className={cn("text-2xl font-semibold tracking-tight", active && "text-foreground")}>
+              {title}
+            </h2>
           </div>
-        )}
+          {summary && (
+            <p className="mt-1 text-sm text-muted-foreground">{summary}</p>
+          )}
+        </div>
+        <span className="mt-1 inline-flex flex-shrink-0 items-center gap-1 rounded-full border border-border px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground hover:text-foreground">
+          {collapsed ? "Expand" : "Collapse"}
+          <ChevronDown className={cn("h-3 w-3 transition-transform", !collapsed && "rotate-180")} />
+        </span>
       </button>
       {!collapsed && (
         <div className="animate-in fade-in slide-in-from-top-1 duration-300">
           {description && (
-            <p className="mb-6 -mt-3 text-sm text-muted-foreground">{description}</p>
+            <p className="mb-6 -mt-1 text-sm text-muted-foreground">{description}</p>
           )}
           <div className="space-y-8">{children}</div>
         </div>
