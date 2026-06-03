@@ -438,6 +438,7 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
       </div>
       <div className="space-y-6 lg:sticky lg:top-20">
         <ProductPreview productType={productType} config={config} />
+        <CurrentConfigCard config={config} valid={valid} />
         <PriceSummary
           productType={productType}
           config={config}
