@@ -382,9 +382,9 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
               mark(2);
             }}
             descriptions={{
-              "Good — AMSCO": "Affordable and energy efficient",
-              "Better — ProVia": "Upgraded efficiency and premium vinyl performance",
-              "Best — ProVia Aeris": "Real wood interior and maximum performance",
+              "Good — AMSCO": "Affordable · Energy efficient · Best budget option",
+              "Better — ProVia": "Better efficiency · Premium vinyl construction · Recommended",
+              "Best — ProVia Aeris": "Maximum efficiency · Real wood interior · Premium upgrade",
             }}
             badges={{
               "Better — ProVia": "Most Popular",
