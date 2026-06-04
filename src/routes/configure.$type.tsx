@@ -24,10 +24,20 @@ import heroDoor from "@/assets/hero-door.jpg";
 import heroSliding from "@/assets/hero-sliding.jpg";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { ChevronDown, Check, Save } from "lucide-react";
+import { Check, Save, Info, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const STEP_LABELS = ["Style", "Product Line", "Glass", "Style & Color", "Measurements"];
+
+const WINDOW_STYLE_DESC: Record<string, string> = {
+  "Single Hung": "Traditional and affordable",
+  "Double Hung": "Easy cleaning and ventilation",
+  Casement: "Maximum airflow and efficiency",
+  Picture: "Large unobstructed views",
+  Slider: "Great for wider openings",
+  Awning: "Ventilation even during rain",
+  Specialty: "Custom shapes and architectural designs",
+};
 
 function ProgressBar({ done, active }: { done: Record<number, boolean>; active: number }) {
   return (
@@ -237,9 +247,6 @@ function StepSection({
   active?: boolean;
   children: React.ReactNode;
 }) {
-  const [open, setOpen] = useState(true);
-  // Manual collapse only — never auto-hide a customer's selection.
-  const collapsed = !open;
   return (
     <section
       className={cn(
@@ -247,11 +254,7 @@ function StepSection({
         active && "rounded-2xl border border-foreground/15 bg-muted/30 px-5 py-6 -mx-5 my-2 first:pt-6 border-l-4 border-l-foreground",
       )}
     >
-      <button
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        className="group mb-4 flex w-full items-start justify-between gap-3 text-left cursor-pointer"
-      >
+      <div className="mb-4 flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <span className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground tabular-nums">
             {complete && <Check className="h-3 w-3 text-emerald-600" />}
@@ -269,22 +272,19 @@ function StepSection({
             </h2>
           </div>
           {summary && (
-            <p className="mt-1 text-sm text-muted-foreground">{summary}</p>
+            <div className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-border bg-muted/40 px-2.5 py-1 text-[11px] font-medium text-foreground/80">
+              <span className="text-muted-foreground">Selected:</span>
+              <span>{summary}</span>
+            </div>
           )}
         </div>
-        <span className="mt-1 inline-flex flex-shrink-0 items-center gap-1 rounded-full border border-border px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground hover:text-foreground">
-          {collapsed ? "Expand" : "Collapse"}
-          <ChevronDown className={cn("h-3 w-3 transition-transform", !collapsed && "rotate-180")} />
-        </span>
-      </button>
-      {!collapsed && (
-        <div className="animate-in fade-in slide-in-from-top-1 duration-300">
-          {description && (
-            <p className="mb-6 -mt-1 text-sm text-muted-foreground">{description}</p>
-          )}
-          <div className="space-y-8">{children}</div>
-        </div>
-      )}
+      </div>
+      <div>
+        {description && (
+          <p className="mb-6 -mt-1 text-sm text-muted-foreground">{description}</p>
+        )}
+        <div className="space-y-8">{children}</div>
+      </div>
     </section>
   );
 }
