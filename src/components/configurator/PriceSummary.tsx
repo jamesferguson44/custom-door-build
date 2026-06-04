@@ -8,16 +8,18 @@ import { addToCart } from "@/lib/quote-storage";
 import { ArrowRight, Plus, ShieldCheck, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
+import { Progress } from "@/components/ui/progress";
 
 type Props = {
   productType: ProductType;
   config: AnyConfig;
   price: PriceBreakdown;
   valid: boolean;
+  completeness?: number;
   onAddedToProject?: () => void;
 };
 
-export function PriceSummary({ productType, config, price, valid, onAddedToProject }: Props) {
+export function PriceSummary({ productType, config, price, valid, completeness, onAddedToProject }: Props) {
   const navigate = useNavigate();
   const [location, setLocation] = useState("");
 
@@ -36,6 +38,9 @@ export function PriceSummary({ productType, config, price, valid, onAddedToProje
     <aside>
       <div className="overflow-hidden rounded-2xl border border-border bg-card">
         <div className="px-6 py-6">
+          <p className="mb-3 text-[12px] leading-relaxed text-muted-foreground">
+            Most homeowners spend between <span className="font-medium text-foreground">$800–$1,500 per window</span> installed, depending on size and options.
+          </p>
           <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
             Estimated Price Range
           </div>
@@ -51,12 +56,25 @@ export function PriceSummary({ productType, config, price, valid, onAddedToProje
                 </span>
               </>
             ) : (
-              <span className="text-4xl font-semibold tracking-tight">—</span>
+              <div className="space-y-1.5 text-sm">
+                {[
+                  "Choose your options",
+                  "Enter approximate dimensions",
+                  "Instantly see pricing",
+                ].map((t) => (
+                  <div key={t} className="flex items-center gap-2 text-muted-foreground">
+                    <CheckCircle2 className="h-3.5 w-3.5 text-foreground/40" />
+                    <span>{t}</span>
+                  </div>
+                ))}
+              </div>
             )}
           </div>
-          <div className="mt-2 text-xs text-muted-foreground">
-            {productLabel(productType)} · {config.width}″ × {config.height}″
-          </div>
+          {valid && (
+            <div className="mt-2 text-xs text-muted-foreground">
+              {productLabel(productType)} · {config.width}″ × {config.height}″
+            </div>
+          )}
           {valid && (
             <div className="mt-3 text-xs text-muted-foreground">
               Estimated payment ~
@@ -66,6 +84,9 @@ export function PriceSummary({ productType, config, price, valid, onAddedToProje
               /mo with financing
             </div>
           )}
+          <p className="mt-3 text-[11px] text-muted-foreground">
+            Final pricing is verified after measurements.
+          </p>
         </div>
 
         <div className="border-t border-border bg-muted/20 px-6 py-4">
@@ -98,6 +119,15 @@ export function PriceSummary({ productType, config, price, valid, onAddedToProje
         </div>
 
         <div className="border-t border-border px-6 py-5">
+          {typeof completeness === "number" && (
+            <div className="mb-4">
+              <div className="mb-1.5 flex items-center justify-between text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+                <span>Project Completeness</span>
+                <span className="tabular-nums text-foreground/80">{Math.round(completeness * 100)}%</span>
+              </div>
+              <Progress value={completeness * 100} className="h-1.5" />
+            </div>
+          )}
           <div className="space-y-2">
             <Button
               className="h-12 w-full rounded-full text-sm font-semibold"

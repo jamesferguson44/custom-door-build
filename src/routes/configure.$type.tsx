@@ -24,10 +24,20 @@ import heroDoor from "@/assets/hero-door.jpg";
 import heroSliding from "@/assets/hero-sliding.jpg";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { ChevronDown, Check, Save } from "lucide-react";
+import { Check, Save, Info, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const STEP_LABELS = ["Style", "Product Line", "Glass", "Style & Color", "Measurements"];
+
+const WINDOW_STYLE_DESC: Record<string, string> = {
+  "Single Hung": "Traditional and affordable",
+  "Double Hung": "Easy cleaning and ventilation",
+  Casement: "Maximum airflow and efficiency",
+  Picture: "Large unobstructed views",
+  Slider: "Great for wider openings",
+  Awning: "Ventilation even during rain",
+  Specialty: "Custom shapes and architectural designs",
+};
 
 function ProgressBar({ done, active }: { done: Record<number, boolean>; active: number }) {
   return (
@@ -237,9 +247,6 @@ function StepSection({
   active?: boolean;
   children: React.ReactNode;
 }) {
-  const [open, setOpen] = useState(true);
-  // Manual collapse only — never auto-hide a customer's selection.
-  const collapsed = !open;
   return (
     <section
       className={cn(
@@ -247,11 +254,7 @@ function StepSection({
         active && "rounded-2xl border border-foreground/15 bg-muted/30 px-5 py-6 -mx-5 my-2 first:pt-6 border-l-4 border-l-foreground",
       )}
     >
-      <button
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        className="group mb-4 flex w-full items-start justify-between gap-3 text-left cursor-pointer"
-      >
+      <div className="mb-4 flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <span className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground tabular-nums">
             {complete && <Check className="h-3 w-3 text-emerald-600" />}
@@ -269,22 +272,19 @@ function StepSection({
             </h2>
           </div>
           {summary && (
-            <p className="mt-1 text-sm text-muted-foreground">{summary}</p>
+            <div className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-border bg-muted/40 px-2.5 py-1 text-[11px] font-medium text-foreground/80">
+              <span className="text-muted-foreground">Selected:</span>
+              <span>{summary}</span>
+            </div>
           )}
         </div>
-        <span className="mt-1 inline-flex flex-shrink-0 items-center gap-1 rounded-full border border-border px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground hover:text-foreground">
-          {collapsed ? "Expand" : "Collapse"}
-          <ChevronDown className={cn("h-3 w-3 transition-transform", !collapsed && "rotate-180")} />
-        </span>
-      </button>
-      {!collapsed && (
-        <div className="animate-in fade-in slide-in-from-top-1 duration-300">
-          {description && (
-            <p className="mb-6 -mt-1 text-sm text-muted-foreground">{description}</p>
-          )}
-          <div className="space-y-8">{children}</div>
-        </div>
-      )}
+      </div>
+      <div>
+        {description && (
+          <p className="mb-6 -mt-1 text-sm text-muted-foreground">{description}</p>
+        )}
+        <div className="space-y-8">{children}</div>
+      </div>
     </section>
   );
 }
@@ -361,6 +361,7 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
               setConfig({ ...config, windowStyle: v });
               mark(1);
             }}
+            descriptions={WINDOW_STYLE_DESC as Partial<Record<typeof config.windowStyle, string>>}
           />
         </StepSection>
 
@@ -381,9 +382,9 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
               mark(2);
             }}
             descriptions={{
-              "Good — AMSCO": "Affordable and energy efficient",
-              "Better — ProVia": "Upgraded efficiency and premium vinyl performance",
-              "Best — ProVia Aeris": "Real wood interior and maximum performance",
+              "Good — AMSCO": "Affordable · Energy efficient · Best budget option",
+              "Better — ProVia": "Better efficiency · Premium vinyl construction · Recommended",
+              "Best — ProVia Aeris": "Maximum efficiency · Real wood interior · Premium upgrade",
             }}
             badges={{
               "Better — ProVia": "Most Popular",
@@ -426,7 +427,7 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
           step={4}
           title="Style & Color"
           description="Personalize the finish. Easy to change later."
-          summary={`${config.color} · ${config.gridStyle}`}
+          summary={`${config.color} Exterior · ${config.gridStyle === "None" ? "No Grids" : `${config.gridStyle} Grids`}`}
           complete={stepDone[4]}
           active={activeStep === 4}
         >
@@ -458,6 +459,15 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
           active={activeStep === 5}
           summary={valid ? `${config.width}″ × ${config.height}″` : undefined}
         >
+          <div className="flex items-start gap-3 rounded-xl border border-sky-200 bg-sky-50/70 px-4 py-3 text-sm text-sky-900 dark:border-sky-900/40 dark:bg-sky-950/30 dark:text-sky-100">
+            <Info className="mt-0.5 h-4 w-4 flex-shrink-0" />
+            <div>
+              <div className="font-medium">Don't worry if your measurements aren't perfect.</div>
+              <div className="mt-0.5 text-[13px] opacity-80">
+                Most homeowners enter approximate sizes. We verify exact measurements before ordering.
+              </div>
+            </div>
+          </div>
           <SizeInputs
             width={config.width}
             height={config.height}
@@ -468,7 +478,22 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
       </div>
       <div className="space-y-6 lg:sticky lg:top-20">
         <ProductPreview productType={productType} config={config} />
-        <CurrentConfigCard config={config} valid={valid} />
+        <div className="rounded-2xl border border-border bg-card px-5 py-4">
+          <ul className="space-y-1.5 text-[13px]">
+            {[
+              "Built to your exact opening",
+              "Professional measurement verification available",
+              "Designed for Utah weather",
+              "No in-home sales appointment required",
+            ].map((t) => (
+              <li key={t} className="flex items-start gap-2">
+                <Check className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-emerald-600" />
+                <span className="text-foreground/80">{t}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <CurrentConfigCard config={config} valid={valid} price={price} />
         <div className="flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
           <Save className="h-3 w-3" /> Project automatically saved.
         </div>
@@ -477,6 +502,7 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
           config={config}
           price={price}
           valid={valid}
+          completeness={Object.values(stepDone).filter(Boolean).length / 5}
           onAddedToProject={() =>
             setConfig({ ...config, width: 0, height: 0 })
           }
@@ -491,20 +517,27 @@ function DoorConfigurator({ productType }: { productType: ProductType }) {
   return <DoorConfiguratorInner productType={productType} />;
 }
 
-function CurrentConfigCard({ config, valid }: { config: WindowConfig; valid: boolean }) {
+function CurrentConfigCard({
+  config,
+  valid,
+  price,
+}: {
+  config: WindowConfig;
+  valid: boolean;
+  price: { low: number; high: number };
+}) {
   const rows = [
     { label: `${config.windowStyle} Window`, on: !!config.windowStyle },
     { label: config.productLine, on: !!config.productLine },
     { label: `${config.glassType} Glass`, on: !!config.glassType },
-    { label: config.color, on: !!config.color },
+    { label: `${config.color} Exterior`, on: !!config.color },
     { label: config.gridStyle === "None" ? "No Grids" : `${config.gridStyle} Grids`, on: !!config.gridStyle },
-    { label: valid ? `${config.width}″ × ${config.height}″` : "Measurements pending", on: valid },
   ];
   return (
     <div className="overflow-hidden rounded-2xl border border-border bg-card">
       <div className="px-6 py-5">
         <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
-          Current Configuration
+          Your Window
         </div>
         <ul className="mt-3 space-y-1.5 text-sm">
           {rows.map((r, i) => (
@@ -517,7 +550,28 @@ function CurrentConfigCard({ config, valid }: { config: WindowConfig; valid: boo
               <span className={r.on ? "text-foreground" : "text-muted-foreground"}>{r.label}</span>
             </li>
           ))}
+          <li className="flex items-center gap-2">
+            {valid ? (
+              <Check className="h-3.5 w-3.5 text-emerald-600 flex-shrink-0" />
+            ) : (
+              <span className="h-3.5 w-3.5 flex-shrink-0 rounded-full border border-dashed border-muted-foreground/40" />
+            )}
+            <span className={valid ? "text-foreground" : "text-muted-foreground"}>
+              {valid ? `${config.width}″ × ${config.height}″` : "Measurements pending"}
+            </span>
+          </li>
         </ul>
+      </div>
+      <div className="border-t border-border bg-muted/30 px-6 py-4">
+        <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+          Estimated Starting Price
+        </div>
+        <div className="mt-1 text-2xl font-semibold tracking-tight tabular-nums">
+          {valid
+            ? new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(price.low)
+            : "—"}
+        </div>
+        <div className="text-[11px] text-muted-foreground">Installed, before measurement verification</div>
       </div>
     </div>
   );
