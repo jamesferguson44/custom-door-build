@@ -42,7 +42,7 @@ export function PriceSummary({ productType, config, price, valid, completeness, 
             Most homeowners spend between <span className="font-medium text-foreground">$800–$1,500 per window</span> installed, depending on size and options.
           </p>
           <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
-            Estimated Price Range
+            Estimated Starting Price
           </div>
           <div className="mt-2 flex items-baseline gap-2 flex-wrap">
             {valid ? (
@@ -85,7 +85,7 @@ export function PriceSummary({ productType, config, price, valid, completeness, 
             </div>
           )}
           <p className="mt-3 text-[11px] text-muted-foreground">
-            Final pricing is verified after measurements.
+            Final pricing is confirmed after measurement verification.
           </p>
         </div>
 
@@ -134,11 +134,14 @@ export function PriceSummary({ productType, config, price, valid, completeness, 
               disabled={!valid}
               onClick={() => handleAdd(false)}
             >
-              <Plus className="mr-1 h-4 w-4" /> Add to Project
+              <Plus className="mr-1 h-4 w-4" /> Add Window
             </Button>
+          <p className="mt-2 text-center text-[11px] text-muted-foreground">
+            Building a multi-window project? Add each window type to your quote.
+          </p>
             <Button
               variant="outline"
-              className="h-11 w-full rounded-full text-sm font-medium"
+              className="mt-3 h-11 w-full rounded-full text-sm font-medium"
               disabled={!valid}
               onClick={() => handleAdd(true)}
             >
