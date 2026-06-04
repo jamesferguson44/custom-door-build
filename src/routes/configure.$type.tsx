@@ -361,6 +361,7 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
               setConfig({ ...config, windowStyle: v });
               mark(1);
             }}
+            descriptions={WINDOW_STYLE_DESC as Partial<Record<typeof config.windowStyle, string>>}
           />
         </StepSection>
 
@@ -426,7 +427,7 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
           step={4}
           title="Style & Color"
           description="Personalize the finish. Easy to change later."
-          summary={`${config.color} · ${config.gridStyle}`}
+          summary={`${config.color} Exterior · ${config.gridStyle === "None" ? "No Grids" : `${config.gridStyle} Grids`}`}
           complete={stepDone[4]}
           active={activeStep === 4}
         >
@@ -458,6 +459,15 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
           active={activeStep === 5}
           summary={valid ? `${config.width}″ × ${config.height}″` : undefined}
         >
+          <div className="flex items-start gap-3 rounded-xl border border-sky-200 bg-sky-50/70 px-4 py-3 text-sm text-sky-900 dark:border-sky-900/40 dark:bg-sky-950/30 dark:text-sky-100">
+            <Info className="mt-0.5 h-4 w-4 flex-shrink-0" />
+            <div>
+              <div className="font-medium">Don't worry if your measurements aren't perfect.</div>
+              <div className="mt-0.5 text-[13px] opacity-80">
+                Most homeowners enter approximate sizes. We verify exact measurements before ordering.
+              </div>
+            </div>
+          </div>
           <SizeInputs
             width={config.width}
             height={config.height}
@@ -468,7 +478,22 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
       </div>
       <div className="space-y-6 lg:sticky lg:top-20">
         <ProductPreview productType={productType} config={config} />
-        <CurrentConfigCard config={config} valid={valid} />
+        <div className="rounded-2xl border border-border bg-card px-5 py-4">
+          <ul className="space-y-1.5 text-[13px]">
+            {[
+              "Built to your exact opening",
+              "Professional measurement verification available",
+              "Designed for Utah weather",
+              "No in-home sales appointment required",
+            ].map((t) => (
+              <li key={t} className="flex items-start gap-2">
+                <Check className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-emerald-600" />
+                <span className="text-foreground/80">{t}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <CurrentConfigCard config={config} valid={valid} price={price} />
         <div className="flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
           <Save className="h-3 w-3" /> Project automatically saved.
         </div>
@@ -477,6 +502,7 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
           config={config}
           price={price}
           valid={valid}
+          completeness={Object.values(stepDone).filter(Boolean).length / 5}
           onAddedToProject={() =>
             setConfig({ ...config, width: 0, height: 0 })
           }
