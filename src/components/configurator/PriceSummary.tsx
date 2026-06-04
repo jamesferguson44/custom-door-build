@@ -56,12 +56,25 @@ export function PriceSummary({ productType, config, price, valid, completeness, 
                 </span>
               </>
             ) : (
-              <span className="text-4xl font-semibold tracking-tight">—</span>
+              <div className="space-y-1.5 text-sm">
+                {[
+                  "Choose your options",
+                  "Enter approximate dimensions",
+                  "Instantly see pricing",
+                ].map((t) => (
+                  <div key={t} className="flex items-center gap-2 text-muted-foreground">
+                    <CheckCircle2 className="h-3.5 w-3.5 text-foreground/40" />
+                    <span>{t}</span>
+                  </div>
+                ))}
+              </div>
             )}
           </div>
-          <div className="mt-2 text-xs text-muted-foreground">
-            {productLabel(productType)} · {config.width}″ × {config.height}″
-          </div>
+          {valid && (
+            <div className="mt-2 text-xs text-muted-foreground">
+              {productLabel(productType)} · {config.width}″ × {config.height}″
+            </div>
+          )}
           {valid && (
             <div className="mt-3 text-xs text-muted-foreground">
               Estimated payment ~
