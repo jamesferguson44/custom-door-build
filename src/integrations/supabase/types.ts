@@ -20,15 +20,20 @@ export type Database = {
           base_price: number
           configuration: Json
           created_at: string
-          customer_address: string
+          customer_address: string | null
+          customer_city: string | null
           customer_email: string
+          customer_first_name: string | null
+          customer_last_name: string | null
           customer_name: string
           customer_phone: string
+          customer_zip: string | null
           height_inches: number
           id: string
           labor_price: number
           product_type: Database["public"]["Enums"]["product_type"]
           project_notes: string | null
+          project_timeline: string | null
           status: Database["public"]["Enums"]["quote_status"]
           total_price: number
           updated_at: string
@@ -39,15 +44,20 @@ export type Database = {
           base_price: number
           configuration: Json
           created_at?: string
-          customer_address: string
+          customer_address?: string | null
+          customer_city?: string | null
           customer_email: string
+          customer_first_name?: string | null
+          customer_last_name?: string | null
           customer_name: string
           customer_phone: string
+          customer_zip?: string | null
           height_inches: number
           id?: string
           labor_price: number
           product_type: Database["public"]["Enums"]["product_type"]
           project_notes?: string | null
+          project_timeline?: string | null
           status?: Database["public"]["Enums"]["quote_status"]
           total_price: number
           updated_at?: string
@@ -58,15 +68,20 @@ export type Database = {
           base_price?: number
           configuration?: Json
           created_at?: string
-          customer_address?: string
+          customer_address?: string | null
+          customer_city?: string | null
           customer_email?: string
+          customer_first_name?: string | null
+          customer_last_name?: string | null
           customer_name?: string
           customer_phone?: string
+          customer_zip?: string | null
           height_inches?: number
           id?: string
           labor_price?: number
           product_type?: Database["public"]["Enums"]["product_type"]
           project_notes?: string | null
+          project_timeline?: string | null
           status?: Database["public"]["Enums"]["quote_status"]
           total_price?: number
           updated_at?: string
