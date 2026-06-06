@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { z } from "zod";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
@@ -7,78 +7,121 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Trash2, Minus, Plus, CheckCircle2, ClipboardCheck, Ruler, Hammer, Package, Calendar, Mail } from "lucide-react";
-import { ScheduleMeasurementDialog } from "@/components/ScheduleMeasurementDialog";
-import { supabase } from "@/integrations/supabase/client";
 import {
-  cartTotal,
-  clearCart,
-  removeFromCart,
-  updateQty,
-  type CartItem,
-} from "@/lib/quote-storage";
+  CheckCircle2,
+  ArrowRight,
+  ArrowLeft,
+  Shield,
+  Sparkles,
+  Ruler,
+  Hammer,
+  Mountain,
+  Eye,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
+import { cartTotal, clearCart, type CartItem } from "@/lib/quote-storage";
 import { useCart } from "@/hooks/use-cart";
-import { formatUSD, productLabel } from "@/lib/pricing";
+import { formatUSD } from "@/lib/pricing";
+import { downloadQuotePdf } from "@/lib/quote-pdf";
 
 export const Route = createFileRoute("/quote")({
   head: () => ({
     meta: [
-      { title: "Your Quote — Pane & Simple" },
-      { name: "description", content: "Review your configurations and request installation." },
+      { title: "Get Your Exact Quote — Pane & Simple" },
+      {
+        name: "description",
+        content:
+          "Submit your window project for a personalized quote. Transparent pricing, no high-pressure sales.",
+      },
     ],
   }),
   component: QuotePage,
 });
 
-const customerSchema = z.object({
-  name: z.string().trim().min(1, "Name is required").max(120),
-  phone: z.string().trim().min(7, "Valid phone required").max(30),
+const TIMELINES = [
+  "Ready Now",
+  "Within 1–3 Months",
+  "Within 3–6 Months",
+  "Just Researching",
+] as const;
+type Timeline = (typeof TIMELINES)[number];
+
+const contactSchema = z.object({
+  firstName: z.string().trim().min(1, "First name is required").max(60),
+  lastName: z.string().trim().min(1, "Last name is required").max(60),
   email: z.string().trim().email("Valid email required").max(255),
-  address: z.string().trim().min(5, "Address is required").max(255),
-  notes: z.string().trim().max(1000).optional(),
+  phone: z.string().trim().min(7, "Valid phone required").max(30),
+  city: z.string().trim().min(1, "City is required").max(80),
+  zip: z
+    .string()
+    .trim()
+    .regex(/^\d{5}(-\d{4})?$/u, "Enter a valid ZIP code"),
 });
+type Contact = z.infer<typeof contactSchema>;
 
 function QuotePage() {
   const cart = useCart();
-  const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState({
-    name: "",
-    phone: "",
-    email: "",
-    address: "",
-    notes: "",
-  });
   const navigate = useNavigate();
+  const [step, setStep] = useState<1 | 2>(1);
+  const [loading, setLoading] = useState(false);
+  const [contact, setContact] = useState<Contact>({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    city: "",
+    zip: "",
+  });
+  const [timeline, setTimeline] = useState<Timeline>("Within 1–3 Months");
+  const [notes, setNotes] = useState("");
 
-  const total = cartTotal(cart);
-  const itemCount = cart.items.reduce((s, i) => s + i.qty, 0);
+  const items = cart.items;
+  const itemCount = items.reduce((s, i) => s + i.qty, 0);
+  const totalMid = cartTotal(cart);
+  const totalLow = useMemo(
+    () => items.reduce((s, i) => s + i.price.low * i.qty, 0),
+    [items],
+  );
+  const totalHigh = useMemo(
+    () => items.reduce((s, i) => s + i.price.high * i.qty, 0),
+    [items],
+  );
 
-  if (cart.items.length === 0) {
+  if (items.length === 0) {
     return (
       <div className="min-h-screen bg-background">
         <SiteHeader />
         <div className="mx-auto max-w-xl px-6 py-24 text-center">
-          <h1 className="text-3xl font-semibold tracking-tight">Your quote is empty</h1>
+          <h1 className="text-3xl font-semibold tracking-tight">No project yet</h1>
           <p className="mt-3 text-muted-foreground">
-            Configure a window or door to add it to your quote.
+            Design your windows first — then come back to request your exact quote.
           </p>
           <Button asChild className="mt-8 h-12 rounded-full px-8">
-            <Link to="/configure/$type" params={{ type: "window" }}>Start Configuring</Link>
+            <Link to="/configure/$type" params={{ type: "window" }}>
+              See My Window Price
+            </Link>
           </Button>
         </div>
       </div>
     );
   }
 
-  const submit = async (mode: "save" | "install" | "checkout") => {
-    const parsed = customerSchema.safeParse(form);
+  const handleContinue = () => {
+    const parsed = contactSchema.safeParse(contact);
     if (!parsed.success) {
       toast.error(parsed.error.issues[0]?.message ?? "Please fill the form");
       return;
     }
+    setContact(parsed.data);
+    setStep(2);
+    if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleSubmit = async () => {
     setLoading(true);
     try {
-      const rows = cart.items.flatMap((item) =>
+      const rows = items.flatMap((item) =>
         Array.from({ length: item.qty }).map(() => ({
           product_type: item.productType,
           configuration: item.config as never,
@@ -88,12 +131,17 @@ function QuotePage() {
           addons_price: item.price.addonsPrice,
           labor_price: item.price.laborPrice,
           total_price: item.price.total,
-          customer_name: parsed.data.name,
-          customer_phone: parsed.data.phone,
-          customer_email: parsed.data.email,
-          customer_address: parsed.data.address,
-          project_notes: parsed.data.notes || null,
-        }))
+          customer_name: `${contact.firstName} ${contact.lastName}`.trim(),
+          customer_first_name: contact.firstName,
+          customer_last_name: contact.lastName,
+          customer_phone: contact.phone,
+          customer_email: contact.email,
+          customer_city: contact.city,
+          customer_zip: contact.zip,
+          customer_address: null,
+          project_timeline: timeline,
+          project_notes: notes.trim() || null,
+        })),
       );
 
       const { data, error } = await supabase
@@ -103,16 +151,31 @@ function QuotePage() {
 
       if (error) throw error;
 
-      if (mode === "checkout") {
-        toast.success("Measurement request submitted. We'll reach out to schedule your visit.");
-      } else if (mode === "install") {
-        toast.success("Installation request submitted! We'll be in touch shortly.");
-      } else {
-        toast.success("Estimate emailed. Check your inbox shortly.");
+      const referenceId = data?.[0]?.id ?? "";
+
+      // Generate + download branded project summary PDF
+      try {
+        downloadQuotePdf(
+          {
+            referenceId,
+            customer: contact,
+            timeline,
+            notes: notes.trim() || undefined,
+            items,
+            totalLow,
+            totalHigh,
+            totalMid,
+            submittedAt: new Date(),
+          },
+          `pane-and-simple-quote-${referenceId.slice(0, 8) || "summary"}.pdf`,
+        );
+      } catch (pdfErr) {
+        console.warn("PDF generation failed", pdfErr);
       }
 
+      toast.success("Quote request received.");
       clearCart();
-      navigate({ to: "/quote/success", search: { id: data?.[0]?.id ?? "" } });
+      navigate({ to: "/quote/success", search: { id: referenceId } });
     } catch (e) {
       console.error(e);
       toast.error("Could not submit quote. Please try again.");
@@ -124,57 +187,314 @@ function QuotePage() {
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />
-      <div className="mx-auto max-w-[1200px] px-6 py-12">
-        <div className="mb-10 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
-              Your Quote
-            </div>
-            <h1 className="mt-2 text-4xl font-semibold tracking-tight">
-              {itemCount} {itemCount === 1 ? "item" : "items"}
-            </h1>
-          </div>
-          <Button asChild variant="outline" className="rounded-full">
-            <Link to="/configure/$type" params={{ type: "window" }}>
-              <Plus className="mr-1 h-4 w-4" /> Add another
-            </Link>
-          </Button>
+      <div className="mx-auto max-w-2xl px-6 py-12 sm:py-16">
+        {/* Progress */}
+        <div className="mb-10 flex items-center justify-center gap-3 text-[11px] font-medium uppercase tracking-[0.18em]">
+          <StepBadge n={1} label="Your Info" active={step === 1} done={step > 1} />
+          <div className="h-px w-10 bg-border" />
+          <StepBadge n={2} label="Review & Submit" active={step === 2} done={false} />
         </div>
 
-        <div className="grid gap-8 lg:grid-cols-[1fr_380px]">
-          <div className="space-y-4">
-            {cart.items.map((item) => (
-              <LineItem key={item.id} item={item} />
-            ))}
+        <div className="text-center">
+          <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
+            Get Your Exact Quote
+          </h1>
+          <p className="mx-auto mt-3 max-w-md text-sm text-muted-foreground sm:text-base">
+            We&apos;ll review your project, verify measurements if needed, and provide a
+            personalized quote.
+          </p>
+        </div>
 
-            <section className="mt-8 rounded-2xl border border-border bg-card p-6">
-              <h2 className="text-lg font-semibold tracking-tight">Your Information</h2>
-              <p className="mt-1 text-sm text-muted-foreground">
-                We'll use this to confirm your quote and schedule a measurement visit.
-              </p>
-              <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                <Field label="Name" id="name">
-                  <Input id="name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
-                </Field>
-                <Field label="Phone" id="phone">
-                  <Input id="phone" type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
-                </Field>
-                <Field label="Email" id="email" full>
-                  <Input id="email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
-                </Field>
-                <Field label="Project Address" id="address" full>
-                  <Input id="address" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} />
-                </Field>
-                <Field label="Project Notes (optional)" id="notes" full>
-                  <Textarea
-                    id="notes"
-                    rows={3}
-                    value={form.notes}
-                    onChange={(e) => setForm({ ...form, notes: e.target.value })}
-                  />
-                </Field>
-              </div>
-            </section>
+        {step === 1 ? (
+          <section className="mt-10 rounded-2xl border border-border bg-card p-6 sm:p-8">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field label="First Name" id="firstName">
+                <Input
+                  id="firstName"
+                  autoComplete="given-name"
+                  value={contact.firstName}
+                  onChange={(e) => setContact({ ...contact, firstName: e.target.value })}
+                />
+              </Field>
+              <Field label="Last Name" id="lastName">
+                <Input
+                  id="lastName"
+                  autoComplete="family-name"
+                  value={contact.lastName}
+                  onChange={(e) => setContact({ ...contact, lastName: e.target.value })}
+                />
+              </Field>
+              <Field label="Email Address" id="email" full>
+                <Input
+                  id="email"
+                  type="email"
+                  autoComplete="email"
+                  value={contact.email}
+                  onChange={(e) => setContact({ ...contact, email: e.target.value })}
+                />
+              </Field>
+              <Field label="Phone Number" id="phone" full>
+                <Input
+                  id="phone"
+                  type="tel"
+                  autoComplete="tel"
+                  value={contact.phone}
+                  onChange={(e) => setContact({ ...contact, phone: e.target.value })}
+                />
+              </Field>
+              <Field label="City" id="city">
+                <Input
+                  id="city"
+                  autoComplete="address-level2"
+                  value={contact.city}
+                  onChange={(e) => setContact({ ...contact, city: e.target.value })}
+                />
+              </Field>
+              <Field label="ZIP Code" id="zip">
+                <Input
+                  id="zip"
+                  inputMode="numeric"
+                  autoComplete="postal-code"
+                  maxLength={10}
+                  value={contact.zip}
+                  onChange={(e) => setContact({ ...contact, zip: e.target.value })}
+                />
+              </Field>
+            </div>
+
+            <Button
+              onClick={handleContinue}
+              className="mt-8 h-12 w-full rounded-full text-sm font-semibold"
+            >
+              Continue <ArrowRight className="ml-1.5 h-4 w-4" />
+            </Button>
+            <p className="mt-3 text-center text-[11px] text-muted-foreground">
+              Your information stays private. We only contact you about your project.
+            </p>
+          </section>
+        ) : (
+          <ReviewStep
+            contact={contact}
+            items={items}
+            itemCount={itemCount}
+            totalLow={totalLow}
+            totalHigh={totalHigh}
+            totalMid={totalMid}
+            timeline={timeline}
+            setTimeline={setTimeline}
+            notes={notes}
+            setNotes={setNotes}
+            onBack={() => setStep(1)}
+            onSubmit={handleSubmit}
+            loading={loading}
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+
+function StepBadge({ n, label, active, done }: { n: number; label: string; active: boolean; done: boolean }) {
+  return (
+    <div className="flex items-center gap-2">
+      <span
+        className={cn(
+          "flex h-6 w-6 items-center justify-center rounded-full border text-[11px] font-semibold",
+          done && "border-emerald-600 bg-emerald-600 text-background",
+          active && "border-foreground bg-foreground text-background",
+          !active && !done && "border-border text-muted-foreground",
+        )}
+      >
+        {done ? <CheckCircle2 className="h-3.5 w-3.5" /> : n}
+      </span>
+      <span className={cn(active ? "text-foreground" : "text-muted-foreground")}>{label}</span>
+    </div>
+  );
+}
+
+function ReviewStep(props: {
+  contact: Contact;
+  items: CartItem[];
+  itemCount: number;
+  totalLow: number;
+  totalHigh: number;
+  totalMid: number;
+  timeline: Timeline;
+  setTimeline: (t: Timeline) => void;
+  notes: string;
+  setNotes: (s: string) => void;
+  onBack: () => void;
+  onSubmit: () => void;
+  loading: boolean;
+}) {
+  const { items, itemCount, totalLow, totalHigh, totalMid } = props;
+
+  const productLines = uniqStrings(
+    items.map((i) => (i.config as { productLine?: string }).productLine),
+  );
+  const glassTypes = uniqStrings(
+    items.map((i) => (i.config as { glassType?: string }).glassType),
+  );
+
+  return (
+    <div className="mt-10 space-y-6">
+      {/* Project Summary Card */}
+      <section className="overflow-hidden rounded-2xl border border-border bg-card">
+        <div className="border-b border-border px-6 py-4">
+          <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+            Your Project
+          </div>
+          <div className="mt-1 text-lg font-semibold tracking-tight">
+            {itemCount} {itemCount === 1 ? "Window" : "Windows"}
+          </div>
+        </div>
+
+        <dl className="divide-y divide-border">
+          <SummaryRow label="Total Windows" value={String(itemCount)} />
+          <SummaryRow
+            label="Estimated Project Total"
+            value={`${formatUSD(totalLow)} – ${formatUSD(totalHigh)}`}
+            sub={`Midpoint ${formatUSD(totalMid)}`}
+          />
+          <SummaryRow label="Product Lines" value={productLines.join(", ") || "—"} />
+          <SummaryRow label="Glass Types" value={glassTypes.join(", ") || "—"} />
+          <SummaryRow
+            label="Installation"
+            value="Included"
+            icon={<Hammer className="h-3.5 w-3.5 text-emerald-600" />}
+          />
+          <SummaryRow
+            label="Measurement Verification"
+            value="Included"
+            icon={<Ruler className="h-3.5 w-3.5 text-emerald-600" />}
+          />
+        </dl>
+      </section>
+
+      {/* Timeline */}
+      <section className="rounded-2xl border border-border bg-card p-6">
+        <h2 className="text-base font-semibold tracking-tight">What&apos;s Your Timeline?</h2>
+        <p className="mt-1 text-xs text-muted-foreground">
+          Helps us prioritize and prepare the right resources.
+        </p>
+        <div className="mt-4 grid gap-2 sm:grid-cols-2">
+          {TIMELINES.map((t) => {
+            const selected = props.timeline === t;
+            return (
+              <button
+                key={t}
+                type="button"
+                onClick={() => props.setTimeline(t)}
+                className={cn(
+                  "flex items-center justify-between rounded-xl border px-4 py-3 text-left text-sm transition",
+                  selected
+                    ? "border-foreground bg-foreground/5 font-medium"
+                    : "border-border hover:border-foreground/40",
+                )}
+              >
+                <span>{t}</span>
+                {selected && <CheckCircle2 className="h-4 w-4 text-emerald-600" />}
+              </button>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* Notes */}
+      <section className="rounded-2xl border border-border bg-card p-6">
+        <Label htmlFor="notes" className="text-sm font-semibold tracking-tight">
+          Optional Notes
+        </Label>
+        <Textarea
+          id="notes"
+          rows={4}
+          className="mt-3"
+          placeholder="Tell us anything you'd like us to know about your project."
+          value={props.notes}
+          onChange={(e) => props.setNotes(e.target.value.slice(0, 1000))}
+        />
+      </section>
+
+      {/* Trust */}
+      <section className="overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-card to-muted/30 p-6">
+        <div className="flex items-center gap-2">
+          <Shield className="h-4 w-4 text-foreground/80" />
+          <h2 className="text-sm font-semibold tracking-tight">
+            Why Homeowners Choose Pane &amp; Simple
+          </h2>
+        </div>
+        <ul className="mt-4 grid gap-2.5 text-[13px] sm:grid-cols-2">
+          {[
+            { icon: <Eye className="h-3.5 w-3.5" />, text: "Transparent online pricing" },
+            { icon: <Sparkles className="h-3.5 w-3.5" />, text: "No high-pressure sales presentations" },
+            { icon: <Ruler className="h-3.5 w-3.5" />, text: "Professional measurement verification" },
+            { icon: <Hammer className="h-3.5 w-3.5" />, text: "Installation available" },
+            { icon: <Mountain className="h-3.5 w-3.5" />, text: "Built for Utah weather" },
+          ].map((t) => (
+            <li key={t.text} className="flex items-start gap-2">
+              <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-emerald-600" />
+              <span className="text-foreground/85">{t.text}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <div className="space-y-3">
+        <Button
+          onClick={props.onSubmit}
+          disabled={props.loading}
+          className="h-12 w-full rounded-full text-sm font-semibold shadow-[var(--shadow-elegant)]"
+        >
+          {props.loading ? "Submitting…" : "Request My Exact Quote"}
+          {!props.loading && <ArrowRight className="ml-1.5 h-4 w-4" />}
+        </Button>
+        <button
+          type="button"
+          onClick={props.onBack}
+          className="flex w-full items-center justify-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+        >
+          <ArrowLeft className="h-3 w-3" /> Edit my information
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function SummaryRow({
+  label, value, sub, icon,
+}: { label: string; value: string; sub?: string; icon?: React.ReactNode }) {
+  return (
+    <div className="flex items-start justify-between gap-4 px-6 py-3.5">
+      <dt className="text-sm text-muted-foreground">{label}</dt>
+      <dd className="text-right">
+        <div className="flex items-center justify-end gap-1.5 text-sm font-medium">
+          {icon}
+          <span>{value}</span>
+        </div>
+        {sub && <div className="mt-0.5 text-[11px] text-muted-foreground">{sub}</div>}
+      </dd>
+    </div>
+  );
+}
+
+function uniqStrings(arr: (string | undefined)[]): string[] {
+  return Array.from(new Set(arr.filter((v): v is string => Boolean(v))));
+}
+
+function Field({
+  label, id, full, children,
+}: { label: string; id: string; full?: boolean; children: React.ReactNode }) {
+  return (
+    <div className={full ? "sm:col-span-2" : ""}>
+      <Label htmlFor={id} className="mb-1.5 text-xs text-muted-foreground">
+        {label}
+      </Label>
+      {children}
+    </div>
+  );
+}
+
+/* legacy exports retained intentionally removed */
           </div>
 
           <aside className="lg:sticky lg:top-20 lg:self-start">
