@@ -196,50 +196,50 @@ Estimated payments from approximately:{" "}
         </div>
 
         {/* 6. Action Buttons */}
-        <div className="border-t border-border px-6 py-5">
-          {typeof completeness === "number" && (
-            <div className="mb-4">
-              <div className="mb-1.5 flex items-center justify-between text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
-                <span>Project Completeness</span>
-                <span className="tabular-nums text-foreground/80">
-                  {Math.round(completeness * 100)}%
-                </span>
-              </div>
-              <Progress value={completeness * 100} className="h-1.5" />
-            </div>
-          )}
-          <div className="space-y-2">
-            <Button
-              className="h-12 w-full rounded-full text-sm font-semibold"
-              disabled={!canAdd}
-              onClick={() => handleAdd(false)}
-            >
-              <Plus className="mr-1 h-4 w-4" /> {addLabel}
-            </Button>
-            <p className="mt-2 text-center text-[11px] text-muted-foreground">
-              {!valid
-                ? "Complete your selections and dimensions to continue."
-                : !locationValid
-                  ? "Add a room or location to continue."
-                  : "Building a multi-window project? Add each window to your quote."}
-            </p>
-            <Button
-              variant="outline"
-              className="mt-3 h-11 w-full rounded-full text-sm font-medium"
-              disabled={!canAdd}
-              onClick={() => handleAdd(true)}
-            >
-              Review Project &amp; Schedule Measurment <ArrowRight className="ml-1 h-4 w-4" />
-            </Button>
-          </div>
-          <p className="mt-3 flex items-center justify-center gap-1 text-center text-[11px] text-muted-foreground">
-            <ShieldCheck className="h-3 w-3" /> Final price confirmed after on-site measurement.
-            <p className="mt-1 text-center text-[11px] text-muted-foreground">
-  Most projects can be measured within 3–7 days.
-</p>
-          </p>
-        </div>
+        {/* 6. Action Buttons */}
+<div className="border-t border-border px-6 py-5">
+  {typeof completeness === "number" && (
+    <div className="mb-4">
+      <div className="mb-1.5 flex items-center justify-between text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+        <span>Project Completeness</span>
+        <span className="tabular-nums text-foreground/80">
+          {Math.round(completeness * 100)}%
+        </span>
       </div>
+      <Progress value={completeness * 100} className="h-1.5" />
+    </div>
+  )}
+  <div className="space-y-2">
+    <Button
+      className="h-12 w-full rounded-full text-sm font-semibold"
+      disabled={!canAdd}
+      onClick={() => handleAdd(false)}
+    >
+      <Plus className="mr-1 h-4 w-4" /> {addLabel}
+    </Button>
+    <p className="mt-2 text-center text-[11px] text-muted-foreground">
+      {!valid
+        ? "Complete your selections and dimensions to continue."
+        : !locationValid
+          ? "Add a room or location to continue."
+          : "Building a multi-window project? Add each window to your quote."}
+    </p>
+    <Button
+      variant="outline"
+      className="mt-3 h-11 w-full rounded-full text-sm font-medium"
+      disabled={!canAdd}
+      onClick={() => handleAdd(true)}
+    >
+      Review Project &amp; Schedule Measurement <ArrowRight className="ml-1 h-4 w-4" />
+    </Button>
+  </div>
+  <div className="mt-3 flex flex-col items-center gap-1 text-center text-[11px] text-muted-foreground">
+    <p className="flex items-center gap-1">
+      <ShieldCheck className="h-3 w-3" /> Final price confirmed after on-site measurement.
+    </p>
+    <p>Most projects can be measured within 3–7 days.</p>
+  </div>
+</div>
     </aside>
   );
 }
