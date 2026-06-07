@@ -234,6 +234,9 @@ Estimated payments from approximately:{" "}
           </div>
           <p className="mt-3 flex items-center justify-center gap-1 text-center text-[11px] text-muted-foreground">
             <ShieldCheck className="h-3 w-3" /> Final price confirmed after on-site measurement.
+            <p className="mt-1 text-center text-[11px] text-muted-foreground">
+  Most projects can be measured within 3–7 days.
+</p>
           </p>
         </div>
       </div>
