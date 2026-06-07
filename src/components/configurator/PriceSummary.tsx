@@ -72,7 +72,7 @@ export function PriceSummary({ productType, config, price, valid, completeness, 
         {/* 1. Estimated Price */}
         <div className="px-6 py-6">
           <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
-            Estimated Starting Price
+            Estimated Installed Price Range
           </div>
           <div className="mt-2 flex items-baseline gap-2 flex-wrap">
             {valid ? (
