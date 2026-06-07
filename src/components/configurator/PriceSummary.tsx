@@ -195,7 +195,7 @@ Estimated payments from approximately:{" "}
           </ol>
         </div>
 
-        {/* 6. Action Buttons */}
+        
         {/* 6. Action Buttons */}
 <div className="border-t border-border px-6 py-5">
   {typeof completeness === "number" && (
@@ -240,6 +240,7 @@ Estimated payments from approximately:{" "}
     <p>Most projects can be measured within 3–7 days.</p>
   </div>
 </div>
+      </div>
     </aside>
   );
 }
