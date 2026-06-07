@@ -51,12 +51,12 @@ export function PriceSummary({ productType, config, price, valid, completeness, 
   };
 
   const trustItems: { t: string; emph?: boolean }[] = [
-    { t: "Product included" },
-    { t: "Professional installation included" },
-    { t: "Measurement verification included" },
-    { t: "Workmanship warranty" },
-    { t: "No in-home sales presentation", emph: true },
-  ];
+{ t: "Professional installation included" },
+  { t: "Measurement verification included" },
+  { t: "Workmanship warranty" },
+  { t: "Built for Utah weather" },
+  { t: "No in-home sales presentation", emph: true },
+];
 
   const nextSteps = [
     "Add all windows in your project",
