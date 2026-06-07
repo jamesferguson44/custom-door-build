@@ -27,7 +27,7 @@ export function SiteHeader() {
           >
             Configure
           </Link>
-          <NavItem to="/admin">Admin</NavItem>
+          {/* <NavItem to="/admin">Admin</NavItem> */}
           <Link
             to="/quote"
             className="ml-1 inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-muted-foreground transition hover:border-foreground hover:text-foreground"
