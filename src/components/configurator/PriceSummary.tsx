@@ -120,7 +120,8 @@ export function PriceSummary({ productType, config, price, valid, completeness, 
               Financing
             </div>
             <div className="mt-1 text-sm">
-              Estimated payment:{" "}
+              Financing Available
+Estimated payments from approximately:{" "}
               <span className="font-semibold tabular-nums">{formatUSD(monthly)}</span>
               /mo
             </div>
