@@ -260,9 +260,6 @@ function StepSection({
             {complete && <Check className="h-3 w-3 text-emerald-600" />}
             Step {String(step).padStart(2, "0")}
             {active && (
-              <span className="ml-1 rounded-full bg-foreground px-1.5 py-px text-[9px] tracking-wider text-background">
-                NOW
-              </span>
             )}
           </span>
           <div className="mt-1 flex items-center gap-2">
