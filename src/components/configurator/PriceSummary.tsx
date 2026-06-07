@@ -229,7 +229,7 @@ Estimated payments from approximately:{" "}
               disabled={!canAdd}
               onClick={() => handleAdd(true)}
             >
-              Review Project &amp; Get Final Quote <ArrowRight className="ml-1 h-4 w-4" />
+              Review Project &amp; Schedule Measurment <ArrowRight className="ml-1 h-4 w-4" />
             </Button>
           </div>
           <p className="mt-3 flex items-center justify-center gap-1 text-center text-[11px] text-muted-foreground">
