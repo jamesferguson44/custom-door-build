@@ -139,34 +139,6 @@ function Home() {
         </div>
       </section>
 
-      {/* Trust */}
-      <section className="border-t border-border">
-        <div className="mx-auto max-w-[1400px] px-6 py-16">
-          <div className="mb-10 text-center">
-            <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-              Built around accuracy and craftsmanship.
-            </h2>
-            <p className="mx-auto mt-3 max-w-2xl text-sm text-muted-foreground">
-              We focus on accurate pricing, verified measurements, and professional installation so there are no surprises when your project moves forward.
-            </p>
-          </div>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
-            {[
-              "Measurements verified before production",
-              "Installed by experienced professionals",
-              "Final fit guarantee",
-              "Workmanship warranty included",
-              "Transparent pricing from day one",
-            ].map((t) => (
-              <div key={t} className="flex items-start gap-3 rounded-xl border border-border bg-card p-5">
-                <CheckCircle2 className="mt-0.5 h-5 w-5 text-foreground" />
-                <span className="text-sm">{t}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Starter templates */}
       <section id="templates" className="border-t border-border bg-muted/30">
         <div className="mx-auto max-w-[1400px] px-6 py-20">
