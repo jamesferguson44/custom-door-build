@@ -88,39 +88,6 @@ function Home() {
         </div>
       </section>
 
-      {/* Why homeowners choose us */}
-      <section className="mx-auto max-w-[1400px] px-6 py-20">
-        <div className="mb-12 text-center">
-          <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
-            A Better Way
-          </div>
-          <h2 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
-            Why Homeowners Prefer This Process
-          </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-sm text-muted-foreground sm:text-base">
-            Most window companies require phone calls, in-home sales presentations, and high-pressure quotes. Pane &amp; Simple lets homeowners explore options and see pricing online before committing to anything.
-          </p>
-        </div>
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {[
-            { icon: <DollarSign className="h-5 w-5" />, title: "Transparent Pricing", body: "See pricing as you build." },
-            { icon: <Eye className="h-5 w-5" />, title: "No Sales Presentations", body: "No pressure, no lengthy appointments." },
-            { icon: <Ruler className="h-5 w-5" />, title: "Verified Measurements", body: "Every opening is professionally verified before ordering." },
-            { icon: <Hammer className="h-5 w-5" />, title: "Professional Installation", body: "Experienced installers handle the entire project." },
-            { icon: <Award className="h-5 w-5" />, title: "Workmanship Warranty", body: "Installation backed by our workmanship guarantee." },
-            { icon: <Mountain className="h-5 w-5" />, title: "Built For Utah Homes", body: "Products selected for Utah weather and efficiency." },
-          ].map((f) => (
-            <div key={f.title} className="rounded-2xl border border-border bg-card p-6">
-              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-full border border-border bg-background">
-                {f.icon}
-              </div>
-              <h3 className="text-base font-semibold tracking-tight">{f.title}</h3>
-              <p className="mt-1.5 text-sm text-muted-foreground">{f.body}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
       {/* How it works */}
       <section id="how-it-works" className="border-t border-border bg-muted/30">
         <div className="mx-auto max-w-[1400px] px-6 py-20">
