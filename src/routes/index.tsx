@@ -293,7 +293,7 @@ function Home() {
       </section>
 
       {/* Customer Projects placeholder */}
-      <section className="border-t border-border">
+      {false && <section className="border-t border-border">
         <div className="mx-auto max-w-[1400px] px-6 py-20">
           <div className="mb-10 text-center">
             <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
