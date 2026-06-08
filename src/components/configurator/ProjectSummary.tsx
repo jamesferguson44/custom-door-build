@@ -179,7 +179,7 @@ function TrustCard() {
     "No in-home sales presentation",
     "Professional measurement verification",
     "Energy-efficient products",
-    "Installation available",
+    "Professional installation included",
     "Built for Utah weather",
   ];
   return (
