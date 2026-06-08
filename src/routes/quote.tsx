@@ -428,7 +428,7 @@ function ReviewStep(props: {
             { icon: <Eye className="h-3.5 w-3.5" />, text: "Transparent online pricing" },
             { icon: <Sparkles className="h-3.5 w-3.5" />, text: "No high-pressure sales presentations" },
             { icon: <Ruler className="h-3.5 w-3.5" />, text: "Professional measurement verification" },
-            { icon: <Hammer className="h-3.5 w-3.5" />, text: "Installation available" },
+            { icon: <Hammer className="h-3.5 w-3.5" />, text: "Professional installation included" },
             { icon: <Mountain className="h-3.5 w-3.5" />, text: "Built for Utah weather" },
           ].map((t) => (
             <li key={t.text} className="flex items-start gap-2">
