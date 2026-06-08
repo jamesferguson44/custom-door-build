@@ -333,7 +333,7 @@ function Home() {
             ))}
           </div>
         </div>
-      </section>
+      </section>}
 
       {/* Final CTA */}
       <section className="border-t border-border bg-muted/30">
