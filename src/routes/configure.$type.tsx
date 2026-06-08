@@ -259,8 +259,6 @@ function StepSection({
           <span className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground tabular-nums">
             {complete && <Check className="h-3 w-3 text-emerald-600" />}
             Step {String(step).padStart(2, "0")}
-            {active && (
-            )}
           </span>
           <div className="mt-1 flex items-center gap-2">
             {complete && <Check className="h-4 w-4 text-emerald-600 flex-shrink-0" />}
