@@ -5,23 +5,6 @@ import type {
   WindowConfig,
 } from "@/lib/pricing";
 import { productLabel } from "@/lib/pricing";
-import windowPicture from "@/assets/window-picture.jpg";
-import windowSingleHung from "@/assets/window-single-hung.jpg";
-import windowDoubleHung from "@/assets/window-double-hung.jpg";
-import windowSlider from "@/assets/window-slider.jpg";
-import windowCasement from "@/assets/window-casement.jpg";
-import windowAwning from "@/assets/window-awning.jpg";
-import windowSpecialty from "@/assets/window-specialty.jpg";
-
-const WINDOW_STYLE_IMAGE: Record<WindowConfig["windowStyle"], string> = {
-  Picture: windowPicture,
-  "Single Hung": windowSingleHung,
-  "Double Hung": windowDoubleHung,
-  Slider: windowSlider,
-  Casement: windowCasement,
-  Awning: windowAwning,
-  Specialty: windowSpecialty,
-};
 
 type Props = {
   productType: ProductType;
@@ -45,30 +28,17 @@ export function ProductPreview({ productType, config }: Props) {
       </div>
       <div className="flex aspect-[4/3] items-center justify-center p-6">
         {productType === "window" ? (
-          <WindowStylePreview config={config as WindowConfig} />
+          <WindowPreview config={config as WindowConfig} />
         ) : (
           <DoorPreview config={config as DoorConfig} isSliding={productType === "sliding_door"} />
         )}
       </div>
       <div className="border-t border-border bg-card/50 px-5 py-3 text-[11px] text-muted-foreground">
-        {productLabel(productType)} · live preview updates with your selections
+        {productType === "window"
+          ? `${(config as WindowConfig).windowStyle} · ${(config as WindowConfig).color} · ${(config as WindowConfig).glassType} · ${(config as WindowConfig).gridStyle === "None" ? "No grids" : `${(config as WindowConfig).gridStyle} grids`}`
+          : `${productLabel(productType)} · live preview updates with your selections`}
       </div>
     </div>
-  );
-}
-
-function WindowStylePreview({ config }: { config: WindowConfig }) {
-  const src = WINDOW_STYLE_IMAGE[config.windowStyle];
-  return (
-    <img
-      key={config.windowStyle}
-      src={src}
-      alt={`${config.windowStyle} window preview`}
-      width={768}
-      height={576}
-      loading="lazy"
-      className="h-full w-full object-contain animate-in fade-in zoom-in-95 duration-300"
-    />
   );
 }
 
@@ -176,6 +146,29 @@ function WindowPreview({ config }: { config: WindowConfig }) {
       {/* Glass shine */}
       <rect x={gx} y={gy} width={gw} height={gh} fill="url(#shine)" />
 
+      {/* Style-specific sash overlays */}
+      <StyleOverlay
+        style={config.windowStyle}
+        x={gx}
+        y={gy}
+        w={gw}
+        h={gh}
+        frameColor={frameColor}
+        frameStroke={frameStroke}
+      />
+
+      {/* Extra sheen for Low-E / Triple Pane */}
+      {config.glassType !== "Standard" && (
+        <rect
+          x={gx}
+          y={gy}
+          width={gw}
+          height={gh}
+          fill={config.glassType === "Triple Pane" ? "#3a6b8a" : "#5a9e8a"}
+          opacity={0.08}
+        />
+      )}
+
       {/* Grid overlay */}
       <GridOverlay
         style={config.gridStyle}
@@ -188,6 +181,66 @@ function WindowPreview({ config }: { config: WindowConfig }) {
       />
     </svg>
   );
+}
+
+function StyleOverlay({
+  style,
+  x,
+  y,
+  w,
+  h,
+  frameColor,
+  frameStroke,
+}: {
+  style: WindowConfig["windowStyle"];
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  frameColor: string;
+  frameStroke: string;
+}) {
+  const t = 4;
+  if (style === "Picture" || style === "Specialty") return null;
+  if (style === "Single Hung" || style === "Double Hung") {
+    // Horizontal sash bar in the middle
+    const my = y + h / 2 - t / 2;
+    return (
+      <g>
+        <rect x={x} y={my} width={w} height={t} fill={frameColor} stroke={frameStroke} strokeWidth={0.5} />
+        {/* Small lift indicator */}
+        <rect x={x + w / 2 - 8} y={my + t + 2} width={16} height={2} rx={1} fill={frameStroke} opacity={0.5} />
+      </g>
+    );
+  }
+  if (style === "Slider") {
+    // Vertical sash bar in the middle
+    const mx = x + w / 2 - t / 2;
+    return (
+      <g>
+        <rect x={mx} y={y} width={t} height={h} fill={frameColor} stroke={frameStroke} strokeWidth={0.5} />
+      </g>
+    );
+  }
+  if (style === "Casement") {
+    // Side-hinge crank indicator (diagonal lines from hinge)
+    return (
+      <g stroke={frameStroke} strokeWidth={0.8} opacity={0.5} fill="none">
+        <line x1={x} y1={y} x2={x + w} y2={y + h / 2} />
+        <line x1={x} y1={y + h} x2={x + w} y2={y + h / 2} />
+      </g>
+    );
+  }
+  if (style === "Awning") {
+    // Top-hinge open indicator
+    return (
+      <g stroke={frameStroke} strokeWidth={0.8} opacity={0.5} fill="none">
+        <line x1={x} y1={y} x2={x + w / 2} y2={y + h} />
+        <line x1={x + w} y1={y} x2={x + w / 2} y2={y + h} />
+      </g>
+    );
+  }
+  return null;
 }
 
 function GridOverlay({
@@ -208,18 +261,20 @@ function GridOverlay({
   stroke: string;
 }) {
   if (style === "None") return null;
-  const t = 3; // grid bar thickness
+  const t = 2.5; // grid bar thickness
 
   if (style === "Colonial") {
-    // 2x3 grid -> 1 vertical, 2 horizontal
-    const vx = x + w / 2 - t / 2;
-    const h1y = y + h / 3 - t / 2;
-    const h2y = y + (2 * h) / 3 - t / 2;
+    // Standard divided lite: 3 cols x 3 rows (2 vertical + 2 horizontal bars)
+    const v1 = x + w / 3 - t / 2;
+    const v2 = x + (2 * w) / 3 - t / 2;
+    const h1 = y + h / 3 - t / 2;
+    const h2 = y + (2 * h) / 3 - t / 2;
     return (
       <g>
-        <rect x={vx} y={y} width={t} height={h} fill={color} stroke={stroke} strokeWidth={0.5} />
-        <rect x={x} y={h1y} width={w} height={t} fill={color} stroke={stroke} strokeWidth={0.5} />
-        <rect x={x} y={h2y} width={w} height={t} fill={color} stroke={stroke} strokeWidth={0.5} />
+        <rect x={v1} y={y} width={t} height={h} fill={color} stroke={stroke} strokeWidth={0.5} />
+        <rect x={v2} y={y} width={t} height={h} fill={color} stroke={stroke} strokeWidth={0.5} />
+        <rect x={x} y={h1} width={w} height={t} fill={color} stroke={stroke} strokeWidth={0.5} />
+        <rect x={x} y={h2} width={w} height={t} fill={color} stroke={stroke} strokeWidth={0.5} />
       </g>
     );
   }

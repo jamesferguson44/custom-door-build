@@ -259,8 +259,6 @@ function StepSection({
           <span className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground tabular-nums">
             {complete && <Check className="h-3 w-3 text-emerald-600" />}
             Step {String(step).padStart(2, "0")}
-            {active && (
-            )}
           </span>
           <div className="mt-1 flex items-center gap-2">
             {complete && <Check className="h-4 w-4 text-emerald-600 flex-shrink-0" />}
@@ -337,6 +335,14 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
     5: valid,
   };
   const activeStep = [1, 2, 3, 4, 5].find((n) => !stepDone[n]) ?? 0;
+  // Weight measurements heavily: each of steps 1–4 = 15% (max 60% without dims),
+  // step 5 (valid dimensions) = 40% to reach 100%.
+  const completeness =
+    (stepDone[1] ? 0.15 : 0) +
+    (stepDone[2] ? 0.15 : 0) +
+    (stepDone[3] ? 0.15 : 0) +
+    (stepDone[4] ? 0.15 : 0) +
+    (stepDone[5] ? 0.4 : 0);
 
   return (
     <Shell productType={productType}>
@@ -473,9 +479,11 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
         </StepSection>
 
       </div>
-      <div className="space-y-6 lg:sticky lg:top-20">
-        <ProductPreview productType={productType} config={config} />
-        <div className="rounded-2xl border border-border bg-card px-5 py-4">
+      <div className="flex flex-col gap-6 lg:block lg:space-y-6">
+        <div className="order-1 lg:sticky lg:top-20 lg:z-10">
+          <ProductPreview productType={productType} config={config} />
+        </div>
+        <div className="order-3 rounded-2xl border border-border bg-card px-5 py-4 lg:order-none">
           <ul className="space-y-1.5 text-[13px]">
             {[
               "Built to your exact opening",
@@ -491,19 +499,21 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
           </ul>
         </div>
         <CurrentConfigCard config={config} valid={valid} price={price} />
-        <div className="flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
+        <div className="order-last flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground lg:order-none">
           <Save className="h-3 w-3" /> Project automatically saved.
         </div>
+        <div className="order-2 lg:order-none">
         <PriceSummary
           productType={productType}
           config={config}
           price={price}
           valid={valid}
-          completeness={Object.values(stepDone).filter(Boolean).length / 5}
+          completeness={completeness}
           onAddedToProject={() =>
             setConfig({ ...config, width: 0, height: 0 })
           }
         />
+        </div>
         <ProjectSummary />
       </div>
     </Shell>
