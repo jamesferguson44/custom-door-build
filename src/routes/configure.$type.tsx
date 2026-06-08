@@ -479,7 +479,7 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
         </StepSection>
 
       </div>
-      <div className="space-y-6">
+      <div className="flex flex-col gap-6 lg:block lg:space-y-6">
         <div className="order-1 lg:sticky lg:top-20 lg:z-10">
           <ProductPreview productType={productType} config={config} />
         </div>
