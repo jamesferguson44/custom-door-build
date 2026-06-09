@@ -144,7 +144,7 @@ function Home() {
         <div className="mx-auto max-w-[1400px] px-6 py-20">
         <div className="mb-10 text-center">
           <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
-            Starter Templates
+            WHERE TO START
           </div>
           <h2 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
             Popular Starting Points
@@ -225,8 +225,15 @@ function Home() {
               </div>
             ))}
           </div>
-          <p className="mx-auto mt-8 max-w-2xl text-center text-xs text-muted-foreground">
-            Final pricing depends on size, product line, installation requirements, and project scope. Use the configurator for personalized pricing.
+          <div className="mx-auto mt-8 flex justify-center">
+            <Button asChild size="lg" className="h-12 rounded-full px-8 text-sm font-semibold">
+              <Link to="/configure/$type" params={{ type: "window" }}>
+                Build My Custom Quote
+              </Link>
+            </Button>
+          </div>
+          <p className="mx-auto mt-6 max-w-2xl text-center text-xs text-muted-foreground">
+            Final pricing depends on size, product line, installation requirements, and project scope.
           </p>
         </div>
       </section>
@@ -298,6 +305,25 @@ function Home() {
               }}
             >
               How It Works
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Have Questions? */}
+      <section className="border-t border-border bg-muted/30">
+        <div className="mx-auto max-w-[1400px] px-6 py-20 text-center">
+          <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+            Still have questions?
+          </h2>
+          <p className="mx-auto mt-3 max-w-xl text-sm text-muted-foreground">
+            We&apos;re happy to talk through your project. No pressure, no sales pitch — just answers.
+          </p>
+          <div className="mt-6 flex justify-center">
+            <Button asChild size="lg" variant="outline" className="h-12 rounded-full px-8 text-sm font-semibold">
+              <Link to="#">
+                Schedule a Quick Call
+              </Link>
             </Button>
           </div>
         </div>
