@@ -144,7 +144,7 @@ function Home() {
         <div className="mx-auto max-w-[1400px] px-6 py-20">
         <div className="mb-10 text-center">
           <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
-            Starter Templates
+            WHERE TO START
           </div>
           <h2 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
             Popular Starting Points
