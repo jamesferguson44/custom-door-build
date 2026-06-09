@@ -225,8 +225,15 @@ function Home() {
               </div>
             ))}
           </div>
-          <p className="mx-auto mt-8 max-w-2xl text-center text-xs text-muted-foreground">
-            Final pricing depends on size, product line, installation requirements, and project scope. Use the configurator for personalized pricing.
+          <div className="mx-auto mt-8 flex justify-center">
+            <Button asChild size="lg" className="h-12 rounded-full px-8 text-sm font-semibold">
+              <Link to="/configure/$type" params={{ type: "window" }}>
+                Build My Custom Quote
+              </Link>
+            </Button>
+          </div>
+          <p className="mx-auto mt-6 max-w-2xl text-center text-xs text-muted-foreground">
+            Final pricing depends on size, product line, installation requirements, and project scope.
           </p>
         </div>
       </section>
