@@ -310,6 +310,25 @@ function Home() {
         </div>
       </section>
 
+      {/* Have Questions? */}
+      <section className="border-t border-border bg-muted/30">
+        <div className="mx-auto max-w-[1400px] px-6 py-20 text-center">
+          <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+            Still have questions?
+          </h2>
+          <p className="mx-auto mt-3 max-w-xl text-sm text-muted-foreground">
+            We&apos;re happy to talk through your project. No pressure, no sales pitch — just answers.
+          </p>
+          <div className="mt-6 flex justify-center">
+            <Button asChild size="lg" variant="outline" className="h-12 rounded-full px-8 text-sm font-semibold">
+              <Link to="#">
+                Schedule a Quick Call
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
       <footer className="border-t border-border py-8 text-center text-xs text-muted-foreground">
         © {new Date().getFullYear()} Pane &amp; Simple
       </footer>
