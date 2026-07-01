@@ -1,13 +1,10 @@
 import type { PriceBreakdown, ProductType, AnyConfig } from "@/lib/pricing";
 import { formatUSD, productLabel } from "@/lib/pricing";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useNavigate } from "@tanstack/react-router";
 import { addToCart, loadCart } from "@/lib/quote-storage";
 import { ArrowRight, Plus, ShieldCheck, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
-import { useState } from "react";
 import { Progress } from "@/components/ui/progress";
 
 type Props = {
@@ -16,13 +13,13 @@ type Props = {
   price: PriceBreakdown;
   valid: boolean;
   completeness?: number;
+  location: string;
+  locationValid: boolean;
   onAddedToProject?: () => void;
 };
 
-export function PriceSummary({ productType, config, price, valid, completeness, onAddedToProject }: Props) {
+export function PriceSummary({ productType, config, price, valid, completeness, location, locationValid, onAddedToProject }: Props) {
   const navigate = useNavigate();
-  const [location, setLocation] = useState("");
-  const locationValid = location.trim().length > 0;
   const canAdd = valid && locationValid;
   const windowStyle =
     productType === "window"
