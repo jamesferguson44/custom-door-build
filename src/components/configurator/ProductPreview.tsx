@@ -172,6 +172,7 @@ function WindowPreview({ config }: { config: WindowConfig }) {
       {/* Grid overlay */}
       <GridOverlay
         style={config.gridStyle}
+        windowStyle={config.windowStyle}
         x={gx}
         y={gy}
         w={gw}
