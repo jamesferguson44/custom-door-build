@@ -23,11 +23,12 @@ import heroWindow from "@/assets/hero-window.jpg";
 import heroDoor from "@/assets/hero-door.jpg";
 import heroSliding from "@/assets/hero-sliding.jpg";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Check, Save, Info, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const STEP_LABELS = ["Style", "Product Line", "Glass", "Style & Color", "Measurements"];
+const STEP_LABELS = ["Style", "Product Line", "Glass", "Style & Color", "Measurements", "Location"];
 
 const WINDOW_STYLE_DESC: Record<string, string> = {
   "Single Hung": "Traditional and affordable",
@@ -144,6 +145,18 @@ const TAGLINE: Record<ProductType, string> = {
   sliding_door: "Bring the outdoors in with smooth-glide patio doors.",
 };
 
+const HERO_EYEBROW: Record<ProductType, string> = {
+  window: "Online Window Configurator · Instant Pricing",
+  door: "Online Door Configurator · Instant Pricing",
+  sliding_door: "Online Patio Door Configurator · Instant Pricing",
+};
+
+const HERO_TITLE: Record<ProductType, string> = {
+  window: "Build Your Replacement Windows",
+  door: "Configure Your Replacement Door",
+  sliding_door: "Configure Your Sliding Patio Door",
+};
+
 export const Route = createFileRoute("/configure/$type")({
   beforeLoad: ({ params }) => {
     if (!VALID_TYPES.includes(params.type as ProductType)) throw notFound();
@@ -193,10 +206,10 @@ function Hero({ productType }: { productType: ProductType }) {
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
-                Configurator
+                {HERO_EYEBROW[productType]}
               </div>
               <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-5xl">
-                {productLabel(productType)}
+                {HERO_TITLE[productType]}
               </h1>
               <p className="mt-2 max-w-xl text-sm text-muted-foreground sm:text-base">
                 {TAGLINE[productType]}
