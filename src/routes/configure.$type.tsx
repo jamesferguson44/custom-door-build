@@ -23,11 +23,12 @@ import heroWindow from "@/assets/hero-window.jpg";
 import heroDoor from "@/assets/hero-door.jpg";
 import heroSliding from "@/assets/hero-sliding.jpg";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Check, Save, Info, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const STEP_LABELS = ["Style", "Product Line", "Glass", "Style & Color", "Measurements"];
+const STEP_LABELS = ["Style", "Product Line", "Glass", "Style & Color", "Measurements", "Location"];
 
 const WINDOW_STYLE_DESC: Record<string, string> = {
   "Single Hung": "Traditional and affordable",
@@ -144,6 +145,18 @@ const TAGLINE: Record<ProductType, string> = {
   sliding_door: "Bring the outdoors in with smooth-glide patio doors.",
 };
 
+const HERO_EYEBROW: Record<ProductType, string> = {
+  window: "Online Window Configurator · Instant Pricing",
+  door: "Online Door Configurator · Instant Pricing",
+  sliding_door: "Online Patio Door Configurator · Instant Pricing",
+};
+
+const HERO_TITLE: Record<ProductType, string> = {
+  window: "Build Your Replacement Windows",
+  door: "Configure Your Replacement Door",
+  sliding_door: "Configure Your Sliding Patio Door",
+};
+
 export const Route = createFileRoute("/configure/$type")({
   beforeLoad: ({ params }) => {
     if (!VALID_TYPES.includes(params.type as ProductType)) throw notFound();
@@ -193,10 +206,10 @@ function Hero({ productType }: { productType: ProductType }) {
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
-                Configurator
+                {HERO_EYEBROW[productType]}
               </div>
               <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-5xl">
-                {productLabel(productType)}
+                {HERO_TITLE[productType]}
               </h1>
               <p className="mt-2 max-w-xl text-sm text-muted-foreground sm:text-base">
                 {TAGLINE[productType]}
@@ -326,6 +339,8 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
   const mark = (n: number) => setTouched((t) => (t[n] ? t : { ...t, [n]: true }));
   const valid = isValidSize(config.width, config.height);
   const price = useMemo(() => calculatePrice("window", config), [config]);
+  const [location, setLocation] = useState("");
+  const locationValid = location.trim().length > 0;
 
   const stepDone: Record<number, boolean> = {
     1: !!touched[1],
@@ -333,16 +348,16 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
     3: !!touched[3],
     4: !!touched[4],
     5: valid,
+    6: locationValid,
   };
-  const activeStep = [1, 2, 3, 4, 5].find((n) => !stepDone[n]) ?? 0;
-  // Weight measurements heavily: each of steps 1–4 = 15% (max 60% without dims),
-  // step 5 (valid dimensions) = 40% to reach 100%.
+  const activeStep = [1, 2, 3, 4, 5, 6].find((n) => !stepDone[n]) ?? 0;
   const completeness =
-    (stepDone[1] ? 0.15 : 0) +
-    (stepDone[2] ? 0.15 : 0) +
-    (stepDone[3] ? 0.15 : 0) +
-    (stepDone[4] ? 0.15 : 0) +
-    (stepDone[5] ? 0.4 : 0);
+    (stepDone[1] ? 0.13 : 0) +
+    (stepDone[2] ? 0.13 : 0) +
+    (stepDone[3] ? 0.12 : 0) +
+    (stepDone[4] ? 0.12 : 0) +
+    (stepDone[5] ? 0.4 : 0) +
+    (locationValid ? 0.1 : 0);
 
   return (
     <Shell productType={productType}>
@@ -478,6 +493,30 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
           />
         </StepSection>
 
+        <StepSection
+          step={6}
+          title="Room or Location"
+          description="Name this window's room so we can organize your quote and installation."
+          summary={locationValid ? location.trim() : undefined}
+          complete={stepDone[6]}
+          active={activeStep === 6}
+        >
+          <div className="space-y-2">
+            <Label htmlFor="room-location-step" className="text-sm font-medium">
+              Room or location name <span className="text-foreground">*</span>
+            </Label>
+            <Input
+              id="room-location-step"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              placeholder="e.g. Living Room, Kitchen, Master Bedroom..."
+            />
+            <p className="text-[12px] text-muted-foreground">
+              This helps us organize your quote and schedule installation by room.
+            </p>
+          </div>
+        </StepSection>
+
       </div>
       <div className="lg:sticky lg:top-20 lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto space-y-6 pb-6">
         <ProductPreview productType={productType} config={config} />
@@ -487,7 +526,12 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
           price={price}
           valid={valid}
           completeness={completeness}
-          onAddedToProject={() => setConfig({ ...config, width: 0, height: 0 })}
+          location={location}
+          locationValid={locationValid}
+          onAddedToProject={() => {
+            setConfig({ ...config, width: 0, height: 0 });
+            setLocation("");
+          }}
         />
         <ProjectSummary />
         <div className="flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
@@ -566,6 +610,8 @@ function DoorConfiguratorInner({ productType }: { productType: ProductType }) {
   const [config, setConfig] = useState<DoorConfig>(DEFAULT_DOOR);
   const valid = isValidSize(config.width, config.height);
   const price = useMemo(() => calculatePrice(productType, config), [productType, config]);
+  const [location, setLocation] = useState("");
+  const locationValid = location.trim().length > 0;
 
   return (
     <Shell productType={productType}>
@@ -624,7 +670,12 @@ function DoorConfiguratorInner({ productType }: { productType: ProductType }) {
           config={config}
           price={price}
           valid={valid}
-          onAddedToProject={() => setConfig({ ...config, width: 0, height: 0 })}
+          location={location}
+          locationValid={locationValid}
+          onAddedToProject={() => {
+            setConfig({ ...config, width: 0, height: 0 });
+            setLocation("");
+          }}
         />
         <ProjectSummary />
         <div className="flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">

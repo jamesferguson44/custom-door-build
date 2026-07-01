@@ -1,13 +1,10 @@
 import type { PriceBreakdown, ProductType, AnyConfig } from "@/lib/pricing";
 import { formatUSD, productLabel } from "@/lib/pricing";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useNavigate } from "@tanstack/react-router";
 import { addToCart, loadCart } from "@/lib/quote-storage";
 import { ArrowRight, Plus, ShieldCheck, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
-import { useState } from "react";
 import { Progress } from "@/components/ui/progress";
 
 type Props = {
@@ -16,13 +13,13 @@ type Props = {
   price: PriceBreakdown;
   valid: boolean;
   completeness?: number;
+  location: string;
+  locationValid: boolean;
   onAddedToProject?: () => void;
 };
 
-export function PriceSummary({ productType, config, price, valid, completeness, onAddedToProject }: Props) {
+export function PriceSummary({ productType, config, price, valid, completeness, location, locationValid, onAddedToProject }: Props) {
   const navigate = useNavigate();
-  const [location, setLocation] = useState("");
-  const locationValid = location.trim().length > 0;
   const canAdd = valid && locationValid;
   const windowStyle =
     productType === "window"
@@ -45,7 +42,6 @@ export function PriceSummary({ productType, config, price, valid, completeness, 
       toast.success(
         `${room} window added. ${count} window${count === 1 ? "" : "s"} currently in your project.`,
       );
-      setLocation("");
       onAddedToProject?.();
     }
   };
@@ -146,28 +142,6 @@ Estimated payments from approximately:{" "}
               </li>
             ))}
           </ul>
-        </div>
-
-        {/* 4. Room / Location */}
-        <div className="border-t border-border px-6 py-5">
-          <Label
-            htmlFor="room-location"
-            className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground"
-          >
-            Room / Location <span className="text-foreground">*</span>
-          </Label>
-          <Input
-            id="room-location"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            placeholder="Required: Living Room, Kitchen, Master Bedroom..."
-            className="mt-2"
-            required
-            aria-required="true"
-          />
-          <p className="mt-1.5 text-[11px] text-muted-foreground">
-            This helps organize your quote and installation.
-          </p>
         </div>
 
 {/* 6. Action Buttons */}
