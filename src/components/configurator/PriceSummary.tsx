@@ -58,14 +58,6 @@ export function PriceSummary({ productType, config, price, valid, completeness, 
   { t: "No in-home sales presentation", emph: true },
 ];
 
-  const nextSteps = [
-    "Add all windows in your project",
-    "Review your quote",
-    "We verify measurements",
-    "Your windows are ordered",
-    "Professional installation",
-  ];
-
   return (
     <aside>
       <div className="overflow-hidden rounded-2xl border border-border bg-card">
@@ -178,22 +170,6 @@ Estimated payments from approximately:{" "}
           </p>
         </div>
 
-        {/* 5. What Happens Next */}
-        <div className="border-t border-border bg-foreground/[0.02] px-6 py-5">
-          <div className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
-            <Sparkles className="h-3 w-3" /> What Happens Next?
-          </div>
-          <ol className="mt-3 space-y-2 text-[13px]">
-            {nextSteps.map((step, i) => (
-              <li key={step} className="flex items-start gap-2.5">
-                <span className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-foreground/10 text-[10px] font-semibold tabular-nums text-foreground/70">
-                  {i + 1}
-                </span>
-                <span className="text-foreground/85">{step}</span>
-              </li>
-            ))}
-          </ol>
-        </div>
 {/* 6. Action Buttons */}
         <div className="border-t border-border px-6 py-5">
           {typeof completeness === "number" && (
