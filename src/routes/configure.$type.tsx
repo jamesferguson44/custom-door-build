@@ -610,6 +610,8 @@ function DoorConfiguratorInner({ productType }: { productType: ProductType }) {
   const [config, setConfig] = useState<DoorConfig>(DEFAULT_DOOR);
   const valid = isValidSize(config.width, config.height);
   const price = useMemo(() => calculatePrice(productType, config), [productType, config]);
+  const [location, setLocation] = useState("");
+  const locationValid = location.trim().length > 0;
 
   return (
     <Shell productType={productType}>
@@ -668,7 +670,12 @@ function DoorConfiguratorInner({ productType }: { productType: ProductType }) {
           config={config}
           price={price}
           valid={valid}
-          onAddedToProject={() => setConfig({ ...config, width: 0, height: 0 })}
+          location={location}
+          locationValid={locationValid}
+          onAddedToProject={() => {
+            setConfig({ ...config, width: 0, height: 0 });
+            setLocation("");
+          }}
         />
         <ProjectSummary />
         <div className="flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
