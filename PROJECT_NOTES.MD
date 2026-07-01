@@ -94,10 +94,10 @@ Pane & Simple is a window and door installation company based in Utah. Customers
 
 ## Known Issues / Work In Progress
 
-- [ ] Live preview panel does not update in real time with selections
-- [ ] Preview panel is not sticky on scroll
-- [ ] Frame color, grid overlays, and window style do not render visually in the preview
-- [ ] Project Completeness bar shows too high before dimensions are entered
+- [fixed ] Live preview panel does not update in real time with selections
+- [Fixed ] Preview panel is not sticky on scroll
+- [ Fixed] Frame color, grid overlays, and window style do not render visually in the preview
+- [ partially fixed] Project Completeness bar shows too high before dimensions are entered
 - [ ] Placeholder review section on homepage is hidden until real customer reviews are available
 - [ ] Admin link is hidden from public nav (intentional)
 
