@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useNavigate } from "@tanstack/react-router";
 import { addToCart, loadCart } from "@/lib/quote-storage";
-import { ArrowRight, Plus, ShieldCheck, CheckCircle2, Sparkles } from "lucide-react";
+import { ArrowRight, Plus, ShieldCheck, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
 import { Progress } from "@/components/ui/progress";
@@ -57,14 +57,6 @@ export function PriceSummary({ productType, config, price, valid, completeness, 
   { t: "Built for Utah weather" },
   { t: "No in-home sales presentation", emph: true },
 ];
-
-  const nextSteps = [
-    "Add all windows in your project",
-    "Review your quote",
-    "We verify measurements",
-    "Your windows are ordered",
-    "Professional installation",
-  ];
 
   return (
     <aside>
@@ -178,22 +170,6 @@ Estimated payments from approximately:{" "}
           </p>
         </div>
 
-        {/* 5. What Happens Next */}
-        <div className="border-t border-border bg-foreground/[0.02] px-6 py-5">
-          <div className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
-            <Sparkles className="h-3 w-3" /> What Happens Next?
-          </div>
-          <ol className="mt-3 space-y-2 text-[13px]">
-            {nextSteps.map((step, i) => (
-              <li key={step} className="flex items-start gap-2.5">
-                <span className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-foreground/10 text-[10px] font-semibold tabular-nums text-foreground/70">
-                  {i + 1}
-                </span>
-                <span className="text-foreground/85">{step}</span>
-              </li>
-            ))}
-          </ol>
-        </div>
 {/* 6. Action Buttons */}
         <div className="border-t border-border px-6 py-5">
           {typeof completeness === "number" && (
