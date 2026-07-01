@@ -479,42 +479,20 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
         </StepSection>
 
       </div>
-      <div className="flex flex-col gap-6 lg:block lg:space-y-6">
-        <div className="order-1 lg:sticky lg:top-20 lg:z-10">
-          <ProductPreview productType={productType} config={config} />
-        </div>
-        <div className="order-3 rounded-2xl border border-border bg-card px-5 py-4 lg:order-none">
-          <ul className="space-y-1.5 text-[13px]">
-            {[
-              "Built to your exact opening",
-              "Professional measurement verification available",
-              "Designed for Utah weather",
-              "No in-home sales appointment required",
-            ].map((t) => (
-              <li key={t} className="flex items-start gap-2">
-                <Check className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-emerald-600" />
-                <span className="text-foreground/80">{t}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <CurrentConfigCard config={config} valid={valid} price={price} />
-        <div className="order-last flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground lg:order-none">
-          <Save className="h-3 w-3" /> Project automatically saved.
-        </div>
-        <div className="order-2 lg:order-none">
+      <div className="lg:sticky lg:top-20 lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto space-y-6 pb-6">
+        <ProductPreview productType={productType} config={config} />
         <PriceSummary
           productType={productType}
           config={config}
           price={price}
           valid={valid}
           completeness={completeness}
-          onAddedToProject={() =>
-            setConfig({ ...config, width: 0, height: 0 })
-          }
+          onAddedToProject={() => setConfig({ ...config, width: 0, height: 0 })}
         />
-        </div>
         <ProjectSummary />
+        <div className="flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
+          <Save className="h-3 w-3" /> Project automatically saved.
+        </div>
       </div>
     </Shell>
   );
@@ -639,18 +617,19 @@ function DoorConfiguratorInner({ productType }: { productType: ProductType }) {
           />
         </StepSection>
       </div>
-      <div className="space-y-6 lg:sticky lg:top-20">
+      <div className="lg:sticky lg:top-20 lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto space-y-6 pb-6">
         <ProductPreview productType={productType} config={config} />
         <PriceSummary
           productType={productType}
           config={config}
           price={price}
           valid={valid}
-          onAddedToProject={() =>
-            setConfig({ ...config, width: 0, height: 0 })
-          }
+          onAddedToProject={() => setConfig({ ...config, width: 0, height: 0 })}
         />
         <ProjectSummary />
+        <div className="flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
+          <Save className="h-3 w-3" /> Project automatically saved.
+        </div>
       </div>
     </Shell>
   );
