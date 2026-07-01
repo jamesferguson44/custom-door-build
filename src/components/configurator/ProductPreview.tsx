@@ -244,7 +244,7 @@ function StyleOverlay({
   return null;
 }
 
-function GridOverlay({
+function PaneGrid({
   style,
   x,
   y,
@@ -262,10 +262,9 @@ function GridOverlay({
   stroke: string;
 }) {
   if (style === "None") return null;
-  const t = 2.5; // grid bar thickness
+  const t = 2.5;
 
   if (style === "Colonial") {
-    // Standard divided lite: 3 cols x 3 rows (2 vertical + 2 horizontal bars)
     const v1 = x + w / 3 - t / 2;
     const v2 = x + (2 * w) / 3 - t / 2;
     const h1 = y + h / 3 - t / 2;
@@ -322,6 +321,55 @@ function GridOverlay({
       />
     </g>
   );
+}
+
+function GridOverlay({
+  style,
+  windowStyle,
+  x,
+  y,
+  w,
+  h,
+  color,
+  stroke,
+}: {
+  style: WindowConfig["gridStyle"];
+  windowStyle: WindowConfig["windowStyle"];
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  color: string;
+  stroke: string;
+}) {
+  if (style === "None") return null;
+  const sash = 4;
+
+  if (windowStyle === "Single Hung" || windowStyle === "Double Hung") {
+    const topH = h / 2 - sash / 2;
+    const botY = y + h / 2 + sash / 2;
+    const botH = h / 2 - sash / 2;
+    return (
+      <g>
+        <PaneGrid style={style} x={x} y={y} w={w} h={topH} color={color} stroke={stroke} />
+        <PaneGrid style={style} x={x} y={botY} w={w} h={botH} color={color} stroke={stroke} />
+      </g>
+    );
+  }
+
+  if (windowStyle === "Slider") {
+    const leftW = w / 2 - sash / 2;
+    const rightX = x + w / 2 + sash / 2;
+    const rightW = w / 2 - sash / 2;
+    return (
+      <g>
+        <PaneGrid style={style} x={x} y={y} w={leftW} h={h} color={color} stroke={stroke} />
+        <PaneGrid style={style} x={rightX} y={y} w={rightW} h={h} color={color} stroke={stroke} />
+      </g>
+    );
+  }
+
+  return <PaneGrid style={style} x={x} y={y} w={w} h={h} color={color} stroke={stroke} />;
 }
 
 /* ------------------------- DOOR ------------------------- */
