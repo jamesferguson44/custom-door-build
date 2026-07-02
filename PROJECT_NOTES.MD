@@ -83,22 +83,21 @@ The main differentiator is transparency: instant online pricing, no sales pressu
 ## Current State of the Build
 
 ### ✅ Completed
-- Window configurator 5-step flow (style, product line, glass, color/grid, dimensions)
+- Window configurator 6-step flow (style, product line, glass, color/grid, dimensions, room/location)
 - Live preview panel updates in real time with all selections (frame color, glass tint, grid overlays, style indicators)
 - Right sidebar is sticky with internal scroll — price and Add button stay reachable
-- Progress bar (`ProgressBar`) reflects completed steps
+- Progress bar (`ProgressBar`) reflects completed steps across all 6
 - "What Happens Next" section removed from right sidebar (to be added to `/quote` page)
 - Redundant bullet checklist card removed from right sidebar
 - `CurrentConfigCard` removed from render (component definition kept)
 - Hero eyebrow updated to "Online Window Configurator · Instant Pricing"
 - Hero H1 updated to "Build Your Replacement Windows"
 - Room/Location moved to left column as Step 6
-- Completeness bar now includes Step 6 (location) — only hits 100% when all fields including room name are complete
+- Completeness bar only hits 100% when all six steps including room name are complete
 - Grid overlays now render per-pane (respecting Single Hung, Double Hung, and Slider sash bars)
-- White frame contrast and overlay line visibility improved
+- White frame contrast and overlay line visibility improved — `overlayStroke` separate from `frameStroke`
 
 ### 🔧 In Progress / Known Issues
-- White frame styling: overlay lines (hinge/opening indicators) still low contrast — needs `overlayStroke` separate from `frameStroke` for white frames
 - Door and sliding door configurator lacks parity with window configurator (no progress bar, no step highlighting, no sticky sidebar, no Step 6 room/location)
 - Placeholder review section on homepage is hidden until real customer reviews are available
 - Admin link is hidden from public nav
@@ -106,11 +105,10 @@ The main differentiator is transparency: instant online pricing, no sales pressu
 - Financing section in `PriceSummary` has a copy formatting issue — "Financing Available Estimated payments..." runs together without a line break
 
 ### 🗓 Up Next (in order)
-1. White frame overlay contrast fix (small — possible GitHub edit)
-2. Financing copy formatting fix in `PriceSummary.tsx` (GitHub edit — add a `<br />` or split into two elements)
-3. Door/sliding door configurator parity with window configurator
-4. `/quote` page build-out — project review, "What Happens Next", scheduling CTA
-5. Homepage polish — activate review section once real testimonials exist
+1. Financing copy formatting fix in `PriceSummary.tsx` (GitHub edit — split into two elements)
+2. Door/sliding door configurator parity with window configurator
+3. `/quote` page build-out — project review, "What Happens Next", scheduling CTA
+4. Homepage polish — activate review section once real testimonials exist
 
 ---
 
