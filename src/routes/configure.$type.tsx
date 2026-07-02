@@ -40,11 +40,11 @@ const WINDOW_STYLE_DESC: Record<string, string> = {
   Specialty: "Custom shapes and architectural designs",
 };
 
-function ProgressBar({ done, active }: { done: Record<number, boolean>; active: number }) {
+function ProgressBar({ done, active, labels }: { done: Record<number, boolean>; active: number; labels: string[] }) {
   return (
     <div className="mb-10 overflow-hidden rounded-2xl border border-border bg-card/60 px-4 py-3 backdrop-blur sm:px-6 sm:py-4">
       <ol className="flex items-center gap-2 sm:gap-3">
-        {STEP_LABELS.map((label, i) => {
+        {labels.map((label, i) => {
           const n = i + 1;
           const isDone = done[n];
           const isActive = active === n;
@@ -70,7 +70,7 @@ function ProgressBar({ done, active }: { done: Record<number, boolean>; active: 
               >
                 {label}
               </span>
-              {i < STEP_LABELS.length - 1 && (
+              {i < labels.length - 1 && (
                 <div
                   className={cn(
                     "hidden h-px flex-1 transition-colors sm:block",
