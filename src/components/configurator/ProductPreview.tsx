@@ -155,7 +155,7 @@ function WindowPreview({ config }: { config: WindowConfig }) {
         w={gw}
         h={gh}
         frameColor={frameColor}
-        frameStroke={frameStroke}
+        frameStroke={overlayStroke}
       />
 
       {/* Extra sheen for Low-E / Triple Pane */}
