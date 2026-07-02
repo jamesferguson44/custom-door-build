@@ -40,11 +40,11 @@ const WINDOW_STYLE_DESC: Record<string, string> = {
   Specialty: "Custom shapes and architectural designs",
 };
 
-function ProgressBar({ done, active }: { done: Record<number, boolean>; active: number }) {
+function ProgressBar({ done, active, labels }: { done: Record<number, boolean>; active: number; labels: string[] }) {
   return (
     <div className="mb-10 overflow-hidden rounded-2xl border border-border bg-card/60 px-4 py-3 backdrop-blur sm:px-6 sm:py-4">
       <ol className="flex items-center gap-2 sm:gap-3">
-        {STEP_LABELS.map((label, i) => {
+        {labels.map((label, i) => {
           const n = i + 1;
           const isDone = done[n];
           const isActive = active === n;
@@ -70,7 +70,7 @@ function ProgressBar({ done, active }: { done: Record<number, boolean>; active: 
               >
                 {label}
               </span>
-              {i < STEP_LABELS.length - 1 && (
+              {i < labels.length - 1 && (
                 <div
                   className={cn(
                     "hidden h-px flex-1 transition-colors sm:block",
@@ -362,7 +362,7 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
   return (
     <Shell productType={productType}>
       <div>
-        <ProgressBar done={stepDone} active={activeStep} />
+        <ProgressBar done={stepDone} active={activeStep} labels={STEP_LABELS} />
         <StepSection
           step={1}
           title="Window Style"
@@ -607,16 +607,155 @@ function CurrentConfigCard({
 }
 
 function DoorConfiguratorInner({ productType }: { productType: ProductType }) {
-  const [config, setConfig] = useState<DoorConfig>(DEFAULT_DOOR);
-  const valid = isValidSize(config.width, config.height);
-  const price = useMemo(() => calculatePrice(productType, config), [productType, config]);
+  const isDoor = productType === "door";
+  const DOOR_STEP_LABELS = ["Material", "Glass", "Finish & Hardware", "Measurements", "Location"];
+
+  const [config, setConfig] = useState<DoorConfig>({ ...DEFAULT_DOOR, material: "Fiberglass" });
+  const [touched, setTouched] = useState<Record<number, boolean>>({});
   const [location, setLocation] = useState("");
   const locationValid = location.trim().length > 0;
+
+  const mark = (n: number) => setTouched((t) => (t[n] ? t : { ...t, [n]: true }));
+  const valid = isValidSize(config.width, config.height);
+  const price = useMemo(() => calculatePrice(productType, config), [productType, config]);
+
+  const stepDone: Record<number, boolean> = {
+    1: !!touched[1],
+    2: !!touched[2],
+    3: !!touched[3],
+    4: valid,
+    5: locationValid,
+  };
+
+  const activeStep = [1, 2, 3, 4, 5].find((n) => !stepDone[n]) ?? 0;
+
+  const completeness =
+    (stepDone[1] ? 0.15 : 0) +
+    (stepDone[2] ? 0.15 : 0) +
+    (stepDone[3] ? 0.2 : 0) +
+    (stepDone[4] ? 0.4 : 0) +
+    (locationValid ? 0.1 : 0);
 
   return (
     <Shell productType={productType}>
       <div>
-        <StepSection step={1} title="Measurements" description="Width and height of the rough opening.">
+        <ProgressBar done={stepDone} active={activeStep} labels={DOOR_STEP_LABELS} />
+
+        <StepSection
+          step={1}
+          title="Material"
+          description="Choose the door construction. Style details are refined during your free design consultation."
+          summary={config.material}
+          complete={stepDone[1]}
+          active={activeStep === 1}
+        >
+          <OptionGroup
+            label="Material"
+            value={config.material as "Fiberglass" | "Steel"}
+            options={["Fiberglass", "Steel"] as const}
+            onChange={(v) => {
+              setConfig({ ...config, material: v });
+              mark(1);
+            }}
+            descriptions={{
+              Fiberglass: isDoor
+                ? "ProVia fiberglass · Best insulation · Most style options"
+                : "Best insulation · Low maintenance · Most popular",
+              Steel: isDoor
+                ? "ProVia Legacy Steel · Secure and affordable"
+                : "Strong and secure · Great value",
+            }}
+            badges={{ Fiberglass: "Most Popular" }}
+          />
+          <div className="flex items-start gap-3 rounded-xl border border-sky-200 bg-sky-50/70 px-4 py-3 text-sm text-sky-900 dark:border-sky-900/40 dark:bg-sky-950/30 dark:text-sky-100">
+            <Info className="mt-0.5 h-4 w-4 flex-shrink-0" />
+            <div>
+              <div className="font-medium">Final style chosen during your free design consultation.</div>
+              <div className="mt-0.5 text-[13px] opacity-80">
+                We bring ProVia sample books so you can see panel styles, glass designs, and hardware in person before anything is ordered.
+              </div>
+            </div>
+          </div>
+        </StepSection>
+
+        <StepSection
+          step={2}
+          title="Glass"
+          description="How much natural light do you want?"
+          summary={config.glassOption === "None" ? "No glass" : `${config.glassOption} glass`}
+          complete={stepDone[2]}
+          active={activeStep === 2}
+        >
+          <OptionGroup
+            label="Glass Option"
+            value={config.glassOption}
+            options={["None", "Half", "Full"] as const}
+            onChange={(v) => {
+              setConfig({ ...config, glassOption: v });
+              mark(2);
+            }}
+            descriptions={{
+              None: "Maximum privacy and insulation",
+              Half: "Natural light with privacy on the lower half",
+              Full: "Maximum natural light",
+            }}
+          />
+        </StepSection>
+
+        <StepSection
+          step={3}
+          title="Finish & Hardware"
+          description="Personalize the look. Easy to change later."
+          summary={`${config.finish} · ${config.hardware}`}
+          complete={stepDone[3]}
+          active={activeStep === 3}
+        >
+          <OptionGroup
+            label="Finish"
+            value={config.finish}
+            options={["Painted", "Stained"] as const}
+            onChange={(v) => {
+              setConfig({ ...config, finish: v });
+              mark(3);
+            }}
+            descriptions={{
+              Painted: "Clean, modern look — most popular choice",
+              Stained: "Warm, natural wood appearance",
+            }}
+            badges={{ Painted: "Most Popular" }}
+          />
+          <OptionGroup
+            label="Hardware"
+            value={config.hardware}
+            options={["Basic", "Premium"] as const}
+            onChange={(v) => {
+              setConfig({ ...config, hardware: v });
+              mark(3);
+            }}
+            descriptions={{
+              Basic: "Standard lockset and handle",
+              Premium: "Designer handle and deadbolt set",
+            }}
+          />
+        </StepSection>
+
+        <StepSection
+          step={4}
+          title="Measurements"
+          description="Approximate measurements are completely fine — a professional verifies exact numbers before production."
+          complete={stepDone[4]}
+          active={activeStep === 4}
+          summary={valid ? `${config.width}″ × ${config.height}″` : undefined}
+        >
+          <div className="flex items-start gap-3 rounded-xl border border-sky-200 bg-sky-50/70 px-4 py-3 text-sm text-sky-900 dark:border-sky-900/40 dark:bg-sky-950/30 dark:text-sky-100">
+            <Info className="mt-0.5 h-4 w-4 flex-shrink-0" />
+            <div>
+              <div className="font-medium">Don't worry if your measurements aren't perfect.</div>
+              <div className="mt-0.5 text-[13px] opacity-80">
+                Most homeowners enter approximate sizes. We verify exact measurements before ordering.
+              </div>
+            </div>
+          </div>
           <SizeInputs
             width={config.width}
             height={config.height}
@@ -624,43 +763,28 @@ function DoorConfiguratorInner({ productType }: { productType: ProductType }) {
           />
         </StepSection>
 
-        <StepSection step={2} title="Material & Glass">
-          <OptionGroup
-            label="Material"
-            value={config.material}
-            options={["Wood", "Fiberglass", "Steel"] as const}
-            onChange={(v) => setConfig({ ...config, material: v })}
-            descriptions={{
-              Wood: "Classic, warm",
-              Fiberglass: "Durable, low maintenance",
-              Steel: "Strongest, secure",
-            }}
-          />
-          <OptionGroup
-            label="Glass Option"
-            value={config.glassOption}
-            options={["None", "Half", "Full"] as const}
-            onChange={(v) => setConfig({ ...config, glassOption: v })}
-          />
-        </StepSection>
-
-        <StepSection step={3} title="Finish & Hardware">
-          <OptionGroup
-            label="Finish"
-            value={config.finish}
-            options={["Painted", "Stained"] as const}
-            onChange={(v) => setConfig({ ...config, finish: v })}
-          />
-          <OptionGroup
-            label="Hardware"
-            value={config.hardware}
-            options={["Basic", "Premium"] as const}
-            onChange={(v) => setConfig({ ...config, hardware: v })}
-            descriptions={{
-              Basic: "Standard lockset",
-              Premium: "Smart lock & designer handle",
-            }}
-          />
+        <StepSection
+          step={5}
+          title="Door Location"
+          description="Name where this door is going so we can organize your quote and installation."
+          summary={locationValid ? location.trim() : undefined}
+          complete={stepDone[5]}
+          active={activeStep === 5}
+        >
+          <div className="space-y-2">
+            <Label htmlFor="door-location-step" className="text-sm font-medium">
+              Door location <span className="text-foreground">*</span>
+            </Label>
+            <Input
+              id="door-location-step"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              placeholder="e.g. Front Entry, Back Door, Garage Entry..."
+            />
+            <p className="text-[12px] text-muted-foreground">
+              This helps us organize your quote and schedule installation by location.
+            </p>
+          </div>
         </StepSection>
       </div>
       <div className="lg:sticky lg:top-20 lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto space-y-6 pb-6">
@@ -670,10 +794,11 @@ function DoorConfiguratorInner({ productType }: { productType: ProductType }) {
           config={config}
           price={price}
           valid={valid}
+          completeness={completeness}
           location={location}
           locationValid={locationValid}
           onAddedToProject={() => {
-            setConfig({ ...config, width: 0, height: 0 });
+            setConfig({ ...DEFAULT_DOOR, material: "Fiberglass" });
             setLocation("");
           }}
         />
