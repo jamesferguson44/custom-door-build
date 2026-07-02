@@ -145,4 +145,3 @@ Step 6 (room/location entered) = 10%
 - **AMSCO** — "Good" tier, locally manufactured in Salt Lake City, best budget option, energy efficient
 - **ProVia** — "Better" tier, premium vinyl construction, Low-E glass standard, most popular choice
 - **ProVia Aeris** — "Best" tier, maximum efficiency, real wood interior option, premium upgrade
-
