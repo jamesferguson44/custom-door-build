@@ -64,7 +64,7 @@ function WindowPreview({ config }: { config: WindowConfig }) {
       : config.color === "Custom"
       ? "#6b5b4a"
       : "#f4f4f2";
-  const frameStroke = config.color === "Black" ? "#000" : "#cfcfca";
+  const frameStroke = config.color === "Black" ? "#000" : "#b0b0aa";
   const frameInner = config.color === "Black" ? "#0d0d0d" : "#e9e9e4";
 
   // Glass tint based on glass type
