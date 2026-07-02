@@ -107,12 +107,12 @@ export function PriceSummary({ productType, config, price, valid, completeness, 
             <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
               Financing
             </div>
-            <div className="mt-1 text-sm">
-              Financing Available
-Estimated payments from approximately:{" "}
-              <span className="font-semibold tabular-nums">{formatUSD(monthly)}</span>
-              /mo
-            </div>
+ <div className="mt-1 text-sm space-y-0.5">
+  <div>Financing Available</div>
+  <div>Estimated payments from approximately:{" "}
+    <span className="font-semibold tabular-nums">{formatUSD(monthly)}</span>/mo
+  </div>
+</div>
             <p className="mt-1 text-[11px] text-muted-foreground">
               Qualified homeowners may be eligible for financing options.
             </p>
