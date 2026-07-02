@@ -64,8 +64,9 @@ function WindowPreview({ config }: { config: WindowConfig }) {
       : config.color === "Custom"
       ? "#6b5b4a"
       : "#f4f4f2";
-  const frameStroke = config.color === "Black" ? "#000" : "#cfcfca";
+  const frameStroke = config.color === "Black" ? "#000" : "#b0b0aa";
   const frameInner = config.color === "Black" ? "#0d0d0d" : "#e9e9e4";
+  const overlayStroke = config.color === "White" ? "#888888" : frameStroke;
 
   // Glass tint based on glass type
   const glassFill =
@@ -154,7 +155,7 @@ function WindowPreview({ config }: { config: WindowConfig }) {
         w={gw}
         h={gh}
         frameColor={frameColor}
-        frameStroke={frameStroke}
+        frameStroke={overlayStroke}
       />
 
       {/* Extra sheen for Low-E / Triple Pane */}
