@@ -321,7 +321,7 @@ function Home() {
           </p>
           <div className="mt-6 flex justify-center">
             <Button asChild size="lg" variant="outline" className="h-12 rounded-full px-8 text-sm font-semibold">
-              <Link to="#">
+              <Link to="/quote">
                 Schedule a Quick Call
               </Link>
             </Button>
