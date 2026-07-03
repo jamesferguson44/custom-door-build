@@ -85,6 +85,9 @@ function Home() {
             <span className="inline-flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4" /> No Sales Appointments</span>
             <span className="inline-flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4" /> Professional Installation</span>
           </div>
+          <p className="mt-3 text-xs text-white/70">
+            Serving Salt Lake County · Utah County · Davis County
+          </p>
         </div>
       </section>
 
@@ -212,16 +215,17 @@ function Home() {
           </div>
           <div className="grid gap-5 md:grid-cols-3">
             {[
-              { label: "Single Window", price: "$650 – $1,500", note: "Installed" },
-              { label: "5 Window Project", price: "$4,000 – $8,000", note: "Installed" },
-              { label: "Whole Home Replacement", price: "$10,000 – $25,000+", note: "Installed" },
+              { label: "Single Window", price: "$650 – $1,500", note: "Installed", description: "Common for single-room upgrades or damage replacement." },
+              { label: "5 Window Project", price: "$4,000 – $8,000", note: "Installed", description: "Popular for replacing windows across main living areas." },
+              { label: "Whole Home Replacement", price: "$10,000 – $25,000+", note: "Installed", description: "Complete replacement of all windows in a typical Utah home." },
             ].map((p) => (
               <div key={p.label} className="rounded-2xl border border-border bg-card p-8">
                 <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
                   {p.label}
                 </div>
                 <div className="mt-3 text-4xl font-semibold tracking-tight">{p.price}</div>
-                <p className="mt-3 text-sm text-muted-foreground">{p.note}</p>
+                <p className="mt-2 text-sm font-medium text-muted-foreground">{p.note}</p>
+                <p className="mt-2 text-sm text-muted-foreground">{p.description}</p>
               </div>
             ))}
           </div>
@@ -329,8 +333,67 @@ function Home() {
         </div>
       </section>
 
-      <footer className="border-t border-border py-8 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} Pane &amp; Simple
+      <footer className="border-t border-border bg-muted/20">
+        <div className="mx-auto max-w-[1400px] px-6 py-12">
+          <div className="grid gap-8 sm:grid-cols-3">
+
+            {/* Brand */}
+            <div>
+              <div className="text-sm font-semibold tracking-tight">Pane &amp; Simple</div>
+              <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+                Transparent window and door replacement for Utah homeowners. No sales pressure — just great products and professional installation.
+              </p>
+              <p className="mt-3 text-xs text-muted-foreground">
+                Serving Salt Lake County · Utah County · Davis County
+              </p>
+            </div>
+
+            {/* Quick links */}
+            <div>
+              <div className="mb-3 text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+                Quick Links
+              </div>
+              <ul className="space-y-2 text-sm">
+                <li>
+                  <Link to="/" className="text-muted-foreground transition-colors hover:text-foreground">
+                    Home
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/configure/$type" params={{ type: "window" }} className="text-muted-foreground transition-colors hover:text-foreground">
+                    Configure Windows
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/configure/$type" params={{ type: "door" }} className="text-muted-foreground transition-colors hover:text-foreground">
+                    Configure Doors
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/quote" className="text-muted-foreground transition-colors hover:text-foreground">
+                    Review My Quote
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            {/* Contact */}
+            <div>
+              <div className="mb-3 text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+                Contact
+              </div>
+              <p className="text-sm text-muted-foreground">(801) 555-0100</p>
+              <p className="mt-1 text-xs text-muted-foreground">Utah-licensed window &amp; door contractor</p>
+              <p className="mt-3 text-xs text-muted-foreground">
+                We respond within 1 business day.
+              </p>
+            </div>
+
+          </div>
+          <div className="mt-10 border-t border-border pt-6 text-center text-xs text-muted-foreground">
+            © {new Date().getFullYear()} Pane &amp; Simple · Utah Window &amp; Door Installation
+          </div>
+        </div>
       </footer>
     </div>
   );
