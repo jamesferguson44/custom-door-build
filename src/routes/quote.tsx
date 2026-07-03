@@ -1,496 +1,404 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
-import { z } from "zod";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/SiteHeader";
+import { loadCart, clearCart } from "@/lib/quote-storage";
+import { formatUSD, productLabel } from "@/lib/pricing";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { toast } from "sonner";
+import { useState } from "react";
 import {
   CheckCircle2,
-  ArrowRight,
   ArrowLeft,
-  Shield,
-  Sparkles,
+  Phone,
+  Calendar,
   Ruler,
-  Hammer,
-  Mountain,
-  Eye,
+  Package,
+  Wrench,
+  ShieldCheck,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { supabase } from "@/integrations/supabase/client";
-import { cartTotal, clearCart, type CartItem } from "@/lib/quote-storage";
-import { useCart } from "@/hooks/use-cart";
-import { formatUSD } from "@/lib/pricing";
-import { downloadQuotePdf } from "@/lib/quote-pdf";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/quote")({
   head: () => ({
     meta: [
-      { title: "Get Your Exact Quote — Pane & Simple" },
+      { title: "Review Your Project — Pane & Simple" },
       {
         name: "description",
         content:
-          "Submit your window project for a personalized quote. Transparent pricing, no high-pressure sales.",
+          "Review your window and door project and schedule a free measurement appointment.",
       },
     ],
   }),
   component: QuotePage,
 });
 
-const TIMELINES = [
-  "Ready Now",
-  "Within 1–3 Months",
-  "Within 3–6 Months",
-  "Just Researching",
-] as const;
-type Timeline = (typeof TIMELINES)[number];
-
-const contactSchema = z.object({
-  firstName: z.string().trim().min(1, "First name is required").max(60),
-  lastName: z.string().trim().min(1, "Last name is required").max(60),
-  email: z.string().trim().email("Valid email required").max(255),
-  phone: z.string().trim().min(7, "Valid phone required").max(30),
-  city: z.string().trim().min(1, "City is required").max(80),
-  zip: z
-    .string()
-    .trim()
-    .regex(/^\d{5}(-\d{4})?$/u, "Enter a valid ZIP code"),
-});
-type Contact = z.infer<typeof contactSchema>;
+const NEXT_STEPS = [
+  {
+    icon: Phone,
+    title: "We call you within 1 business day",
+    description:
+      "A Pane & Simple team member will reach out to confirm your project details and answer any questions.",
+  },
+  {
+    icon: Calendar,
+    title: "Schedule your measurement appointment",
+    description:
+      "We'll find a time that works for you — most appointments are available within 3–7 days.",
+  },
+  {
+    icon: Ruler,
+    title: "Professional measurement verification",
+    description:
+      "We verify exact dimensions on-site before anything is ordered. No surprises at installation.",
+  },
+  {
+    icon: Package,
+    title: "Your products are ordered",
+    description:
+      "Once measurements are confirmed and you approve the final price, we place your order.",
+  },
+  {
+    icon: Wrench,
+    title: "Professional installation",
+    description:
+      "Our team handles the full installation. Clean, efficient, and built to last.",
+  },
+];
 
 function QuotePage() {
-  const cart = useCart();
-  const navigate = useNavigate();
-  const [step, setStep] = useState<1 | 2>(1);
-  const [loading, setLoading] = useState(false);
-  const [contact, setContact] = useState<Contact>({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    city: "",
-    zip: "",
-  });
-  const [timeline, setTimeline] = useState<Timeline>("Within 1–3 Months");
+  const cart = loadCart();
+  const items = cart.items ?? [];
+  const isEmpty = items.length === 0;
+
+  const totalLow = items.reduce(
+    (sum, item) => sum + item.price.low * item.qty,
+    0,
+  );
+  const totalHigh = items.reduce(
+    (sum, item) => sum + item.price.high * item.qty,
+    0,
+  );
+
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
   const [notes, setNotes] = useState("");
+  const [submitted, setSubmitted] = useState(false);
 
-  const items = cart.items;
-  const itemCount = items.reduce((s, i) => s + i.qty, 0);
-  const totalMid = cartTotal(cart);
-  const totalLow = useMemo(
-    () => items.reduce((s, i) => s + i.price.low * i.qty, 0),
-    [items],
-  );
-  const totalHigh = useMemo(
-    () => items.reduce((s, i) => s + i.price.high * i.qty, 0),
-    [items],
-  );
+  const canSubmit =
+    name.trim().length > 0 &&
+    (phone.trim().length > 0 || email.trim().length > 0);
 
-  if (items.length === 0) {
-    return (
-      <div className="min-h-screen bg-background">
-        <SiteHeader />
-        <div className="mx-auto max-w-xl px-6 py-24 text-center">
-          <h1 className="text-3xl font-semibold tracking-tight">No project yet</h1>
-          <p className="mt-3 text-muted-foreground">
-            Design your windows first — then come back to request your exact quote.
-          </p>
-          <Button asChild className="mt-8 h-12 rounded-full px-8">
-            <Link to="/configure/$type" params={{ type: "window" }}>
-              See My Window Price
-            </Link>
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
-  const handleContinue = () => {
-    const parsed = contactSchema.safeParse(contact);
-    if (!parsed.success) {
-      toast.error(parsed.error.issues[0]?.message ?? "Please fill the form");
-      return;
-    }
-    setContact(parsed.data);
-    setStep(2);
-    if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  const handleSubmit = async () => {
-    setLoading(true);
-    try {
-      const rows = items.flatMap((item) =>
-        Array.from({ length: item.qty }).map(() => ({
-          product_type: item.productType,
-          configuration: item.config as never,
-          width_inches: item.config.width ?? 0,
-          height_inches: item.config.height ?? 0,
-          base_price: Math.round(item.price.basePrice),
-          addons_price: item.price.addonsPrice,
-          labor_price: item.price.laborPrice,
-          total_price: item.price.total,
-          customer_name: `${contact.firstName} ${contact.lastName}`.trim(),
-          customer_first_name: contact.firstName,
-          customer_last_name: contact.lastName,
-          customer_phone: contact.phone,
-          customer_email: contact.email,
-          customer_city: contact.city,
-          customer_zip: contact.zip,
-          customer_address: null,
-          project_timeline: timeline,
-          project_notes: notes.trim() || null,
-        })),
-      );
-
-      const { data, error } = await supabase
-        .from("quotes")
-        .insert(rows)
-        .select("id");
-
-      if (error) throw error;
-
-      const referenceId = data?.[0]?.id ?? "";
-
-      // Generate + download branded project summary PDF
-      try {
-        downloadQuotePdf(
-          {
-            referenceId,
-            customer: contact,
-            timeline,
-            notes: notes.trim() || undefined,
-            items,
-            totalLow,
-            totalHigh,
-            totalMid,
-            submittedAt: new Date(),
-          },
-          `pane-and-simple-quote-${referenceId.slice(0, 8) || "summary"}.pdf`,
-        );
-      } catch (pdfErr) {
-        console.warn("PDF generation failed", pdfErr);
-      }
-
-      toast.success("Quote request received.");
-      clearCart();
-      navigate({ to: "/quote/success", search: { id: referenceId } });
-    } catch (e) {
-      console.error(e);
-      toast.error("Could not submit quote. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+  const handleSubmit = () => {
+    if (!canSubmit) return;
+    setSubmitted(true);
+    toast.success("Request received! We'll be in touch within 1 business day.");
   };
 
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />
-      <div className="mx-auto max-w-2xl px-6 py-12 sm:py-16">
-        {/* Progress */}
-        <div className="mb-10 flex items-center justify-center gap-3 text-[11px] font-medium uppercase tracking-[0.18em]">
-          <StepBadge n={1} label="Your Info" active={step === 1} done={step > 1} />
-          <div className="h-px w-10 bg-border" />
-          <StepBadge n={2} label="Review & Submit" active={step === 2} done={false} />
-        </div>
-
-        <div className="text-center">
-          <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-            Get Your Exact Quote
+      <div className="mx-auto max-w-6xl px-6 py-12">
+        {/* Page header */}
+        <div className="mb-10">
+          <Link
+            to="/configure/$type"
+            params={{ type: "window" }}
+            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Configurator
+          </Link>
+          <h1 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">
+            {isEmpty ? "Your project is empty" : "Review Your Project"}
           </h1>
-          <p className="mx-auto mt-3 max-w-md text-sm text-muted-foreground sm:text-base">
-            We&apos;ll review your project, verify measurements if needed, and provide a
-            personalized quote.
-          </p>
+          {!isEmpty && (
+            <p className="mt-2 text-muted-foreground">
+              {items.length} item{items.length !== 1 ? "s" : ""} · Estimated
+              installed price range below
+            </p>
+          )}
         </div>
 
-        {step === 1 ? (
-          <section className="mt-10 rounded-2xl border border-border bg-card p-6 sm:p-8">
-            <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="First Name" id="firstName">
-                <Input
-                  id="firstName"
-                  autoComplete="given-name"
-                  value={contact.firstName}
-                  onChange={(e) => setContact({ ...contact, firstName: e.target.value })}
-                />
-              </Field>
-              <Field label="Last Name" id="lastName">
-                <Input
-                  id="lastName"
-                  autoComplete="family-name"
-                  value={contact.lastName}
-                  onChange={(e) => setContact({ ...contact, lastName: e.target.value })}
-                />
-              </Field>
-              <Field label="Email Address" id="email" full>
-                <Input
-                  id="email"
-                  type="email"
-                  autoComplete="email"
-                  value={contact.email}
-                  onChange={(e) => setContact({ ...contact, email: e.target.value })}
-                />
-              </Field>
-              <Field label="Phone Number" id="phone" full>
-                <Input
-                  id="phone"
-                  type="tel"
-                  autoComplete="tel"
-                  value={contact.phone}
-                  onChange={(e) => setContact({ ...contact, phone: e.target.value })}
-                />
-              </Field>
-              <Field label="City" id="city">
-                <Input
-                  id="city"
-                  autoComplete="address-level2"
-                  value={contact.city}
-                  onChange={(e) => setContact({ ...contact, city: e.target.value })}
-                />
-              </Field>
-              <Field label="ZIP Code" id="zip">
-                <Input
-                  id="zip"
-                  inputMode="numeric"
-                  autoComplete="postal-code"
-                  maxLength={10}
-                  value={contact.zip}
-                  onChange={(e) => setContact({ ...contact, zip: e.target.value })}
-                />
-              </Field>
+        {isEmpty ? (
+          <div className="rounded-2xl border border-border bg-card p-12 text-center">
+            <div className="text-4xl">🪟</div>
+            <h2 className="mt-4 text-xl font-semibold tracking-tight">
+              No items in your project yet
+            </h2>
+            <p className="mt-2 text-muted-foreground">
+              Head to the configurator to build your first window or door.
+            </p>
+            <Button asChild className="mt-8 h-12 rounded-full px-8">
+              <Link to="/configure/$type" params={{ type: "window" }}>
+                Start Configuring
+              </Link>
+            </Button>
+          </div>
+        ) : (
+          <div className="grid gap-8 lg:grid-cols-[1fr_380px]">
+            {/* LEFT — Project breakdown */}
+            <div className="space-y-6">
+              {/* Line items */}
+              <div className="rounded-2xl border border-border bg-card">
+                <div className="border-b border-border px-6 py-4">
+                  <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+                    Project Items
+                  </h2>
+                </div>
+                <div className="divide-y divide-border">
+                  {items.map((item) => (
+                    <div
+                      key={item.id}
+                      className="flex items-start justify-between gap-4 px-6 py-4"
+                    >
+                      <div className="min-w-0">
+                        <p className="font-medium">
+                          {item.location
+                            ? item.location
+                            : productLabel(item.productType)}
+                        </p>
+                        <p className="mt-0.5 text-sm text-muted-foreground">
+                          {productLabel(item.productType)}
+                          {item.config.width && item.config.height
+                            ? ` · ${item.config.width}″ × ${item.config.height}″`
+                            : ""}
+                          {(
+                            item.config as { productLine?: string }
+                          ).productLine
+                            ? ` · ${(item.config as { productLine?: string }).productLine}`
+                            : ""}
+                          {(
+                            item.config as { glassType?: string }
+                          ).glassType
+                            ? ` · ${(item.config as { glassType?: string }).glassType}`
+                            : ""}
+                          {(item.config as { color?: string }).color
+                            ? ` · ${(item.config as { color?: string }).color}`
+                            : ""}
+                          {(
+                            item.config as { gridStyle?: string }
+                          ).gridStyle &&
+                          (item.config as { gridStyle?: string }).gridStyle !==
+                            "None"
+                            ? ` · ${(item.config as { gridStyle?: string }).gridStyle} grids`
+                            : ""}
+                        </p>
+                        {item.qty > 1 && (
+                          <p className="mt-1 text-sm text-muted-foreground">
+                            Qty: {item.qty}
+                          </p>
+                        )}
+                      </div>
+                      <div className="text-right">
+                        <p className="font-medium">
+                          {formatUSD(item.price.low * item.qty)}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          – {formatUSD(item.price.high * item.qty)}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Project total */}
+              <div className="rounded-2xl border border-border bg-card p-6">
+                <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+                  Estimated Project Total
+                </h2>
+                <div className="mt-2 flex items-baseline gap-2">
+                  <span className="text-3xl font-semibold tracking-tight">
+                    {formatUSD(totalLow)}
+                  </span>
+                  <span className="text-lg text-muted-foreground">–</span>
+                  <span className="text-3xl font-semibold tracking-tight">
+                    {formatUSD(totalHigh)}
+                  </span>
+                </div>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Installed price estimate. Final pricing confirmed after on-site
+                  measurement verification.
+                </p>
+                <div className="mt-4 space-y-2">
+                  {[
+                    "Professional installation included",
+                    "Measurement verification included",
+                    "Workmanship warranty included",
+                    "No in-home sales presentation required",
+                  ].map((t) => (
+                    <div
+                      key={t}
+                      className="flex items-center gap-2 text-sm text-foreground/85"
+                    >
+                      <CheckCircle2 className="h-4 w-4 flex-shrink-0 text-emerald-600" />
+                      <span>{t}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Add more / start over */}
+              <div className="flex flex-wrap gap-3">
+                <Button
+                  asChild
+                  variant="outline"
+                  className="h-11 rounded-full px-6"
+                >
+                  <Link to="/configure/$type" params={{ type: "window" }}>
+                    Add Another Window
+                  </Link>
+                </Button>
+                <Button
+                  asChild
+                  variant="outline"
+                  className="h-11 rounded-full px-6"
+                >
+                  <Link to="/configure/$type" params={{ type: "door" }}>
+                    Add a Door
+                  </Link>
+                </Button>
+              </div>
             </div>
 
-            <Button
-              onClick={handleContinue}
-              className="mt-8 h-12 w-full rounded-full text-sm font-semibold"
-            >
-              Continue <ArrowRight className="ml-1.5 h-4 w-4" />
-            </Button>
-            <p className="mt-3 text-center text-[11px] text-muted-foreground">
-              Your information stays private. We only contact you about your project.
-            </p>
-          </section>
-        ) : (
-          <ReviewStep
-            contact={contact}
-            items={items}
-            itemCount={itemCount}
-            totalLow={totalLow}
-            totalHigh={totalHigh}
-            totalMid={totalMid}
-            timeline={timeline}
-            setTimeline={setTimeline}
-            notes={notes}
-            setNotes={setNotes}
-            onBack={() => setStep(1)}
-            onSubmit={handleSubmit}
-            loading={loading}
-          />
-        )}
-      </div>
-    </div>
-  );
-}
+            {/* RIGHT — What happens next + callback form */}
+            <div className="space-y-6">
+              {/* What happens next */}
+              <div className="rounded-2xl border border-border bg-card p-6">
+                <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+                  What Happens Next
+                </h2>
+                <div className="mt-4 space-y-5">
+                  {NEXT_STEPS.map((step, i) => (
+                    <div key={i} className="flex gap-3">
+                      <div className="mt-0.5 flex-shrink-0">
+                        <step.icon className="h-5 w-5 text-foreground/70" />
+                      </div>
+                      <div>
+                        <p className="font-medium">{step.title}</p>
+                        <p className="mt-0.5 text-sm text-muted-foreground">
+                          {step.description}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
 
-function StepBadge({ n, label, active, done }: { n: number; label: string; active: boolean; done: boolean }) {
-  return (
-    <div className="flex items-center gap-2">
-      <span
-        className={cn(
-          "flex h-6 w-6 items-center justify-center rounded-full border text-[11px] font-semibold",
-          done && "border-emerald-600 bg-emerald-600 text-background",
-          active && "border-foreground bg-foreground text-background",
-          !active && !done && "border-border text-muted-foreground",
-        )}
-      >
-        {done ? <CheckCircle2 className="h-3.5 w-3.5" /> : n}
-      </span>
-      <span className={cn(active ? "text-foreground" : "text-muted-foreground")}>{label}</span>
-    </div>
-  );
-}
+              {/* Callback request form */}
+              <div className="rounded-2xl border border-border bg-card p-6">
+                <div className="mb-4">
+                  <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+                    Request a Callback
+                  </h2>
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    Leave your info and we'll reach out within 1 business day to
+                    confirm your project and schedule your measurement
+                    appointment.
+                  </p>
+                </div>
 
-function ReviewStep(props: {
-  contact: Contact;
-  items: CartItem[];
-  itemCount: number;
-  totalLow: number;
-  totalHigh: number;
-  totalMid: number;
-  timeline: Timeline;
-  setTimeline: (t: Timeline) => void;
-  notes: string;
-  setNotes: (s: string) => void;
-  onBack: () => void;
-  onSubmit: () => void;
-  loading: boolean;
-}) {
-  const { items, itemCount, totalLow, totalHigh, totalMid } = props;
-
-  const productLines = uniqStrings(
-    items.map((i) => (i.config as { productLine?: string }).productLine),
-  );
-  const glassTypes = uniqStrings(
-    items.map((i) => (i.config as { glassType?: string }).glassType),
-  );
-
-  return (
-    <div className="mt-10 space-y-6">
-      {/* Project Summary Card */}
-      <section className="overflow-hidden rounded-2xl border border-border bg-card">
-        <div className="border-b border-border px-6 py-4">
-          <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
-            Your Project
-          </div>
-          <div className="mt-1 text-lg font-semibold tracking-tight">
-            {itemCount} {itemCount === 1 ? "Window" : "Windows"}
-          </div>
-        </div>
-
-        <dl className="divide-y divide-border">
-          <SummaryRow label="Total Windows" value={String(itemCount)} />
-          <SummaryRow
-            label="Estimated Project Total"
-            value={`${formatUSD(totalLow)} – ${formatUSD(totalHigh)}`}
-            sub={`Midpoint ${formatUSD(totalMid)}`}
-          />
-          <SummaryRow label="Product Lines" value={productLines.join(", ") || "—"} />
-          <SummaryRow label="Glass Types" value={glassTypes.join(", ") || "—"} />
-          <SummaryRow
-            label="Installation"
-            value="Included"
-            icon={<Hammer className="h-3.5 w-3.5 text-emerald-600" />}
-          />
-          <SummaryRow
-            label="Measurement Verification"
-            value="Included"
-            icon={<Ruler className="h-3.5 w-3.5 text-emerald-600" />}
-          />
-        </dl>
-      </section>
-
-      {/* Timeline */}
-      <section className="rounded-2xl border border-border bg-card p-6">
-        <h2 className="text-base font-semibold tracking-tight">What&apos;s Your Timeline?</h2>
-        <p className="mt-1 text-xs text-muted-foreground">
-          Helps us prioritize and prepare the right resources.
-        </p>
-        <div className="mt-4 grid gap-2 sm:grid-cols-2">
-          {TIMELINES.map((t) => {
-            const selected = props.timeline === t;
-            return (
-              <button
-                key={t}
-                type="button"
-                onClick={() => props.setTimeline(t)}
-                className={cn(
-                  "flex items-center justify-between rounded-xl border px-4 py-3 text-left text-sm transition",
-                  selected
-                    ? "border-foreground bg-foreground/5 font-medium"
-                    : "border-border hover:border-foreground/40",
+                {submitted ? (
+                  <div className="py-6 text-center">
+                    <CheckCircle2 className="mx-auto h-10 w-10 text-emerald-600" />
+                    <h3 className="mt-3 text-lg font-semibold tracking-tight">
+                      Request received!
+                    </h3>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      We'll be in touch within 1 business day. Check your email
+                      for a confirmation.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <div>
+                      <Label
+                        htmlFor="name"
+                        className="text-xs text-muted-foreground"
+                      >
+                        Your name *
+                      </Label>
+                      <Input
+                        id="name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        placeholder="First and last name"
+                        className="mt-1.5"
+                      />
+                    </div>
+                    <div>
+                      <Label
+                        htmlFor="phone"
+                        className="text-xs text-muted-foreground"
+                      >
+                        Phone number
+                      </Label>
+                      <Input
+                        id="phone"
+                        type="tel"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        placeholder="(801) 555-0100"
+                        className="mt-1.5"
+                      />
+                    </div>
+                    <div>
+                      <Label
+                        htmlFor="email"
+                        className="text-xs text-muted-foreground"
+                      >
+                        Email address
+                      </Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="you@example.com"
+                        className="mt-1.5"
+                      />
+                    </div>
+                    <div>
+                      <Label
+                        htmlFor="notes"
+                        className="text-xs text-muted-foreground"
+                      >
+                        Anything else we should know? (optional)
+                      </Label>
+                      <Textarea
+                        id="notes"
+                        value={notes}
+                        onChange={(e) => setNotes(e.target.value)}
+                        placeholder="e.g. Best time to call, access notes, specific questions..."
+                        className="mt-1.5 min-h-[80px]"
+                      />
+                    </div>
+                    <Button
+                      className="h-12 w-full rounded-full text-sm font-semibold"
+                      disabled={!canSubmit}
+                      onClick={handleSubmit}
+                    >
+                      Request Callback & Measurement Appointment
+                    </Button>
+                    <p className="text-center text-[11px] text-muted-foreground">
+                      {!canSubmit
+                        ? "Please enter your name and at least a phone number or email."
+                        : "No commitment required. We'll confirm your project details before scheduling."}
+                    </p>
+                    <div className="flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
+                      <ShieldCheck className="h-3 w-3" />
+                      Final price confirmed after on-site measurement. No
+                      surprises.
+                    </div>
+                  </div>
                 )}
-              >
-                <span>{t}</span>
-                {selected && <CheckCircle2 className="h-4 w-4 text-emerald-600" />}
-              </button>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* Notes */}
-      <section className="rounded-2xl border border-border bg-card p-6">
-        <Label htmlFor="notes" className="text-sm font-semibold tracking-tight">
-          Optional Notes
-        </Label>
-        <Textarea
-          id="notes"
-          rows={4}
-          className="mt-3"
-          placeholder="Tell us anything you'd like us to know about your project."
-          value={props.notes}
-          onChange={(e) => props.setNotes(e.target.value.slice(0, 1000))}
-        />
-      </section>
-
-      {/* Trust */}
-      <section className="overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-card to-muted/30 p-6">
-        <div className="flex items-center gap-2">
-          <Shield className="h-4 w-4 text-foreground/80" />
-          <h2 className="text-sm font-semibold tracking-tight">
-            Why Homeowners Choose Pane &amp; Simple
-          </h2>
-        </div>
-        <ul className="mt-4 grid gap-2.5 text-[13px] sm:grid-cols-2">
-          {[
-            { icon: <Eye className="h-3.5 w-3.5" />, text: "Transparent online pricing" },
-            { icon: <Sparkles className="h-3.5 w-3.5" />, text: "No high-pressure sales presentations" },
-            { icon: <Ruler className="h-3.5 w-3.5" />, text: "Professional measurement verification" },
-            { icon: <Hammer className="h-3.5 w-3.5" />, text: "Professional installation included" },
-            { icon: <Mountain className="h-3.5 w-3.5" />, text: "Built for Utah weather" },
-          ].map((t) => (
-            <li key={t.text} className="flex items-start gap-2">
-              <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-emerald-600" />
-              <span className="text-foreground/85">{t.text}</span>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <div className="space-y-3">
-        <Button
-          onClick={props.onSubmit}
-          disabled={props.loading}
-          className="h-12 w-full rounded-full text-sm font-semibold shadow-[var(--shadow-elegant)]"
-        >
-          {props.loading ? "Submitting…" : "Request My Exact Quote"}
-          {!props.loading && <ArrowRight className="ml-1.5 h-4 w-4" />}
-        </Button>
-        <button
-          type="button"
-          onClick={props.onBack}
-          className="flex w-full items-center justify-center gap-1 text-xs text-muted-foreground hover:text-foreground"
-        >
-          <ArrowLeft className="h-3 w-3" /> Edit my information
-        </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
 }
-
-function SummaryRow({
-  label, value, sub, icon,
-}: { label: string; value: string; sub?: string; icon?: React.ReactNode }) {
-  return (
-    <div className="flex items-start justify-between gap-4 px-6 py-3.5">
-      <dt className="text-sm text-muted-foreground">{label}</dt>
-      <dd className="text-right">
-        <div className="flex items-center justify-end gap-1.5 text-sm font-medium">
-          {icon}
-          <span>{value}</span>
-        </div>
-        {sub && <div className="mt-0.5 text-[11px] text-muted-foreground">{sub}</div>}
-      </dd>
-    </div>
-  );
-}
-
-function uniqStrings(arr: (string | undefined)[]): string[] {
-  return Array.from(new Set(arr.filter((v): v is string => Boolean(v))));
-}
-
-function Field({
-  label, id, full, children,
-}: { label: string; id: string; full?: boolean; children: React.ReactNode }) {
-  return (
-    <div className={full ? "sm:col-span-2" : ""}>
-      <Label htmlFor={id} className="mb-1.5 text-xs text-muted-foreground">
-        {label}
-      </Label>
-      {children}
-    </div>
-  );
-}
-
