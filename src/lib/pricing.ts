@@ -38,10 +38,12 @@ export type WindowConfig = {
 export type DoorConfig = {
   width: number | null;
   height: number | null;
-  material: "Wood" | "Fiberglass" | "Steel";
+  material: "Wood" | "Fiberglass" | "Steel" | "Vinyl";
   glassOption: "None" | "Half" | "Full";
   finish: "Painted" | "Stained";
   hardware: "Basic" | "Premium";
+  panelCount?: 2 | 3 | 4;
+  frameColor?: "White" | "Bronze" | "Black";
 };
 
 export type AnyConfig = WindowConfig | DoorConfig;
@@ -98,6 +100,7 @@ const WINDOW_GRID_ADDON: Record<WindowConfig["gridStyle"], string | null> = {
 
 const DOOR_MATERIAL_TIER: Record<DoorConfig["material"], BrandTier> = {
   Steel: "Good",
+  Vinyl: "Good",
   Fiberglass: "Better",
   Wood: "Best",
 };
