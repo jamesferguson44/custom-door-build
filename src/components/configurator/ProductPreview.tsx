@@ -591,6 +591,7 @@ function SlidingDoorBody({
   stroke,
   handleColor,
   glassOption,
+  panelCount = 2,
 }: {
   x: number;
   y: number;
@@ -600,50 +601,59 @@ function SlidingDoorBody({
   stroke: string;
   handleColor: string;
   glassOption: DoorConfig["glassOption"];
+  panelCount?: number;
 }) {
-  const panelW = w / 2;
-  const frame = 6;
-  // Glass density depends on glassOption; sliding always shows glass but we vary insets
-  const inset =
-    glassOption === "Full" ? frame : glassOption === "Half" ? frame + 6 : frame + 14;
+  void glassOption;
+  const panelW = w / panelCount;
+  const frame = 5;
 
-  const renderPanel = (px: number) => (
+  const slidingMap: Record<number, boolean[]> = {
+    2: [true, false],
+    3: [true, false, true],
+    4: [false, true, true, false],
+  };
+  const isSliding = slidingMap[panelCount] ?? [true, false];
+
+  const renderPanel = (px: number, sliding: boolean) => (
     <g key={px}>
-      <rect x={px} y={y} width={panelW} height={h} fill={doorColor} stroke={stroke} />
       <rect
-        x={px + inset}
-        y={y + inset}
-        width={panelW - inset * 2}
-        height={h - inset * 2}
+        x={px}
+        y={y}
+        width={panelW}
+        height={h}
+        fill={doorColor}
+        stroke={stroke}
+        strokeWidth={0.75}
+      />
+      <rect
+        x={px + frame}
+        y={y + frame}
+        width={panelW - frame * 2}
+        height={h - frame * 2}
         fill="url(#door-glass)"
         stroke={stroke}
+        strokeWidth={0.5}
       />
+      {sliding && (
+        <rect
+          x={px + panelW - 9}
+          y={y + h * 0.5 - 14}
+          width={3}
+          height={28}
+          rx={1.5}
+          fill={handleColor}
+        />
+      )}
     </g>
   );
 
   return (
     <g>
-      {/* Track */}
-      <rect x={x - 4} y={y - 4} width={w + 8} height={4} fill="#bdbdbd" />
-      {renderPanel(x)}
-      {renderPanel(x + panelW)}
-      {/* Handles */}
-      <rect
-        x={x + panelW - 6}
-        y={y + h * 0.5 - 12}
-        width={3}
-        height={24}
-        rx={1.5}
-        fill={handleColor}
-      />
-      <rect
-        x={x + panelW + 3}
-        y={y + h * 0.5 - 12}
-        width={3}
-        height={24}
-        rx={1.5}
-        fill={handleColor}
-      />
+      <rect x={x - 4} y={y - 5} width={w + 8} height={5} rx={1} fill="#c0c0be" />
+      <rect x={x - 4} y={y + h} width={w + 8} height={5} rx={1} fill="#c0c0be" />
+      {Array.from({ length: panelCount }).map((_, i) =>
+        renderPanel(x + i * panelW, isSliding[i])
+      )}
     </g>
   );
 }
