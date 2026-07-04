@@ -183,11 +183,9 @@ export const Route = createFileRoute("/configure/$type")({
 function ConfigurePage() {
   const { type } = Route.useParams();
   const productType = type as ProductType;
-  return productType === "window" ? (
-    <WindowConfigurator productType={productType} />
-  ) : (
-    <DoorConfigurator productType={productType} />
-  );
+  if (productType === "window") return <WindowConfigurator productType={productType} />;
+  if (productType === "sliding_door") return <SlidingDoorConfigurator productType={productType} />;
+  return <DoorConfigurator productType={productType} />;
 }
 
 function Hero({ productType }: { productType: ProductType }) {
