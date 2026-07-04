@@ -378,18 +378,19 @@ function GridOverlay({
 /* ------------------------- DOOR ------------------------- */
 
 function DoorPreview({ config, isSliding }: { config: DoorConfig; isSliding: boolean }) {
-  const maxW = 200;
-  const maxH = 220;
-  const ratio = (config.width ?? 36) / (config.height ?? 80);
+  const maxW = isSliding ? 290 : 200;
+  const maxH = isSliding ? 170 : 220;
+  const defaultRatio = isSliding
+    ? (config.panelCount ?? 2) * 0.6
+    : (config.width ?? 36) / (config.height ?? 80);
+  const ratio = (config.width && config.height)
+    ? (config.width / config.height)
+    : defaultRatio;
   let w = maxW;
   let h = maxW / ratio;
   if (h > maxH) {
     h = maxH;
     w = maxH * ratio;
-  }
-  // Sliding doors are typically wider — give them a bit more room
-  if (isSliding) {
-    w = Math.min(280, w * 1.6);
   }
   const x = (320 - w) / 2;
   const y = (240 - h) / 2;
@@ -414,6 +415,16 @@ function DoorPreview({ config, isSliding }: { config: DoorConfig; isSliding: boo
       : config.finish === "Stained"
       ? fiberglassStained
       : fiberglassPainted;
+
+  const slidingFrameColor =
+    config.frameColor === "Black" ? "#1a1a1a"
+    : config.frameColor === "Bronze" ? "#7a5c3a"
+    : "#f0f0ee";
+
+  const slidingFrameStroke =
+    config.frameColor === "Black" ? "#000"
+    : config.frameColor === "Bronze" ? "#5a3e20"
+    : "#ccccca";
 
   const stroke = "#2a2a2a33";
   const handleColor = config.hardware === "Premium" ? "#c9a24b" : "#9a9a9a";
@@ -448,10 +459,11 @@ function DoorPreview({ config, isSliding }: { config: DoorConfig; isSliding: boo
           y={y}
           w={w}
           h={h}
-          doorColor={doorColor}
-          stroke={stroke}
+          doorColor={slidingFrameColor}
+          stroke={slidingFrameStroke}
           handleColor={handleColor}
           glassOption={config.glassOption}
+          panelCount={config.panelCount ?? 2}
         />
       ) : (
         <SingleDoorBody
