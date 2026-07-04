@@ -36,6 +36,8 @@ export function ProductPreview({ productType, config }: Props) {
       <div className="border-t border-border bg-card/50 px-5 py-3 text-[11px] text-muted-foreground">
         {productType === "window"
           ? `${(config as WindowConfig).windowStyle} · ${(config as WindowConfig).color} · ${(config as WindowConfig).glassType} · ${(config as WindowConfig).gridStyle === "None" ? "No grids" : `${(config as WindowConfig).gridStyle} grids`}`
+          : productType === "sliding_door"
+          ? `${(config as DoorConfig).panelCount ?? 2}-Panel · ${(config as DoorConfig).frameColor ?? "White"} · ${(config as DoorConfig).material}`
           : `${productLabel(productType)} · live preview updates with your selections`}
       </div>
     </div>
