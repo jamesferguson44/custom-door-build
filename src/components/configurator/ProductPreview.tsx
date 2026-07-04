@@ -36,6 +36,8 @@ export function ProductPreview({ productType, config }: Props) {
       <div className="border-t border-border bg-card/50 px-5 py-3 text-[11px] text-muted-foreground">
         {productType === "window"
           ? `${(config as WindowConfig).windowStyle} · ${(config as WindowConfig).color} · ${(config as WindowConfig).glassType} · ${(config as WindowConfig).gridStyle === "None" ? "No grids" : `${(config as WindowConfig).gridStyle} grids`}`
+          : productType === "sliding_door"
+          ? `${(config as DoorConfig).panelCount ?? 2}-Panel · ${(config as DoorConfig).frameColor ?? "White"} · ${(config as DoorConfig).material}`
           : `${productLabel(productType)} · live preview updates with your selections`}
       </div>
     </div>
@@ -376,18 +378,19 @@ function GridOverlay({
 /* ------------------------- DOOR ------------------------- */
 
 function DoorPreview({ config, isSliding }: { config: DoorConfig; isSliding: boolean }) {
-  const maxW = 200;
-  const maxH = 220;
-  const ratio = (config.width ?? 36) / (config.height ?? 80);
+  const maxW = isSliding ? 290 : 200;
+  const maxH = isSliding ? 170 : 220;
+  const defaultRatio = isSliding
+    ? (config.panelCount ?? 2) * 0.6
+    : (config.width ?? 36) / (config.height ?? 80);
+  const ratio = (config.width && config.height)
+    ? (config.width / config.height)
+    : defaultRatio;
   let w = maxW;
   let h = maxW / ratio;
   if (h > maxH) {
     h = maxH;
     w = maxH * ratio;
-  }
-  // Sliding doors are typically wider — give them a bit more room
-  if (isSliding) {
-    w = Math.min(280, w * 1.6);
   }
   const x = (320 - w) / 2;
   const y = (240 - h) / 2;
@@ -412,6 +415,16 @@ function DoorPreview({ config, isSliding }: { config: DoorConfig; isSliding: boo
       : config.finish === "Stained"
       ? fiberglassStained
       : fiberglassPainted;
+
+  const slidingFrameColor =
+    config.frameColor === "Black" ? "#1a1a1a"
+    : config.frameColor === "Bronze" ? "#7a5c3a"
+    : "#f0f0ee";
+
+  const slidingFrameStroke =
+    config.frameColor === "Black" ? "#000"
+    : config.frameColor === "Bronze" ? "#5a3e20"
+    : "#ccccca";
 
   const stroke = "#2a2a2a33";
   const handleColor = config.hardware === "Premium" ? "#c9a24b" : "#9a9a9a";
@@ -446,10 +459,11 @@ function DoorPreview({ config, isSliding }: { config: DoorConfig; isSliding: boo
           y={y}
           w={w}
           h={h}
-          doorColor={doorColor}
-          stroke={stroke}
+          doorColor={slidingFrameColor}
+          stroke={slidingFrameStroke}
           handleColor={handleColor}
           glassOption={config.glassOption}
+          panelCount={config.panelCount ?? 2}
         />
       ) : (
         <SingleDoorBody
@@ -577,6 +591,7 @@ function SlidingDoorBody({
   stroke,
   handleColor,
   glassOption,
+  panelCount = 2,
 }: {
   x: number;
   y: number;
@@ -586,50 +601,59 @@ function SlidingDoorBody({
   stroke: string;
   handleColor: string;
   glassOption: DoorConfig["glassOption"];
+  panelCount?: number;
 }) {
-  const panelW = w / 2;
-  const frame = 6;
-  // Glass density depends on glassOption; sliding always shows glass but we vary insets
-  const inset =
-    glassOption === "Full" ? frame : glassOption === "Half" ? frame + 6 : frame + 14;
+  void glassOption;
+  const panelW = w / panelCount;
+  const frame = 5;
 
-  const renderPanel = (px: number) => (
+  const slidingMap: Record<number, boolean[]> = {
+    2: [true, false],
+    3: [true, false, true],
+    4: [false, true, true, false],
+  };
+  const isSliding = slidingMap[panelCount] ?? [true, false];
+
+  const renderPanel = (px: number, sliding: boolean) => (
     <g key={px}>
-      <rect x={px} y={y} width={panelW} height={h} fill={doorColor} stroke={stroke} />
       <rect
-        x={px + inset}
-        y={y + inset}
-        width={panelW - inset * 2}
-        height={h - inset * 2}
+        x={px}
+        y={y}
+        width={panelW}
+        height={h}
+        fill={doorColor}
+        stroke={stroke}
+        strokeWidth={0.75}
+      />
+      <rect
+        x={px + frame}
+        y={y + frame}
+        width={panelW - frame * 2}
+        height={h - frame * 2}
         fill="url(#door-glass)"
         stroke={stroke}
+        strokeWidth={0.5}
       />
+      {sliding && (
+        <rect
+          x={px + panelW - 9}
+          y={y + h * 0.5 - 14}
+          width={3}
+          height={28}
+          rx={1.5}
+          fill={handleColor}
+        />
+      )}
     </g>
   );
 
   return (
     <g>
-      {/* Track */}
-      <rect x={x - 4} y={y - 4} width={w + 8} height={4} fill="#bdbdbd" />
-      {renderPanel(x)}
-      {renderPanel(x + panelW)}
-      {/* Handles */}
-      <rect
-        x={x + panelW - 6}
-        y={y + h * 0.5 - 12}
-        width={3}
-        height={24}
-        rx={1.5}
-        fill={handleColor}
-      />
-      <rect
-        x={x + panelW + 3}
-        y={y + h * 0.5 - 12}
-        width={3}
-        height={24}
-        rx={1.5}
-        fill={handleColor}
-      />
+      <rect x={x - 4} y={y - 5} width={w + 8} height={5} rx={1} fill="#c0c0be" />
+      <rect x={x - 4} y={y + h} width={w + 8} height={5} rx={1} fill="#c0c0be" />
+      {Array.from({ length: panelCount }).map((_, i) =>
+        renderPanel(x + i * panelW, isSliding[i])
+      )}
     </g>
   );
 }

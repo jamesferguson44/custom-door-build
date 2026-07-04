@@ -183,11 +183,9 @@ export const Route = createFileRoute("/configure/$type")({
 function ConfigurePage() {
   const { type } = Route.useParams();
   const productType = type as ProductType;
-  return productType === "window" ? (
-    <WindowConfigurator productType={productType} />
-  ) : (
-    <DoorConfigurator productType={productType} />
-  );
+  if (productType === "window") return <WindowConfigurator productType={productType} />;
+  if (productType === "sliding_door") return <SlidingDoorConfigurator productType={productType} />;
+  return <DoorConfigurator productType={productType} />;
 }
 
 function Hero({ productType }: { productType: ProductType }) {
@@ -530,6 +528,209 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
           locationValid={locationValid}
           onAddedToProject={() => {
             setConfig({ ...config, width: 0, height: 0 });
+            setLocation("");
+          }}
+        />
+        <ProjectSummary />
+        <div className="flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
+          <Save className="h-3 w-3" /> Project automatically saved.
+        </div>
+      </div>
+    </Shell>
+  );
+}
+
+const SLIDING_STEP_LABELS = ["Material", "Panels", "Glass", "Color", "Measurements", "Location"];
+
+function SlidingDoorConfigurator({ productType }: { productType: ProductType }) {
+  const [config, setConfig] = useState<DoorConfig>({
+    material: "Vinyl",
+    panelCount: 2,
+    glassOption: "Full",
+    frameColor: "White",
+    finish: "Painted",
+    hardware: "Basic",
+    width: 0,
+    height: 0,
+  });
+  const [touched, setTouched] = useState<Record<number, boolean>>({});
+  const [location, setLocation] = useState("");
+  const locationValid = location.trim().length > 0;
+
+  const mark = (n: number) => setTouched((t) => (t[n] ? t : { ...t, [n]: true }));
+  const valid = isValidSize(config.width, config.height);
+  const price = useMemo(() => calculatePrice(productType, config), [productType, config]);
+
+  const stepDone: Record<number, boolean> = {
+    1: !!touched[1],
+    2: !!touched[2],
+    3: !!touched[3],
+    4: !!touched[4],
+    5: valid,
+    6: locationValid,
+  };
+
+  const activeStep = [1, 2, 3, 4, 5, 6].find((n) => !stepDone[n]) ?? 0;
+
+  const completeness =
+    (stepDone[1] ? 0.13 : 0) +
+    (stepDone[2] ? 0.13 : 0) +
+    (stepDone[3] ? 0.12 : 0) +
+    (stepDone[4] ? 0.12 : 0) +
+    (stepDone[5] ? 0.4 : 0) +
+    (locationValid ? 0.1 : 0);
+
+  return (
+    <Shell productType={productType}>
+      <div>
+        <ProgressBar done={stepDone} active={activeStep} labels={SLIDING_STEP_LABELS} />
+
+        <StepSection
+          step={1}
+          title="Material"
+          description="Vinyl is the most popular and affordable choice for sliding patio doors. Fiberglass offers better insulation and a more premium look."
+          summary={config.material}
+          complete={stepDone[1]}
+          active={activeStep === 1}
+        >
+          <OptionGroup
+            label="Material"
+            value={config.material as "Vinyl" | "Fiberglass"}
+            options={["Vinyl", "Fiberglass"] as const}
+            onChange={(v) => { setConfig({ ...config, material: v }); mark(1); }}
+            descriptions={{
+              Vinyl: "Most popular · Durable and low maintenance · Best value",
+              Fiberglass: "Premium insulation · Superior strength · Contemporary look",
+            }}
+            badges={{ Vinyl: "Most Popular" }}
+          />
+        </StepSection>
+
+        <StepSection
+          step={2}
+          title="Panel Configuration"
+          description="Choose how many panels your sliding door will have. 2-panel is standard for most openings."
+          summary={config.panelCount ? `${config.panelCount}-Panel` : undefined}
+          complete={stepDone[2]}
+          active={activeStep === 2}
+        >
+          <OptionGroup
+            label="Panel Configuration"
+            value={String(config.panelCount ?? 2)}
+            options={["2", "3", "4"] as const}
+            onChange={(v) => { setConfig({ ...config, panelCount: Number(v) as 2 | 3 | 4 }); mark(2); }}
+            descriptions={{
+              "2": "One sliding panel, one fixed · Standard opening · Most common",
+              "3": "Two sliding panels, one fixed center · Wider openings",
+              "4": "Two sliding, two fixed · Large openings and expansive views",
+            }}
+            badges={{ "2": "Most Common" }}
+          />
+        </StepSection>
+
+        <StepSection
+          step={3}
+          title="Glass"
+          description="Low-E is recommended for Utah's climate. Triple pane is the premium upgrade for maximum insulation."
+          summary={config.glassOption === "Full" ? "Low-E (Recommended)" : "Triple Pane"}
+          complete={stepDone[3]}
+          active={activeStep === 3}
+        >
+          <OptionGroup
+            label="Glass Type"
+            value={config.glassOption as "Full" | "Half"}
+            options={["Full", "Half"] as const}
+            onChange={(v) => { setConfig({ ...config, glassOption: v }); mark(3); }}
+            descriptions={{
+              Full: "Low-E dual pane · Energy efficient · Standard choice for Utah",
+              Half: "Triple pane · Maximum insulation · Best for extreme temperature zones",
+            }}
+            badges={{ Full: "Recommended" }}
+          />
+        </StepSection>
+
+        <StepSection
+          step={4}
+          title="Frame Color"
+          description="Choose the exterior frame color. All options include a white interior finish."
+          summary={config.frameColor}
+          complete={stepDone[4]}
+          active={activeStep === 4}
+        >
+          <OptionGroup
+            label="Frame Color"
+            value={config.frameColor ?? "White"}
+            options={["White", "Bronze", "Black"] as const}
+            onChange={(v) => { setConfig({ ...config, frameColor: v as "White" | "Bronze" | "Black" }); mark(4); }}
+            descriptions={{
+              White: "Classic · Matches most home exteriors",
+              Bronze: "Warm tone · Popular with brick and earth tones",
+              Black: "Modern and bold · Contemporary look",
+            }}
+          />
+        </StepSection>
+
+        <StepSection
+          step={5}
+          title="Measurements"
+          description="Approximate measurements are completely fine — a professional verifies exact numbers before production."
+          complete={stepDone[5]}
+          active={activeStep === 5}
+          summary={valid ? `${config.width}″ × ${config.height}″` : undefined}
+        >
+          <div className="flex items-start gap-3 rounded-xl border border-sky-200 bg-sky-50/70 px-4 py-3 text-sm text-sky-900 dark:border-sky-900/40 dark:bg-sky-950/30 dark:text-sky-100">
+            <Info className="mt-0.5 h-4 w-4 flex-shrink-0" />
+            <div>
+              <div className="font-medium">Don't worry if your measurements aren't perfect.</div>
+              <div className="mt-0.5 text-[13px] opacity-80">
+                Most homeowners enter approximate sizes. We verify exact measurements before ordering.
+              </div>
+            </div>
+          </div>
+          <SizeInputs
+            width={config.width}
+            height={config.height}
+            onChange={(width, height) => setConfig({ ...config, width, height })}
+          />
+        </StepSection>
+
+        <StepSection
+          step={6}
+          title="Door Location"
+          description="Tell us where this door is so we can organize your quote and installation."
+          summary={locationValid ? location : undefined}
+          complete={locationValid}
+          active={stepDone[5] && !locationValid}
+        >
+          <div className="space-y-2">
+            <Label htmlFor="sliding-location" className="text-sm text-muted-foreground">
+              Door location <span className="text-foreground">*</span>
+            </Label>
+            <Input
+              id="sliding-location"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              placeholder="e.g. Back Patio, Living Room, Master Bedroom..."
+            />
+            <p className="text-[11px] text-muted-foreground">
+              This helps us organize your quote and schedule installation by location.
+            </p>
+          </div>
+        </StepSection>
+      </div>
+
+      <div className="lg:sticky lg:top-20 lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto space-y-6 pb-6">
+        <ProductPreview productType={productType} config={config} />
+        <PriceSummary
+          productType={productType}
+          config={config}
+          price={price}
+          valid={valid}
+          completeness={completeness}
+          location={location}
+          locationValid={locationValid}
+          onAddedToProject={() => {
+            setConfig({ material: "Vinyl", panelCount: 2, glassOption: "Full", frameColor: "White", finish: "Painted", hardware: "Basic", width: 0, height: 0 });
             setLocation("");
           }}
         />
