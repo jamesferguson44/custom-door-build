@@ -547,6 +547,7 @@ function SlidingDoorConfigurator({ productType }: { productType: ProductType }) 
     material: "Vinyl",
     panelCount: 2,
     glassOption: "Full",
+    glassEfficiency: "Low-E",
     frameColor: "White",
     finish: "Painted",
     hardware: "Basic",
