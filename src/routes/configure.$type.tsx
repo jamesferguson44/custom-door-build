@@ -268,7 +268,6 @@ function StepSection({
       <div className="mb-4 flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <span className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground tabular-nums">
-            {complete && <Check className="h-3 w-3 text-emerald-600" />}
             Step {String(step).padStart(2, "0")}
           </span>
           <div className="mt-1 flex items-center gap-2">
