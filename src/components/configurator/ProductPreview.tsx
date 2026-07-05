@@ -37,7 +37,7 @@ export function ProductPreview({ productType, config }: Props) {
         {productType === "window"
           ? `${(config as WindowConfig).windowStyle} · ${(config as WindowConfig).color} · ${(config as WindowConfig).glassType} · ${(config as WindowConfig).gridStyle === "None" ? "No grids" : `${(config as WindowConfig).gridStyle} grids`}`
           : productType === "sliding_door"
-          ? `${(config as DoorConfig).panelCount ?? 2}-Panel · ${(config as DoorConfig).frameColor ?? "White"} · ${(config as DoorConfig).material}`
+          ? `${(config as DoorConfig).panelCount ?? 2}-Panel · ${(config as DoorConfig).frameColor ?? "White"} · ${(config as DoorConfig).glassEfficiency ?? "Low-E"}`
           : `${productLabel(productType)} · live preview updates with your selections`}
       </div>
     </div>
@@ -607,15 +607,19 @@ function SlidingDoorBody({
   const panelW = w / panelCount;
   const frame = 5;
 
-  const slidingMap: Record<number, boolean[]> = {
-    2: [true, false],
-    3: [true, false, true],
-    4: [false, true, true, false],
+  // Handle side: "right" = inner edge of rightward-sliding panel
+  //              "left"  = inner edge of leftward-sliding panel
+  //              null    = fixed panel, no handle
+  const handleSideMap: Record<number, ("right" | "left" | null)[]> = {
+    2: ["right", null],
+    3: ["right", null, "left"],
+    4: [null, "right", "left", null],
   };
-  const isSliding = slidingMap[panelCount] ?? [true, false];
+  const handleSides = handleSideMap[panelCount] ?? ["right", null];
 
-  const renderPanel = (px: number, sliding: boolean) => (
-    <g key={px}>
+  const renderPanel = (px: number, handleSide: "right" | "left" | null, i: number) => (
+    <g key={i}>
+      {/* Panel slab */}
       <rect
         x={px}
         y={y}
@@ -625,6 +629,7 @@ function SlidingDoorBody({
         stroke={stroke}
         strokeWidth={0.75}
       />
+      {/* Glass */}
       <rect
         x={px + frame}
         y={y + frame}
@@ -634,14 +639,27 @@ function SlidingDoorBody({
         stroke={stroke}
         strokeWidth={0.5}
       />
-      {sliding && (
+      {/* Handle — slim recessed pull on the inner edge of sliding panels */}
+      {handleSide === "right" && (
         <rect
-          x={px + panelW - 9}
-          y={y + h * 0.5 - 14}
-          width={3}
-          height={28}
-          rx={1.5}
+          x={px + panelW - 8}
+          y={y + h * 0.5 - 8}
+          width={2.5}
+          height={16}
+          rx={1.2}
           fill={handleColor}
+          opacity={0.85}
+        />
+      )}
+      {handleSide === "left" && (
+        <rect
+          x={px + 5}
+          y={y + h * 0.5 - 8}
+          width={2.5}
+          height={16}
+          rx={1.2}
+          fill={handleColor}
+          opacity={0.85}
         />
       )}
     </g>
@@ -649,10 +667,24 @@ function SlidingDoorBody({
 
   return (
     <g>
+      {/* Top track */}
       <rect x={x - 4} y={y - 5} width={w + 8} height={5} rx={1} fill="#c0c0be" />
+      {/* Bottom track */}
       <rect x={x - 4} y={y + h} width={w + 8} height={5} rx={1} fill="#c0c0be" />
+      {/* Panel dividers — thin vertical lines between panels */}
+      {Array.from({ length: panelCount - 1 }).map((_, i) => (
+        <rect
+          key={i}
+          x={x + (i + 1) * panelW - 1}
+          y={y}
+          width={2}
+          height={h}
+          fill={stroke}
+          opacity={0.3}
+        />
+      ))}
       {Array.from({ length: panelCount }).map((_, i) =>
-        renderPanel(x + i * panelW, isSliding[i])
+        renderPanel(x + i * panelW, handleSides[i], i)
       )}
     </g>
   );

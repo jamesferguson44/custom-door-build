@@ -547,6 +547,7 @@ function SlidingDoorConfigurator({ productType }: { productType: ProductType }) 
     material: "Vinyl",
     panelCount: 2,
     glassOption: "Full",
+    glassEfficiency: "Low-E",
     frameColor: "White",
     finish: "Painted",
     hardware: "Basic",
@@ -631,21 +632,24 @@ function SlidingDoorConfigurator({ productType }: { productType: ProductType }) 
         <StepSection
           step={3}
           title="Glass"
-          description="Low-E is recommended for Utah's climate. Triple pane is the premium upgrade for maximum insulation."
-          summary={config.glassOption === "Full" ? "Low-E (Recommended)" : "Triple Pane"}
+          description="Low-E dual pane is the standard choice for Utah's climate. Triple pane is the premium upgrade for maximum insulation."
+          summary={config.glassEfficiency ?? "Low-E"}
           complete={stepDone[3]}
           active={activeStep === 3}
         >
           <OptionGroup
-            label="Glass Type"
-            value={config.glassOption as "Full" | "Half"}
-            options={["Full", "Half"] as const}
-            onChange={(v) => { setConfig({ ...config, glassOption: v }); mark(3); }}
-            descriptions={{
-              Full: "Low-E dual pane · Energy efficient · Standard choice for Utah",
-              Half: "Triple pane · Maximum insulation · Best for extreme temperature zones",
+            label="Glass Efficiency"
+            value={config.glassEfficiency ?? "Low-E"}
+            options={["Low-E", "Triple Pane"] as const}
+            onChange={(v) => {
+              setConfig({ ...config, glassEfficiency: v as "Low-E" | "Triple Pane" });
+              mark(3);
             }}
-            badges={{ Full: "Recommended" }}
+            descriptions={{
+              "Low-E": "Dual pane with Low-E coating · Energy efficient · Standard choice for Utah",
+              "Triple Pane": "Three panes · Maximum insulation · Best for extreme temperature zones",
+            }}
+            badges={{ "Low-E": "Recommended" }}
           />
         </StepSection>
 
@@ -730,7 +734,17 @@ function SlidingDoorConfigurator({ productType }: { productType: ProductType }) 
           location={location}
           locationValid={locationValid}
           onAddedToProject={() => {
-            setConfig({ material: "Vinyl", panelCount: 2, glassOption: "Full", frameColor: "White", finish: "Painted", hardware: "Basic", width: 0, height: 0 });
+            setConfig({
+              material: "Vinyl",
+              panelCount: 2,
+              glassOption: "Full",
+              glassEfficiency: "Low-E",
+              frameColor: "White",
+              finish: "Painted",
+              hardware: "Basic",
+              width: 0,
+              height: 0,
+            });
             setLocation("");
           }}
         />

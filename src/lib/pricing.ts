@@ -44,6 +44,7 @@ export type DoorConfig = {
   hardware: "Basic" | "Premium";
   panelCount?: 2 | 3 | 4;
   frameColor?: "White" | "Bronze" | "Black";
+  glassEfficiency?: "Low-E" | "Triple Pane";
 };
 
 export type AnyConfig = WindowConfig | DoorConfig;
