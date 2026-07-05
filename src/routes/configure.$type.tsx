@@ -62,9 +62,8 @@ function ProgressBar({ done, active, labels }: { done: Record<number, boolean>; 
               >
                 {isDone ? <Check className="h-3 w-3" /> : n}
               </div>
-              <span
-                className={cn(
-                  "truncate text-xs transition-colors sm:text-[13px]",
+             <span className={cn(
+  "hidden sm:inline truncate text-xs transition-colors sm:text-[13px]",
                   isActive ? "font-medium text-foreground" : isDone ? "text-muted-foreground" : "text-muted-foreground/70",
                 )}
               >
