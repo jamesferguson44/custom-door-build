@@ -206,7 +206,7 @@ function Hero({ productType }: { productType: ProductType }) {
               <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-white/80 sm:text-muted-foreground">
                 {HERO_EYEBROW[productType]}
               </div>
-              <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-5xl">
+              <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-5xl text-white sm:text-foreground">
                 {HERO_TITLE[productType]}
               </h1>
               <p className="mt-2 max-w-xl text-sm text-muted-foreground sm:text-base">
