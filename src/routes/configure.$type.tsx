@@ -203,7 +203,7 @@ function Hero({ productType }: { productType: ProductType }) {
         <div className="mx-auto max-w-[1400px] px-6 pb-8 sm:pb-12">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+              <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-white/80 sm:text-muted-foreground">
                 {HERO_EYEBROW[productType]}
               </div>
               <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-5xl">
