@@ -145,7 +145,7 @@ const TAGLINE: Record<ProductType, string> = {
 };
 
 const HERO_EYEBROW: Record<ProductType, string> = {
-  window: "Online Window Configurator · Instant Pricing",
+  window: "Online Configurator · Instant Pricing",
   door: "Online Door Configurator · Instant Pricing",
   sliding_door: "Online Patio Door Configurator · Instant Pricing",
 };
