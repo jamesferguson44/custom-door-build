@@ -33,7 +33,7 @@ export function OptionGroup<T extends string>({
               type="button"
               onClick={() => onChange(opt)}
               className={cn(
-                "group relative rounded-xl border bg-card px-4 py-3.5 text-left transition-all",
+                "group relative rounded-xl border bg-card px-3 py-3 sm:px-4 sm:py-3.5 text-left transition-all",
                 "hover:border-foreground/30 hover:shadow-sm",
                 selected
                   ? "border-foreground ring-1 ring-foreground/80 shadow-sm"
