@@ -197,7 +197,8 @@ function Hero({ productType }: { productType: ProductType }) {
         height={1080}
         className="h-[44vh] w-full object-cover sm:h-[52vh]"
       />
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/90 via-background/10 to-transparent" />
+      <div className="pointer-events-none absolute inset-0 bg-black/40 sm:bg-transparent" />
+<div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/90 via-background/10 to-transparent" />
       <div className="absolute inset-x-0 bottom-0">
         <div className="mx-auto max-w-[1400px] px-6 pb-8 sm:pb-12">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
