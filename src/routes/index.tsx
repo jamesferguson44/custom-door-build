@@ -51,7 +51,7 @@ function Home() {
           className="h-[80vh] w-full object-cover"
         />
         {/* Strong overlay for guaranteed contrast */}
-        <div className="absolute inset-0 bg-black/55" />
+        <div className="absolute inset-0 bg-black/55 sm:bg-black/55 bg-black/70" />
         <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-background" />
         <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 mx-auto max-w-[1400px] px-6 text-center text-white">
           <h1 className="text-4xl font-semibold tracking-tight drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)] sm:text-6xl lg:text-7xl">
