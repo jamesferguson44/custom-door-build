@@ -80,7 +80,7 @@ function Home() {
           <p className="mx-auto mt-6 max-w-xl text-xs text-white/80 sm:text-sm">
             Installed replacement windows typically start around <span className="font-semibold text-white">$650 per window</span>.
           </p>
-          <div className="mx-auto mt-8 flex max-w-3xl flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-white/90 sm:text-sm">
+          <div className="mx-auto mt-8 flex max-w-3xl flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-foreground/70 sm:text-sm">
             <span className="inline-flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4" /> See Pricing Instantly</span>
             <span className="inline-flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4" /> No Sales Appointments</span>
             <span className="inline-flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4" /> Professional Installation</span>
