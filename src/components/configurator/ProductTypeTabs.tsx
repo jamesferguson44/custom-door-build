@@ -17,7 +17,7 @@ export function ProductTypeTabs({ active }: { active: ProductType }) {
           to="/configure/$type"
           params={{ type: t.type }}
           className={cn(
-            "rounded-full px-4 py-1.5 text-[13px] font-medium transition",
+            "rounded-full px-3 py-1.5 text-[12px] sm:px-4 sm:text-[13px] font-medium transition",
             active === t.type
               ? "bg-foreground text-background shadow-sm"
               : "text-muted-foreground hover:text-foreground"
