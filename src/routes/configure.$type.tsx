@@ -359,7 +359,8 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
   return (
     <Shell productType={productType}>
       <div>
-        <ProgressBar done={stepDone} active={activeStep} labels={STEP_LABELS} />
+        <div className="min-w-0 w-full">
+  <ProgressBar done={stepDone} active={activeStep} labels={STEP_LABELS} />
         <StepSection
           step={1}
           title="Window Style"
