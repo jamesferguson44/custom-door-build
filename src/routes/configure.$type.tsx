@@ -229,7 +229,7 @@ function Shell({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background overflow-x-hidden">
       <SiteHeader />
       <Hero productType={productType} />
       <div className="mx-auto max-w-[1400px] px-6 py-12 sm:py-16">
