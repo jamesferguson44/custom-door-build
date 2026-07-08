@@ -358,8 +358,7 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
 
   return (
     <Shell productType={productType}>
-      <div>
-        <div className="min-w-0 w-full">
+      <div className="min-w-0 w-full">
   <ProgressBar done={stepDone} active={activeStep} labels={STEP_LABELS} />
         <StepSection
           step={1}
@@ -536,7 +535,6 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
           <Save className="h-3 w-3" /> Project automatically saved.
         </div>
       </div>
-      </div>
     </Shell>
   );
 }
@@ -584,7 +582,7 @@ function SlidingDoorConfigurator({ productType }: { productType: ProductType }) 
 
   return (
     <Shell productType={productType}>
-      <div>
+      <div className="min-w-0 w-full">
         <ProgressBar done={stepDone} active={activeStep} labels={SLIDING_STEP_LABELS} />
 
         <StepSection
@@ -854,7 +852,7 @@ function DoorConfiguratorInner({ productType }: { productType: ProductType }) {
 
   return (
     <Shell productType={productType}>
-      <div>
+      <div className="min-w-0 w-full">
         <ProgressBar done={stepDone} active={activeStep} labels={DOOR_STEP_LABELS} />
 
         <StepSection
