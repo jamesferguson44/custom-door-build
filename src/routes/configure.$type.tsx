@@ -536,6 +536,7 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
           <Save className="h-3 w-3" /> Project automatically saved.
         </div>
       </div>
+      </div>
     </Shell>
   );
 }
