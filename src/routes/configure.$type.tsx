@@ -262,7 +262,7 @@ function StepSection({
     <section
       className={cn(
         "border-t border-border pt-10 first:border-t-0 first:pt-0 transition-all duration-300",
-        active && "rounded-2xl border border-foreground/15 bg-muted/30 px-5 py-6 -mx-5 my-2 first:pt-6 border-l-4 border-l-foreground",
+        active && "rounded-2xl border border-foreground/15 bg-muted/30 px-3 py-6 -mx-3 sm:px-5 sm:-mx-5 my-2 first:pt-6 border-l-4 border-l-foreground",
       )}
     >
       <div className="mb-4 flex items-start justify-between gap-3">
