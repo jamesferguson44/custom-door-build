@@ -1001,7 +1001,7 @@ function DoorConfiguratorInner({ productType }: { productType: ProductType }) {
           </div>
         </StepSection>
       </div>
-      <div className="lg:sticky lg:top-20 lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto space-y-6 pb-6">
+      <div className="min-w-0 w-full lg:sticky lg:top-20 lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto space-y-6 pb-6">
         <ProductPreview productType={productType} config={config} />
         <PriceSummary
           productType={productType}
