@@ -367,6 +367,7 @@ function StepSection({
 
 function WindowConfigurator({ productType }: { productType: ProductType }) {
   const { template } = Route.useSearch();
+  const navigate = useNavigate();
   const [config, setConfig] = useState<WindowConfig>(() => {
     const preset = template ? WINDOW_TEMPLATES[template as TemplateId] : undefined;
     if (!template && typeof window !== "undefined") {
@@ -427,9 +428,23 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
     (stepDone[5] ? 0.4 : 0) +
     (locationValid ? 0.1 : 0);
 
+  const addLabel = config.windowStyle ? `Add ${config.windowStyle}` : "Add Window";
+
+  const handleMobileAdd = () => {
+    addToCart({ productType, config, price, location: location.trim() || undefined });
+    const count = loadCart().items.reduce((s, i) => s + i.qty, 0);
+    toast.success(`${location.trim() || "Window"} added. ${count} window${count === 1 ? "" : "s"} in your project.`);
+    setConfig({ ...config, width: 0, height: 0 });
+    setLocation("");
+  };
+
   return (
-    <Shell productType={productType}>
-      <div className="min-w-0 w-full">
+    <>
+    <Shell
+      productType={productType}
+      mobilePreview={<ProductPreview productType={productType} config={config} />}
+    >
+      <div className="min-w-0 w-full pb-24 lg:pb-0">
   <ProgressBar done={stepDone} active={activeStep} labels={STEP_LABELS} />
         <StepSection
           step={1}
@@ -586,7 +601,7 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
         </StepSection>
 
       </div>
-      <div className="min-w-0 w-full lg:sticky lg:top-20 lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto space-y-6 pb-6">
+      <div className="hidden lg:block min-w-0 w-full lg:sticky lg:top-20 lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto space-y-6 pb-6">
         <ProductPreview productType={productType} config={config} />
         <PriceSummary
           productType={productType}
@@ -607,6 +622,15 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
         </div>
       </div>
     </Shell>
+    <MobileBottomBar
+      price={price}
+      valid={valid}
+      locationValid={locationValid}
+      addLabel={addLabel}
+      onAdd={handleMobileAdd}
+      onReview={() => navigate({ to: "/quote" })}
+    />
+    </>
   );
 }
 
