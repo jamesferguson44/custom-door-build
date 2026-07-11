@@ -18,7 +18,7 @@ type Props = {
 export function ProductPreview({ productType, config }: Props) {
   return (
     <div className="overflow-hidden rounded-2xl border border-border bg-gradient-to-b from-muted/40 to-muted/10">
-      <div className="flex items-center justify-between border-b border-border px-5 py-3">
+      <div className="hidden lg:flex items-center justify-between border-b border-border px-5 py-3">
         <div className="text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
           Live Preview
         </div>
