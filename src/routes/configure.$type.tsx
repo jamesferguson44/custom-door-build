@@ -235,7 +235,7 @@ function Shell({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-background overflow-x-hidden">
+    <div className="min-h-screen bg-background">
       <SiteHeader />
       <Hero productType={productType} />
       {mobilePreview && (
