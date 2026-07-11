@@ -637,6 +637,7 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
 const SLIDING_STEP_LABELS = ["Material", "Panels", "Glass", "Color", "Measurements", "Location"];
 
 function SlidingDoorConfigurator({ productType }: { productType: ProductType }) {
+  const navigate = useNavigate();
   const [config, setConfig] = useState<DoorConfig>({
     material: "Vinyl",
     panelCount: 2,
@@ -675,9 +676,31 @@ function SlidingDoorConfigurator({ productType }: { productType: ProductType }) 
     (stepDone[5] ? 0.4 : 0) +
     (locationValid ? 0.1 : 0);
 
+  const handleMobileAdd = () => {
+    addToCart({ productType, config, price, location: location.trim() || undefined });
+    const count = loadCart().items.reduce((s, i) => s + i.qty, 0);
+    toast.success(`${location.trim() || "Sliding door"} added. ${count} item${count === 1 ? "" : "s"} in your project.`);
+    setConfig({
+      material: "Vinyl",
+      panelCount: 2,
+      glassOption: "Full",
+      glassEfficiency: "Low-E",
+      frameColor: "White",
+      finish: "Painted",
+      hardware: "Basic",
+      width: 0,
+      height: 0,
+    });
+    setLocation("");
+  };
+
   return (
-    <Shell productType={productType}>
-      <div className="min-w-0 w-full">
+    <>
+    <Shell
+      productType={productType}
+      mobilePreview={<ProductPreview productType={productType} config={config} />}
+    >
+      <div className="min-w-0 w-full pb-24 lg:pb-0">
         <ProgressBar done={stepDone} active={activeStep} labels={SLIDING_STEP_LABELS} />
 
         <StepSection
@@ -817,7 +840,7 @@ function SlidingDoorConfigurator({ productType }: { productType: ProductType }) 
         </StepSection>
       </div>
 
-      <div className="min-w-0 w-full lg:sticky lg:top-20 lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto space-y-6 pb-6">
+      <div className="hidden lg:block min-w-0 w-full lg:sticky lg:top-20 lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto space-y-6 pb-6">
         <ProductPreview productType={productType} config={config} />
         <PriceSummary
           productType={productType}
@@ -848,6 +871,15 @@ function SlidingDoorConfigurator({ productType }: { productType: ProductType }) 
         </div>
       </div>
     </Shell>
+    <MobileBottomBar
+      price={price}
+      valid={valid}
+      locationValid={locationValid}
+      addLabel="Add Sliding Door"
+      onAdd={handleMobileAdd}
+      onReview={() => navigate({ to: "/quote" })}
+    />
+    </>
   );
 }
 
