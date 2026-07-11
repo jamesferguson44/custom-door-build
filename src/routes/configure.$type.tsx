@@ -1,4 +1,4 @@
-import { createFileRoute, notFound } from "@tanstack/react-router";
+import { createFileRoute, notFound, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { ProductTypeTabs } from "@/components/configurator/ProductTypeTabs";
@@ -11,6 +11,7 @@ import {
   DEFAULT_DOOR,
   DEFAULT_WINDOW,
   calculatePrice,
+  formatUSD,
   isValidSize,
   productLabel,
   WINDOW_STYLES,
@@ -19,13 +20,16 @@ import {
   type ProductType,
   type WindowConfig,
 } from "@/lib/pricing";
+import { addToCart, loadCart } from "@/lib/quote-storage";
+import { toast } from "sonner";
 import heroWindow from "@/assets/hero-window.jpg";
 import heroDoor from "@/assets/hero-door.jpg";
 import heroSliding from "@/assets/hero-sliding.jpg";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Check, Save, Info, ShieldCheck } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Check, Save, Info, ShieldCheck, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const STEP_LABELS = ["Style", "Product Line", "Glass", "Style & Color", "Measurements", "Location"];
@@ -223,20 +227,87 @@ function Hero({ productType }: { productType: ProductType }) {
 
 function Shell({
   productType,
+  mobilePreview,
   children,
 }: {
   productType: ProductType;
+  mobilePreview?: React.ReactNode;
   children: React.ReactNode;
 }) {
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
       <SiteHeader />
       <Hero productType={productType} />
+      {mobilePreview && (
+        <div className="lg:hidden sticky top-14 z-30 border-b border-border bg-background/95 backdrop-blur">
+          <div className="mx-auto max-w-[1400px] px-4 py-3 max-h-52 overflow-hidden">
+            {mobilePreview}
+          </div>
+        </div>
+      )}
       <div className="mx-auto max-w-[1400px] px-6 py-12 sm:py-16">
         <div className="grid gap-10 lg:grid-cols-[1fr_400px] lg:gap-12">
           {children}
         </div>
       </div>
+    </div>
+  );
+}
+
+function MobileBottomBar({
+  price,
+  valid,
+  locationValid,
+  addLabel,
+  onAdd,
+  onReview,
+}: {
+  price: { low: number; high: number };
+  valid: boolean;
+  locationValid: boolean;
+  addLabel: string;
+  onAdd: () => void;
+  onReview: () => void;
+}) {
+  const canAdd = valid && locationValid;
+  return (
+    <div className="lg:hidden fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 backdrop-blur px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+      <div className="flex items-center gap-3">
+        <div className="min-w-0 flex-1">
+          {valid ? (
+            <>
+              <div className="text-[10px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
+                Est. Installed Price
+              </div>
+              <div className="text-sm font-semibold tabular-nums truncate">
+                {formatUSD(price.low)} – {formatUSD(price.high)}
+              </div>
+            </>
+          ) : (
+            <div className="text-xs text-muted-foreground">
+              Complete steps to see pricing
+            </div>
+          )}
+        </div>
+        <Button
+          size="sm"
+          className="h-11 shrink-0 rounded-full px-4 text-sm font-semibold"
+          disabled={!canAdd}
+          onClick={onAdd}
+        >
+          <Plus className="mr-1 h-4 w-4" />
+          {canAdd ? addLabel : "Add"}
+        </Button>
+      </div>
+      {canAdd && (
+        <button
+          type="button"
+          onClick={onReview}
+          className="mt-1.5 block w-full text-center text-[11px] text-muted-foreground underline-offset-2 hover:underline"
+        >
+          Or review project &amp; schedule measurement →
+        </button>
+      )}
     </div>
   );
 }
@@ -296,6 +367,7 @@ function StepSection({
 
 function WindowConfigurator({ productType }: { productType: ProductType }) {
   const { template } = Route.useSearch();
+  const navigate = useNavigate();
   const [config, setConfig] = useState<WindowConfig>(() => {
     const preset = template ? WINDOW_TEMPLATES[template as TemplateId] : undefined;
     if (!template && typeof window !== "undefined") {
@@ -356,9 +428,23 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
     (stepDone[5] ? 0.4 : 0) +
     (locationValid ? 0.1 : 0);
 
+  const addLabel = config.windowStyle ? `Add ${config.windowStyle}` : "Add Window";
+
+  const handleMobileAdd = () => {
+    addToCart({ productType, config, price, location: location.trim() || undefined });
+    const count = loadCart().items.reduce((s, i) => s + i.qty, 0);
+    toast.success(`${location.trim() || "Window"} added. ${count} window${count === 1 ? "" : "s"} in your project.`);
+    setConfig({ ...config, width: 0, height: 0 });
+    setLocation("");
+  };
+
   return (
-    <Shell productType={productType}>
-      <div className="min-w-0 w-full">
+    <>
+    <Shell
+      productType={productType}
+      mobilePreview={<ProductPreview productType={productType} config={config} />}
+    >
+      <div className="min-w-0 w-full pb-24 lg:pb-0">
   <ProgressBar done={stepDone} active={activeStep} labels={STEP_LABELS} />
         <StepSection
           step={1}
@@ -515,7 +601,7 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
         </StepSection>
 
       </div>
-      <div className="min-w-0 w-full lg:sticky lg:top-20 lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto space-y-6 pb-6">
+      <div className="hidden lg:block min-w-0 w-full lg:sticky lg:top-20 lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto space-y-6 pb-6">
         <ProductPreview productType={productType} config={config} />
         <PriceSummary
           productType={productType}
@@ -536,12 +622,22 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
         </div>
       </div>
     </Shell>
+    <MobileBottomBar
+      price={price}
+      valid={valid}
+      locationValid={locationValid}
+      addLabel={addLabel}
+      onAdd={handleMobileAdd}
+      onReview={() => navigate({ to: "/quote" })}
+    />
+    </>
   );
 }
 
 const SLIDING_STEP_LABELS = ["Material", "Panels", "Glass", "Color", "Measurements", "Location"];
 
 function SlidingDoorConfigurator({ productType }: { productType: ProductType }) {
+  const navigate = useNavigate();
   const [config, setConfig] = useState<DoorConfig>({
     material: "Vinyl",
     panelCount: 2,
@@ -580,9 +676,31 @@ function SlidingDoorConfigurator({ productType }: { productType: ProductType }) 
     (stepDone[5] ? 0.4 : 0) +
     (locationValid ? 0.1 : 0);
 
+  const handleMobileAdd = () => {
+    addToCart({ productType, config, price, location: location.trim() || undefined });
+    const count = loadCart().items.reduce((s, i) => s + i.qty, 0);
+    toast.success(`${location.trim() || "Sliding door"} added. ${count} item${count === 1 ? "" : "s"} in your project.`);
+    setConfig({
+      material: "Vinyl",
+      panelCount: 2,
+      glassOption: "Full",
+      glassEfficiency: "Low-E",
+      frameColor: "White",
+      finish: "Painted",
+      hardware: "Basic",
+      width: 0,
+      height: 0,
+    });
+    setLocation("");
+  };
+
   return (
-    <Shell productType={productType}>
-      <div className="min-w-0 w-full">
+    <>
+    <Shell
+      productType={productType}
+      mobilePreview={<ProductPreview productType={productType} config={config} />}
+    >
+      <div className="min-w-0 w-full pb-24 lg:pb-0">
         <ProgressBar done={stepDone} active={activeStep} labels={SLIDING_STEP_LABELS} />
 
         <StepSection
@@ -722,7 +840,7 @@ function SlidingDoorConfigurator({ productType }: { productType: ProductType }) 
         </StepSection>
       </div>
 
-      <div className="min-w-0 w-full lg:sticky lg:top-20 lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto space-y-6 pb-6">
+      <div className="hidden lg:block min-w-0 w-full lg:sticky lg:top-20 lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto space-y-6 pb-6">
         <ProductPreview productType={productType} config={config} />
         <PriceSummary
           productType={productType}
@@ -753,6 +871,15 @@ function SlidingDoorConfigurator({ productType }: { productType: ProductType }) 
         </div>
       </div>
     </Shell>
+    <MobileBottomBar
+      price={price}
+      valid={valid}
+      locationValid={locationValid}
+      addLabel="Add Sliding Door"
+      onAdd={handleMobileAdd}
+      onReview={() => navigate({ to: "/quote" })}
+    />
+    </>
   );
 }
 
@@ -824,6 +951,7 @@ function DoorConfiguratorInner({ productType }: { productType: ProductType }) {
   const isDoor = productType === "door";
   const DOOR_STEP_LABELS = ["Material", "Glass", "Finish & Hardware", "Measurements", "Location"];
 
+  const navigate = useNavigate();
   const [config, setConfig] = useState<DoorConfig>({ ...DEFAULT_DOOR, material: "Fiberglass" });
   const [touched, setTouched] = useState<Record<number, boolean>>({});
   const [location, setLocation] = useState("");
@@ -850,9 +978,21 @@ function DoorConfiguratorInner({ productType }: { productType: ProductType }) {
     (stepDone[4] ? 0.4 : 0) +
     (locationValid ? 0.1 : 0);
 
+  const handleMobileAdd = () => {
+    addToCart({ productType, config, price, location: location.trim() || undefined });
+    const count = loadCart().items.reduce((s, i) => s + i.qty, 0);
+    toast.success(`${location.trim() || "Door"} added. ${count} item${count === 1 ? "" : "s"} in your project.`);
+    setConfig({ ...DEFAULT_DOOR, material: "Fiberglass" });
+    setLocation("");
+  };
+
   return (
-    <Shell productType={productType}>
-      <div className="min-w-0 w-full">
+    <>
+    <Shell
+      productType={productType}
+      mobilePreview={<ProductPreview productType={productType} config={config} />}
+    >
+      <div className="min-w-0 w-full pb-24 lg:pb-0">
         <ProgressBar done={stepDone} active={activeStep} labels={DOOR_STEP_LABELS} />
 
         <StepSection
@@ -1001,7 +1141,7 @@ function DoorConfiguratorInner({ productType }: { productType: ProductType }) {
           </div>
         </StepSection>
       </div>
-      <div className="min-w-0 w-full lg:sticky lg:top-20 lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto space-y-6 pb-6">
+      <div className="hidden lg:block min-w-0 w-full lg:sticky lg:top-20 lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto space-y-6 pb-6">
         <ProductPreview productType={productType} config={config} />
         <PriceSummary
           productType={productType}
@@ -1022,5 +1162,14 @@ function DoorConfiguratorInner({ productType }: { productType: ProductType }) {
         </div>
       </div>
     </Shell>
+    <MobileBottomBar
+      price={price}
+      valid={valid}
+      locationValid={locationValid}
+      addLabel="Add Door"
+      onAdd={handleMobileAdd}
+      onReview={() => navigate({ to: "/quote" })}
+    />
+    </>
   );
 }
