@@ -951,6 +951,7 @@ function DoorConfiguratorInner({ productType }: { productType: ProductType }) {
   const isDoor = productType === "door";
   const DOOR_STEP_LABELS = ["Material", "Glass", "Finish & Hardware", "Measurements", "Location"];
 
+  const navigate = useNavigate();
   const [config, setConfig] = useState<DoorConfig>({ ...DEFAULT_DOOR, material: "Fiberglass" });
   const [touched, setTouched] = useState<Record<number, boolean>>({});
   const [location, setLocation] = useState("");
@@ -977,9 +978,21 @@ function DoorConfiguratorInner({ productType }: { productType: ProductType }) {
     (stepDone[4] ? 0.4 : 0) +
     (locationValid ? 0.1 : 0);
 
+  const handleMobileAdd = () => {
+    addToCart({ productType, config, price, location: location.trim() || undefined });
+    const count = loadCart().items.reduce((s, i) => s + i.qty, 0);
+    toast.success(`${location.trim() || "Door"} added. ${count} item${count === 1 ? "" : "s"} in your project.`);
+    setConfig({ ...DEFAULT_DOOR, material: "Fiberglass" });
+    setLocation("");
+  };
+
   return (
-    <Shell productType={productType}>
-      <div className="min-w-0 w-full">
+    <>
+    <Shell
+      productType={productType}
+      mobilePreview={<ProductPreview productType={productType} config={config} />}
+    >
+      <div className="min-w-0 w-full pb-24 lg:pb-0">
         <ProgressBar done={stepDone} active={activeStep} labels={DOOR_STEP_LABELS} />
 
         <StepSection
@@ -1128,7 +1141,7 @@ function DoorConfiguratorInner({ productType }: { productType: ProductType }) {
           </div>
         </StepSection>
       </div>
-      <div className="min-w-0 w-full lg:sticky lg:top-20 lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto space-y-6 pb-6">
+      <div className="hidden lg:block min-w-0 w-full lg:sticky lg:top-20 lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto space-y-6 pb-6">
         <ProductPreview productType={productType} config={config} />
         <PriceSummary
           productType={productType}
@@ -1149,5 +1162,14 @@ function DoorConfiguratorInner({ productType }: { productType: ProductType }) {
         </div>
       </div>
     </Shell>
+    <MobileBottomBar
+      price={price}
+      valid={valid}
+      locationValid={locationValid}
+      addLabel="Add Door"
+      onAdd={handleMobileAdd}
+      onReview={() => navigate({ to: "/quote" })}
+    />
+    </>
   );
 }
