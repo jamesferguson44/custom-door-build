@@ -33,7 +33,7 @@ export function ProductPreview({ productType, config }: Props) {
           <DoorPreview config={config as DoorConfig} isSliding={productType === "sliding_door"} />
         )}
       </div>
-      <div className="border-t border-border bg-card/50 px-5 py-3 text-[11px] text-muted-foreground">
+      <div className="hidden lg:block border-t border-border bg-card/50 px-5 py-3 text-[11px] text-muted-foreground">
         {productType === "window"
           ? `${(config as WindowConfig).windowStyle} · ${(config as WindowConfig).color} · ${(config as WindowConfig).glassType} · ${(config as WindowConfig).gridStyle === "None" ? "No grids" : `${(config as WindowConfig).gridStyle} grids`}`
           : productType === "sliding_door"
