@@ -26,7 +26,7 @@ export function ProductPreview({ productType, config }: Props) {
           {config.width}″ × {config.height}″
         </div>
       </div>
-      <div className="flex aspect-[4/3] items-center justify-center p-6">
+      <div className="flex aspect-[16/9] lg:aspect-[4/3] items-center justify-center p-2 lg:p-6">
         {productType === "window" ? (
           <WindowPreview config={config as WindowConfig} />
         ) : (
