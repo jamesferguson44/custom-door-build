@@ -156,57 +156,68 @@ function QuotePage() {
                 </div>
                 <div className="divide-y divide-border">
                   {items.map((item) => (
-                    <div
+                    <li
                       key={item.id}
-                      className="flex items-start justify-between gap-4 px-6 py-4"
+                      className="px-6 py-5"
                     >
-                      <div className="min-w-0">
-                        <p className="font-medium">
-                          {item.location
-                            ? item.location
-                            : productLabel(item.productType)}
-                        </p>
-                        <p className="mt-0.5 text-sm text-muted-foreground">
-                          {productLabel(item.productType)}
-                          {item.config.width && item.config.height
-                            ? ` · ${item.config.width}″ × ${item.config.height}″`
-                            : ""}
-                          {(
-                            item.config as { productLine?: string }
-                          ).productLine
-                            ? ` · ${(item.config as { productLine?: string }).productLine}`
-                            : ""}
-                          {(
-                            item.config as { glassType?: string }
-                          ).glassType
-                            ? ` · ${(item.config as { glassType?: string }).glassType}`
-                            : ""}
-                          {(item.config as { color?: string }).color
-                            ? ` · ${(item.config as { color?: string }).color}`
-                            : ""}
-                          {(
-                            item.config as { gridStyle?: string }
-                          ).gridStyle &&
-                          (item.config as { gridStyle?: string }).gridStyle !==
-                            "None"
-                            ? ` · ${(item.config as { gridStyle?: string }).gridStyle} grids`
-                            : ""}
-                        </p>
-                        {item.qty > 1 && (
-                          <p className="mt-1 text-sm text-muted-foreground">
-                            Qty: {item.qty}
-                          </p>
-                        )}
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="min-w-0 flex-1">
+                          <div className="font-medium">
+                            {item.location
+                              ? `${item.location}`
+                              : productLabel(item.productType)}
+                          </div>
+                          <div className="mt-0.5 text-sm text-muted-foreground">
+                            {productLabel(item.productType)}
+                            {item.config.width && item.config.height
+                              ? ` · ${item.config.width}″ × ${item.config.height}″`
+                              : ""}
+                            {(
+                              item.config as { productLine?: string }
+                            ).productLine
+                              ? ` · ${(item.config as { productLine?: string }).productLine}`
+                              : ""}
+                            {(
+                              item.config as { glassType?: string }
+                            ).glassType
+                              ? ` · ${(item.config as { glassType?: string }).glassType}`
+                              : ""}
+                            {(item.config as { color?: string }).color
+                              ? ` · ${(item.config as { color?: string }).color}`
+                              : ""}
+                            {(
+                              item.config as { gridStyle?: string }
+                            ).gridStyle &&
+                            (item.config as { gridStyle?: string }).gridStyle !==
+                              "None"
+                              ? ` · ${(item.config as { gridStyle?: string }).gridStyle} grids`
+                              : ""}
+                          </div>
+                          {item.qty > 1 && (
+                            <div className="mt-1 text-xs text-muted-foreground">
+                              Qty: {item.qty}
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex flex-shrink-0 items-start gap-3">
+                          <div className="text-right">
+                            <div className="font-semibold tabular-nums">
+                              {formatUSD(item.price.low * item.qty)}
+                            </div>
+                            <div className="text-sm text-muted-foreground tabular-nums">
+                              – {formatUSD(item.price.high * item.qty)}
+                            </div>
+                          </div>
+                          <button
+                            onClick={() => handleRemove(item.id)}
+                            className="mt-0.5 rounded-lg p-1.5 text-muted-foreground transition hover:bg-destructive/10 hover:text-destructive"
+                            aria-label="Remove item"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <p className="font-medium">
-                          {formatUSD(item.price.low * item.qty)}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          – {formatUSD(item.price.high * item.qty)}
-                        </p>
-                      </div>
-                    </div>
+                    </li>
                   ))}
                 </div>
               </div>
