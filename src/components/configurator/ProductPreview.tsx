@@ -50,7 +50,7 @@ function WindowPreview({ config }: { config: WindowConfig }) {
   // Maintain real proportions while fitting into a 320x240 viewBox.
   const maxW = 280;
   const maxH = 200;
-  const ratio = (config.width ?? 36) / (config.height ?? 48);
+  const ratio = (config.width || 36) / (config.height || 48);
   let w = maxW;
   let h = maxW / ratio;
   if (h > maxH) {
