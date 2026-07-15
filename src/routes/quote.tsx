@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/SiteHeader";
-import { loadCart, clearCart } from "@/lib/quote-storage";
+import { loadCart, clearCart, removeFromCart } from "@/lib/quote-storage";
 import { formatUSD, productLabel } from "@/lib/pricing";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,6 +16,7 @@ import {
   Package,
   Wrench,
   ShieldCheck,
+  Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -85,6 +86,12 @@ function QuotePage() {
   const [email, setEmail] = useState("");
   const [notes, setNotes] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [, forceUpdate] = useState(0);
+
+  const handleRemove = (id: string) => {
+    removeFromCart(id);
+    forceUpdate((n) => n + 1);
+  };
 
   const canSubmit =
     name.trim().length > 0 &&
@@ -97,7 +104,7 @@ function QuotePage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen overflow-x-hidden bg-background">
       <SiteHeader />
       <div className="mx-auto max-w-6xl px-6 py-12">
         {/* Page header */}
