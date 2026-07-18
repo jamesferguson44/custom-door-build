@@ -245,7 +245,7 @@ function Shell({
           </div>
         </div>
       )}
-      <div className="mx-auto max-w-[1400px] px-6 py-12 sm:py-16 overflow-x-hidden">
+      <div className="mx-auto max-w-[1400px] px-6 py-12 sm:py-16 overflow-x-clip">
         <div className="grid gap-10 lg:grid-cols-[1fr_400px] lg:gap-12">
           {children}
         </div>
