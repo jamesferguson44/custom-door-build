@@ -47,7 +47,7 @@ export function ProductPreview({ productType, config, id = "preview" }: Props) {
 
 /* ------------------------- WINDOW ------------------------- */
 
-function WindowPreview({ config }: { config: WindowConfig }) {
+function WindowPreview({ config, id }: { config: WindowConfig; id: string }) {
   // Maintain real proportions while fitting into a 320x240 viewBox.
   const maxW = 280;
   const maxH = 200;
@@ -81,10 +81,10 @@ function WindowPreview({ config }: { config: WindowConfig }) {
   // Glass tint based on glass type
   const glassFill =
     config.glassType === "Triple Pane"
-      ? "url(#glass-triple)"
+      ? `url(#${id}-glass-triple)`
       : config.glassType === "Low-E"
-      ? "url(#glass-lowe)"
-      : "url(#glass-std)";
+      ? `url(#${id}-glass-lowe)`
+      : `url(#${id}-glass-std)`;
 
   const frameThick = 10;
   const gx = x + frameThick;
@@ -100,19 +100,19 @@ function WindowPreview({ config }: { config: WindowConfig }) {
       aria-label="Window preview"
     >
       <defs>
-        <linearGradient id="glass-std" x1="0" y1="0" x2="1" y2="1">
+        <linearGradient id={`${id}-glass-std`} x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stopColor="#dbe7ee" />
           <stop offset="100%" stopColor="#aac3d1" />
         </linearGradient>
-        <linearGradient id="glass-lowe" x1="0" y1="0" x2="1" y2="1">
+        <linearGradient id={`${id}-glass-lowe`} x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stopColor="#cfe4dd" />
           <stop offset="100%" stopColor="#7fb0a3" />
         </linearGradient>
-        <linearGradient id="glass-triple" x1="0" y1="0" x2="1" y2="1">
+        <linearGradient id={`${id}-glass-triple`} x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stopColor="#c7d8e6" />
           <stop offset="100%" stopColor="#6b8aa4" />
         </linearGradient>
-        <linearGradient id="shine" x1="0" y1="0" x2="1" y2="1">
+        <linearGradient id={`${id}-shine`} x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stopColor="#ffffff" stopOpacity="0.55" />
           <stop offset="60%" stopColor="#ffffff" stopOpacity="0" />
         </linearGradient>
@@ -155,7 +155,7 @@ function WindowPreview({ config }: { config: WindowConfig }) {
       {/* Glass */}
       <rect x={gx} y={gy} width={gw} height={gh} fill={glassFill} />
       {/* Glass shine */}
-      <rect x={gx} y={gy} width={gw} height={gh} fill="url(#shine)" />
+      <rect x={gx} y={gy} width={gw} height={gh} fill={`url(#${id}-shine)`} />
 
       {/* Style-specific sash overlays */}
       {config.gridStyle === "None" && (
@@ -390,7 +390,7 @@ function GridOverlay({
 
 /* ------------------------- DOOR ------------------------- */
 
-function DoorPreview({ config, isSliding }: { config: DoorConfig; isSliding: boolean }) {
+function DoorPreview({ config, isSliding, id }: { config: DoorConfig; isSliding: boolean; id: string }) {
   const maxW = isSliding ? 290 : 200;
   const maxH = isSliding ? 170 : 220;
   const defaultRatio = isSliding
@@ -450,11 +450,11 @@ function DoorPreview({ config, isSliding }: { config: DoorConfig; isSliding: boo
       aria-label="Door preview"
     >
       <defs>
-        <linearGradient id="door-glass" x1="0" y1="0" x2="1" y2="1">
+        <linearGradient id={`${id}-door-glass`} x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stopColor="#dbe7ee" />
           <stop offset="100%" stopColor="#90b0c2" />
         </linearGradient>
-        <linearGradient id="door-shine" x1="0" y1="0" x2="0" y2="1">
+        <linearGradient id={`${id}-door-shine`} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#ffffff" stopOpacity="0.18" />
           <stop offset="100%" stopColor="#000000" stopOpacity="0.12" />
         </linearGradient>
