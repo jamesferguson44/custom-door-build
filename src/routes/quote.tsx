@@ -156,7 +156,7 @@ function QuotePage() {
                 </div>
                 <div className="divide-y divide-border">
                   {items.map((item) => (
-                    <li
+                    <Div
                       key={item.id}
                       className="px-6 py-5"
                     >
@@ -217,7 +217,7 @@ function QuotePage() {
                           </button>
                         </div>
                       </div>
-                    </li>
+                    </div>
                   ))}
                 </div>
               </div>
