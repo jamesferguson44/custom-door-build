@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { CheckCircle2, ClipboardCheck, MessageSquare, FileText, Ruler } from "lucide-react";
 import { z } from "zod";
 import { SiteHeader } from "@/components/SiteHeader";
+import { SiteFooter } from "@/components/SiteFooter";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/quote/success")({
@@ -72,6 +73,7 @@ function SuccessPage() {
           </Button>
         </div>
       </div>
+      <SiteFooter />
     </div>
   );
 }

@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as QuoteRouteImport } from './routes/quote'
+import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as QuoteSuccessRouteImport } from './routes/quote.success'
@@ -18,6 +19,11 @@ import { Route as ConfigureTypeRouteImport } from './routes/configure.$type'
 const QuoteRoute = QuoteRouteImport.update({
   id: '/quote',
   path: '/quote',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
+  id: '/privacy-policy',
+  path: '/privacy-policy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRoute = AdminRouteImport.update({
@@ -44,6 +50,7 @@ const ConfigureTypeRoute = ConfigureTypeRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
   '/quote': typeof QuoteRouteWithChildren
   '/configure/$type': typeof ConfigureTypeRoute
   '/quote/success': typeof QuoteSuccessRoute
@@ -51,6 +58,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
   '/quote': typeof QuoteRouteWithChildren
   '/configure/$type': typeof ConfigureTypeRoute
   '/quote/success': typeof QuoteSuccessRoute
@@ -59,19 +67,33 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
   '/quote': typeof QuoteRouteWithChildren
   '/configure/$type': typeof ConfigureTypeRoute
   '/quote/success': typeof QuoteSuccessRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin' | '/quote' | '/configure/$type' | '/quote/success'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/privacy-policy'
+    | '/quote'
+    | '/configure/$type'
+    | '/quote/success'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin' | '/quote' | '/configure/$type' | '/quote/success'
+  to:
+    | '/'
+    | '/admin'
+    | '/privacy-policy'
+    | '/quote'
+    | '/configure/$type'
+    | '/quote/success'
   id:
     | '__root__'
     | '/'
     | '/admin'
+    | '/privacy-policy'
     | '/quote'
     | '/configure/$type'
     | '/quote/success'
@@ -80,6 +102,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
+  PrivacyPolicyRoute: typeof PrivacyPolicyRoute
   QuoteRoute: typeof QuoteRouteWithChildren
   ConfigureTypeRoute: typeof ConfigureTypeRoute
 }
@@ -91,6 +114,13 @@ declare module '@tanstack/react-router' {
       path: '/quote'
       fullPath: '/quote'
       preLoaderRoute: typeof QuoteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy-policy': {
+      id: '/privacy-policy'
+      path: '/privacy-policy'
+      fullPath: '/privacy-policy'
+      preLoaderRoute: typeof PrivacyPolicyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin': {
@@ -137,9 +167,19 @@ const QuoteRouteWithChildren = QuoteRoute._addFileChildren(QuoteRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
+  PrivacyPolicyRoute: PrivacyPolicyRoute,
   QuoteRoute: QuoteRouteWithChildren,
   ConfigureTypeRoute: ConfigureTypeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}

@@ -1,6 +1,7 @@
 import { createFileRoute, notFound, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
+import { SiteFooter } from "@/components/SiteFooter";
 import { ProductTypeTabs } from "@/components/configurator/ProductTypeTabs";
 import { OptionGroup } from "@/components/configurator/OptionGroup";
 import { SizeInputs } from "@/components/configurator/SizeInputs";
@@ -276,6 +277,8 @@ function Shell({
       <div className="mx-auto max-w-[1400px] px-6 py-8 sm:py-10 overflow-x-clip">
         <div className="grid gap-10 lg:grid-cols-[1fr_400px] lg:gap-12">{children}</div>
       </div>
+      <SiteFooter />
+      <div className="h-20 lg:hidden" aria-hidden />
     </div>
   );
 }

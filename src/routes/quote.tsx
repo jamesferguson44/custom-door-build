@@ -1,11 +1,25 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/SiteHeader";
+import { SiteFooter } from "@/components/SiteFooter";
+import { Turnstile } from "@/components/Turnstile";
 import { loadCart, clearCart, removeFromCart } from "@/lib/quote-storage";
 import { formatUSD, productLabel } from "@/lib/pricing";
+import { supabase } from "@/integrations/supabase/client";
+import type { Json } from "@/integrations/supabase/types";
+import { downloadQuotePdf } from "@/lib/quote-pdf";
+import { notifyNewQuote } from "@/lib/quote-notify";
+import { verifyTurnstile } from "@/lib/turnstile-verify";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useState } from "react";
 import {
   CheckCircle2,
@@ -17,6 +31,7 @@ import {
   Wrench,
   ShieldCheck,
   Trash2,
+  Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -67,26 +82,42 @@ const NEXT_STEPS = [
   },
 ];
 
+const TIMELINE_OPTIONS = ["ASAP", "Within 1 month", "1–3 months", "3–6 months", "Just researching"];
+
+function summarizeItems(items: ReturnType<typeof loadCart>["items"]): string {
+  const counts = new Map<string, number>();
+  for (const it of items) {
+    const label = productLabel(it.productType);
+    counts.set(label, (counts.get(label) ?? 0) + it.qty);
+  }
+  return Array.from(counts.entries())
+    .map(([label, n]) => `${n} ${label}${n > 1 ? "s" : ""}`)
+    .join(", ");
+}
+
 function QuotePage() {
+  const navigate = useNavigate();
   const cart = loadCart();
   const items = cart.items ?? [];
   const isEmpty = items.length === 0;
 
-  const totalLow = items.reduce(
-    (sum, item) => sum + item.price.low * item.qty,
-    0,
-  );
-  const totalHigh = items.reduce(
-    (sum, item) => sum + item.price.high * item.qty,
-    0,
-  );
+  const totalLow = items.reduce((sum, item) => sum + item.price.low * item.qty, 0);
+  const totalHigh = items.reduce((sum, item) => sum + item.price.high * item.qty, 0);
+  const totalMid = items.reduce((sum, item) => sum + item.price.total * item.qty, 0);
 
-  const [name, setName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
+  const [city, setCity] = useState("");
+  const [zip, setZip] = useState("");
+  const [timeline, setTimeline] = useState("");
   const [notes, setNotes] = useState("");
-  const [submitted, setSubmitted] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
   const [, forceUpdate] = useState(0);
+
+  const turnstileConfigured = Boolean(import.meta.env.VITE_TURNSTILE_SITE_KEY);
 
   const handleRemove = (id: string) => {
     removeFromCart(id);
@@ -94,13 +125,96 @@ function QuotePage() {
   };
 
   const canSubmit =
-    name.trim().length > 0 &&
-    (phone.trim().length > 0 || email.trim().length > 0);
+    firstName.trim().length > 0 &&
+    lastName.trim().length > 0 &&
+    phone.trim().length > 0 &&
+    email.trim().length > 0 &&
+    (!turnstileConfigured || !!turnstileToken);
 
-  const handleSubmit = () => {
-    if (!canSubmit) return;
-    setSubmitted(true);
-    toast.success("Request received! We'll be in touch within 1 business day.");
+  const handleSubmit = async () => {
+    if (!canSubmit || submitting) return;
+    setSubmitting(true);
+
+    try {
+      if (turnstileConfigured && turnstileToken) {
+        const result = await verifyTurnstile({ data: { token: turnstileToken } });
+        if (!result.success) {
+          toast.error("Verification failed. Please try the checkbox again.");
+          setSubmitting(false);
+          return;
+        }
+      }
+
+      const customerName = `${firstName.trim()} ${lastName.trim()}`.trim();
+      const rows = items.map((item) => ({
+        product_type: item.productType,
+        configuration: item.config as unknown as Json,
+        width_inches: item.config.width ?? 0,
+        height_inches: item.config.height ?? 0,
+        base_price: item.price.basePrice,
+        addons_price: item.price.addonsPrice,
+        labor_price: item.price.laborPrice,
+        total_price: item.price.total,
+        customer_name: customerName,
+        customer_first_name: firstName.trim(),
+        customer_last_name: lastName.trim(),
+        customer_phone: phone.trim(),
+        customer_email: email.trim(),
+        customer_city: city.trim() || null,
+        customer_zip: zip.trim() || null,
+        project_notes: notes.trim() || null,
+        project_timeline: timeline || null,
+      }));
+
+      const { data, error } = await supabase.from("quotes").insert(rows).select("id");
+      if (error) {
+        console.error("[quote submit] insert failed:", error);
+        toast.error("Something went wrong submitting your request. Please try again or call us directly.");
+        setSubmitting(false);
+        return;
+      }
+
+      const referenceId = data?.[0]?.id;
+
+      try {
+        downloadQuotePdf({
+          referenceId,
+          customer: { firstName: firstName.trim(), lastName: lastName.trim(), email: email.trim(), phone: phone.trim(), city: city.trim(), zip: zip.trim() },
+          timeline: timeline || undefined,
+          notes: notes.trim() || undefined,
+          items,
+          totalLow,
+          totalHigh,
+          totalMid,
+          submittedAt: new Date(),
+        });
+      } catch (pdfErr) {
+        console.error("[quote submit] PDF generation failed (non-blocking):", pdfErr);
+      }
+
+      if (referenceId) {
+        notifyNewQuote({
+          data: {
+            quoteId: referenceId,
+            customerName,
+            customerEmail: email.trim(),
+            customerPhone: phone.trim(),
+            itemCount: items.reduce((s, i) => s + i.qty, 0),
+            totalLow,
+            totalHigh,
+            productSummary: summarizeItems(items),
+            notes: notes.trim() || undefined,
+          },
+        }).catch((err) => console.error("[quote submit] notify failed (non-blocking):", err));
+      }
+
+      clearCart();
+      navigate({ to: "/quote/success", search: { id: referenceId } });
+    } catch (err) {
+      console.error("[quote submit] unexpected error:", err);
+      toast.error("Something went wrong submitting your request. Please try again or call us directly.");
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -318,105 +432,157 @@ function QuotePage() {
                   </p>
                 </div>
 
-                {submitted ? (
-                  <div className="py-6 text-center">
-                    <CheckCircle2 className="mx-auto h-10 w-10 text-emerald-600" />
-                    <h3 className="mt-3 text-lg font-semibold tracking-tight">
-                      Request received!
-                    </h3>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      We'll be in touch within 1 business day. Check your email
-                      for a confirmation.
-                    </p>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label htmlFor="firstName" className="text-xs text-muted-foreground">
+                        First name *
+                      </Label>
+                      <Input
+                        id="firstName"
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                        placeholder="Jane"
+                        className="mt-1.5"
+                        disabled={submitting}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="lastName" className="text-xs text-muted-foreground">
+                        Last name *
+                      </Label>
+                      <Input
+                        id="lastName"
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                        placeholder="Doe"
+                        className="mt-1.5"
+                        disabled={submitting}
+                      />
+                    </div>
                   </div>
-                ) : (
-                  <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="phone" className="text-xs text-muted-foreground">
+                      Phone number *
+                    </Label>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      placeholder="(801) 555-0100"
+                      className="mt-1.5"
+                      disabled={submitting}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="email" className="text-xs text-muted-foreground">
+                      Email address *
+                    </Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="you@example.com"
+                      className="mt-1.5"
+                      disabled={submitting}
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <Label
-                        htmlFor="name"
-                        className="text-xs text-muted-foreground"
-                      >
-                        Your name *
+                      <Label htmlFor="city" className="text-xs text-muted-foreground">
+                        City (optional)
                       </Label>
                       <Input
-                        id="name"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        placeholder="First and last name"
+                        id="city"
+                        value={city}
+                        onChange={(e) => setCity(e.target.value)}
+                        placeholder="Salt Lake City"
                         className="mt-1.5"
+                        disabled={submitting}
                       />
                     </div>
                     <div>
-                      <Label
-                        htmlFor="phone"
-                        className="text-xs text-muted-foreground"
-                      >
-                        Phone number
+                      <Label htmlFor="zip" className="text-xs text-muted-foreground">
+                        Zip (optional)
                       </Label>
                       <Input
-                        id="phone"
-                        type="tel"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        placeholder="(801) 555-0100"
+                        id="zip"
+                        value={zip}
+                        onChange={(e) => setZip(e.target.value)}
+                        placeholder="84101"
                         className="mt-1.5"
+                        disabled={submitting}
                       />
                     </div>
-                    <div>
-                      <Label
-                        htmlFor="email"
-                        className="text-xs text-muted-foreground"
-                      >
-                        Email address
-                      </Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="you@example.com"
-                        className="mt-1.5"
-                      />
-                    </div>
-                    <div>
-                      <Label
-                        htmlFor="notes"
-                        className="text-xs text-muted-foreground"
-                      >
-                        Anything else we should know? (optional)
-                      </Label>
-                      <Textarea
-                        id="notes"
-                        value={notes}
-                        onChange={(e) => setNotes(e.target.value)}
-                        placeholder="e.g. Best time to call, access notes, specific questions..."
-                        className="mt-1.5 min-h-[80px]"
-                      />
-                    </div>
-                    <Button
-                      className="h-12 w-full rounded-full text-sm font-semibold"
-                      disabled={!canSubmit}
-                      onClick={handleSubmit}
+                  </div>
+                  <div>
+                    <Label htmlFor="timeline" className="text-xs text-muted-foreground">
+                      Project timeline (optional)
+                    </Label>
+                    <Select value={timeline} onValueChange={setTimeline} disabled={submitting}>
+                      <SelectTrigger id="timeline" className="mt-1.5">
+                        <SelectValue placeholder="When are you hoping to start?" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {TIMELINE_OPTIONS.map((t) => (
+                          <SelectItem key={t} value={t}>
+                            {t}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label
+                      htmlFor="notes"
+                      className="text-xs text-muted-foreground"
                     >
-                      Request Callback & Measurement Appointment
-                    </Button>
-                    <p className="text-center text-[11px] text-muted-foreground">
-                      {!canSubmit
-                        ? "Please enter your name and at least a phone number or email."
-                        : "No commitment required. We'll confirm your project details before scheduling."}
-                    </p>
-                    <div className="flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
-                      <ShieldCheck className="h-3 w-3" />
-                      Final price confirmed after on-site measurement. No
-                      surprises.
-                    </div>
+                      Anything else we should know? (optional)
+                    </Label>
+                    <Textarea
+                      id="notes"
+                      value={notes}
+                      onChange={(e) => setNotes(e.target.value)}
+                      placeholder="e.g. Best time to call, access notes, specific questions..."
+                      className="mt-1.5 min-h-[80px]"
+                      disabled={submitting}
+                    />
                   </div>
-                )}
+                  {turnstileConfigured && (
+                    <Turnstile onVerify={setTurnstileToken} />
+                  )}
+                  <Button
+                    className="h-12 w-full rounded-full text-sm font-semibold"
+                    disabled={!canSubmit || submitting}
+                    onClick={handleSubmit}
+                  >
+                    {submitting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Submitting…
+                      </>
+                    ) : (
+                      "Request Callback & Measurement Appointment"
+                    )}
+                  </Button>
+                  <p className="text-center text-[11px] text-muted-foreground">
+                    {!canSubmit
+                      ? "Please enter your name, phone, and email."
+                      : "No commitment required. We'll confirm your project details before scheduling."}
+                  </p>
+                  <div className="flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
+                    <ShieldCheck className="h-3 w-3" />
+                    Final price confirmed after on-site measurement. No
+                    surprises.
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         )}
       </div>
+      <SiteFooter />
     </div>
   );
 }
