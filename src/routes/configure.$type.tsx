@@ -442,7 +442,7 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
     <>
     <Shell
       productType={productType}
-      mobilePreview={<ProductPreview productType={productType} config={config} />}
+      mobilePreview={<ProductPreview productType={productType} config={config} id="mobile-preview" />}
     >
       <div className="min-w-0 w-full pb-24 lg:pb-0">
   <ProgressBar done={stepDone} active={activeStep} labels={STEP_LABELS} />
@@ -602,7 +602,7 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
 
       </div>
       <div className="hidden lg:block min-w-0 w-full lg:sticky lg:top-20 lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto space-y-6 pb-6">
-        <ProductPreview productType={productType} config={config} />
+        <ProductPreview productType={productType} config={config} id="desktop-preview" />
         <PriceSummary
           productType={productType}
           config={config}
@@ -698,7 +698,7 @@ function SlidingDoorConfigurator({ productType }: { productType: ProductType }) 
     <>
     <Shell
       productType={productType}
-      mobilePreview={<ProductPreview productType={productType} config={config} />}
+      mobilePreview={<ProductPreview productType={productType} config={config} id="mobile-preview" />}
     >
       <div className="min-w-0 w-full pb-24 lg:pb-0">
         <ProgressBar done={stepDone} active={activeStep} labels={SLIDING_STEP_LABELS} />
@@ -841,7 +841,7 @@ function SlidingDoorConfigurator({ productType }: { productType: ProductType }) 
       </div>
 
       <div className="hidden lg:block min-w-0 w-full lg:sticky lg:top-20 lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto space-y-6 pb-6">
-        <ProductPreview productType={productType} config={config} />
+        <ProductPreview productType={productType} config={config} id="desktop-preview" />
         <PriceSummary
           productType={productType}
           config={config}
@@ -990,7 +990,7 @@ function DoorConfiguratorInner({ productType }: { productType: ProductType }) {
     <>
     <Shell
       productType={productType}
-      mobilePreview={<ProductPreview productType={productType} config={config} />}
+      mobilePreview={<ProductPreview productType={productType} config={config} id="mobile-preview" />}
     >
       <div className="min-w-0 w-full pb-24 lg:pb-0">
         <ProgressBar done={stepDone} active={activeStep} labels={DOOR_STEP_LABELS} />
@@ -1142,7 +1142,7 @@ function DoorConfiguratorInner({ productType }: { productType: ProductType }) {
         </StepSection>
       </div>
       <div className="hidden lg:block min-w-0 w-full lg:sticky lg:top-20 lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto space-y-6 pb-6">
-        <ProductPreview productType={productType} config={config} />
+        <ProductPreview productType={productType} config={config} id="desktop-preview" />
         <PriceSummary
           productType={productType}
           config={config}
