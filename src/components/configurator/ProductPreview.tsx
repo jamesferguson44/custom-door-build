@@ -158,17 +158,18 @@ function WindowPreview({ config, id }: { config: WindowConfig; id: string }) {
       <rect x={gx} y={gy} width={gw} height={gh} fill={`url(#${id}-shine)`} />
 
       {/* Style-specific sash overlays */}
-      {config.gridStyle === "None" && (
-        <StyleOverlay
-          style={config.windowStyle}
-          x={gx}
-          y={gy}
-          w={gw}
-          h={gh}
-          frameColor={frameColor}
-          frameStroke={overlayStroke}
-        />
-      )}
+      {(config.gridStyle === "None" ||
+  (config.windowStyle !== "Casement" && config.windowStyle !== "Awning")) && (
+  <StyleOverlay
+    style={config.windowStyle}
+    x={gx}
+    y={gy}
+    w={gw}
+    h={gh}
+    frameColor={frameColor}
+    frameStroke={overlayStroke}
+  />
+)}
 
 
       {/* Extra sheen for Low-E / Triple Pane */}
