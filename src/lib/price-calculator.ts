@@ -6,13 +6,14 @@
  * and the breakdown is fully transparent for debugging or display.
  *
  * Pipeline:
- *   1. Compute square footage from width × height (inches).
- *   2. Look up the matching size bucket → base price.
- *   3. Apply brand tier multiplier (Good / Better / Best).
- *   4. Apply installation difficulty (labor multiplier + flat surcharge).
- *   5. Add selected add-ons (flat dollars or % of base price).
- *   6. Apply hidden 15% margin buffer to the subtotal.
- *   7. Round to the nearest dollar.
+ *   1. Snap width/height up to the nearest standard size increment.
+ *   2. Compute square footage from the snapped width × height (inches).
+ *   3. Look up the matching size bucket → base price.
+ *   4. Apply brand tier multiplier (Good / Better / Best).
+ *   5. Apply installation difficulty (labor multiplier + flat surcharge).
+ *   6. Add selected add-ons (flat dollars or % of base price).
+ *   7. Apply hidden 15% margin buffer to the subtotal.
+ *   8. Round to the nearest dollar.
  */
 
 import {
@@ -22,6 +23,7 @@ import {
   PRODUCT_PRICING,
   PRICING_GLOBALS,
   getSqftPrice,
+  snapDimension,
   type AddOn,
   type BrandTier,
   type InstallDifficulty,
@@ -46,6 +48,12 @@ export type QuoteInput = {
 export type LineItem = { label: string; amount: number };
 
 export type QuoteBreakdown = {
+  /** Customer-entered dimensions, unmodified. */
+  rawWidth: number;
+  rawHeight: number;
+  /** Dimensions after snapping up to the nearest standard size increment. */
+  snappedWidth: number;
+  snappedHeight: number;
   squareFeet: number;
   /** Raw price-per-sqft × sqft from the matched bucket. */
   basePrice: number;
@@ -85,8 +93,10 @@ export function calculateQuote(input: QuoteInput): QuoteBreakdown {
   const tier = BRAND_TIERS[input.tier];
   const install = INSTALL_DIFFICULTY[input.installation];
 
-  // 1. Square footage
-  const squareFeet = (input.width * input.height) / 144;
+  // 1. Snap to standard size increment, then compute square footage
+  const snappedWidth = snapDimension(input.width, input.productType);
+  const snappedHeight = snapDimension(input.height, input.productType);
+  const squareFeet = (snappedWidth * snappedHeight) / 144;
 
   // 2. Size bucket → base price
   const basePrice = getSqftPrice(input.productType, squareFeet);
@@ -121,6 +131,10 @@ export function calculateQuote(input: QuoteInput): QuoteBreakdown {
   const total = unitTotal * quantity;
 
   return {
+    rawWidth: input.width,
+    rawHeight: input.height,
+    snappedWidth,
+    snappedHeight,
     squareFeet,
     basePrice,
     bucketRate: bucket.pricePerSqft,

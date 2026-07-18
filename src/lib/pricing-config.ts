@@ -11,6 +11,9 @@
  *  - "flat" add-ons = fixed dollars added to subtotal.
  *  - "percent" add-ons = fraction of base price (0.05 = +5%).
  *  - Bucket `maxSqft` is inclusive; the last bucket should be Infinity.
+ *  - Width/height are snapped up to `DIMENSION_SNAP_INCHES` before pricing,
+ *    so odd measurements (e.g. 37") price the same as the next standard
+ *    size (e.g. 38") instead of every inch producing a different price.
  */
 
 export type ProductKey = "window" | "door" | "sliding_door";
@@ -42,6 +45,32 @@ export type ProductPricing = {
   /** Flat labor cost per unit before difficulty adjustment. */
   baseLabor: number;
 };
+
+/* -------------------------------------------------------------------------- */
+/*                          Dimension snapping                                */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Round width/height up to the nearest increment before pricing.
+ *
+ * This keeps quotes aligned with how manufacturers/dealers actually price
+ * (standard size increments) rather than charging a different price for
+ * every single inch. Update these numbers once real manufacturer size
+ * charts are available — everything downstream (calculator, UI) adapts
+ * automatically.
+ */
+export const DIMENSION_SNAP_INCHES: Record<ProductKey, number> = {
+  window: 2,
+  door: 2,
+  sliding_door: 4,
+};
+
+/** Round `inches` up to the next `DIMENSION_SNAP_INCHES` increment for this product. */
+export function snapDimension(inches: number, product: ProductKey): number {
+  const step = DIMENSION_SNAP_INCHES[product];
+  if (!step || step <= 0) return inches;
+  return Math.ceil(inches / step) * step;
+}
 
 /* -------------------------------------------------------------------------- */
 /*                            Size-based pricing                              */

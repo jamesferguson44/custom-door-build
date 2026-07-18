@@ -93,6 +93,13 @@ export function PriceSummary({ productType, config, price, valid, completeness, 
               {productLabel(productType)} · {config.width}″ × {config.height}″
             </div>
           )}
+          {valid &&
+            (price.snappedWidth !== price.rawWidth ||
+              price.snappedHeight !== price.rawHeight) && (
+              <div className="mt-1 text-[11px] text-muted-foreground">
+                Priced as {price.snappedWidth}″ × {price.snappedHeight}″ (next standard size)
+              </div>
+            )}
           <p className="mt-2 text-[11px] text-muted-foreground">
             Instant online estimate based on your selections.
           </p>

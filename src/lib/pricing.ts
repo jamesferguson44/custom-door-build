@@ -113,6 +113,12 @@ const DOOR_GLASS_ADDON: Record<DoorConfig["glassOption"], string | null> = {
 };
 
 export type PriceBreakdown = {
+  /** Customer-entered dimensions, unmodified. */
+  rawWidth: number;
+  rawHeight: number;
+  /** Dimensions actually used for pricing, snapped to a standard size increment. */
+  snappedWidth: number;
+  snappedHeight: number;
   squareFeet: number;
   baseRate: number;
   basePrice: number;
@@ -137,6 +143,10 @@ function toBreakdown(
 ): PriceBreakdown {
   const subtotal = q.tieredBase + q.laborTotal + q.addOnsTotal;
   return {
+    rawWidth: q.rawWidth,
+    rawHeight: q.rawHeight,
+    snappedWidth: q.snappedWidth,
+    snappedHeight: q.snappedHeight,
     squareFeet: q.squareFeet,
     baseRate: q.bucketRate,
     basePrice: q.tieredBase,
@@ -227,6 +237,10 @@ export function isValidSize(width: number | null, height: number | null): boolea
 }
 
 const EMPTY_PRICE: PriceBreakdown = {
+  rawWidth: 0,
+  rawHeight: 0,
+  snappedWidth: 0,
+  snappedHeight: 0,
   squareFeet: 0,
   baseRate: 0,
   basePrice: 0,
