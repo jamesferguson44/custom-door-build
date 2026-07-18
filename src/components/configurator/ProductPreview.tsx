@@ -157,15 +157,18 @@ function WindowPreview({ config }: { config: WindowConfig }) {
       <rect x={gx} y={gy} width={gw} height={gh} fill="url(#shine)" />
 
       {/* Style-specific sash overlays */}
-      <StyleOverlay
-        style={config.windowStyle}
-        x={gx}
-        y={gy}
-        w={gw}
-        h={gh}
-        frameColor={frameColor}
-        frameStroke={overlayStroke}
-      />
+      {config.gridStyle === "None" && (
+        <StyleOverlay
+          style={config.windowStyle}
+          x={gx}
+          y={gy}
+          w={gw}
+          h={gh}
+          frameColor={frameColor}
+          frameStroke={overlayStroke}
+        />
+      )}
+
 
       {/* Extra sheen for Low-E / Triple Pane */}
       {config.glassType !== "Standard" && (
