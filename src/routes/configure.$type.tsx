@@ -601,8 +601,10 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
         </StepSection>
 
       </div>
-      <div className="hidden lg:block min-w-0 w-full lg:sticky lg:top-20 lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto space-y-6 pb-6">
-        <ProductPreview productType={productType} config={config} id="desktop-preview" />
+      <div className="hidden lg:block min-w-0 w-full space-y-6 pb-6">
+        <div className="lg:sticky lg:top-20">
+          <ProductPreview productType={productType} config={config} id="desktop-preview" />
+        </div>
         <PriceSummary
           productType={productType}
           config={config}
@@ -840,8 +842,10 @@ function SlidingDoorConfigurator({ productType }: { productType: ProductType }) 
         </StepSection>
       </div>
 
-      <div className="hidden lg:block min-w-0 w-full lg:sticky lg:top-20 lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto space-y-6 pb-6">
-        <ProductPreview productType={productType} config={config} id="desktop-preview" />
+      <div className="hidden lg:block min-w-0 w-full space-y-6 pb-6">
+        <div className="lg:sticky lg:top-20">
+          <ProductPreview productType={productType} config={config} id="desktop-preview" />
+        </div>
         <PriceSummary
           productType={productType}
           config={config}
@@ -1141,8 +1145,10 @@ function DoorConfiguratorInner({ productType }: { productType: ProductType }) {
           </div>
         </StepSection>
       </div>
-      <div className="hidden lg:block min-w-0 w-full lg:sticky lg:top-20 lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto space-y-6 pb-6">
-        <ProductPreview productType={productType} config={config} id="desktop-preview" />
+      <div className="hidden lg:block min-w-0 w-full space-y-6 pb-6">
+        <div className="lg:sticky lg:top-20">
+          <ProductPreview productType={productType} config={config} id="desktop-preview" />
+        </div>
         <PriceSummary
           productType={productType}
           config={config}
