@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import { Trash2, ArrowRight, Sparkles, CheckCircle2, Wallet } from "lucide-react";
+import { Trash2, ArrowRight, Sparkles, Wallet } from "lucide-react";
 import { useCart } from "@/hooks/use-cart";
 import { removeFromCart, clearCart } from "@/lib/quote-storage";
 import { formatUSD, productLabel } from "@/lib/pricing";
@@ -11,35 +11,31 @@ export function ProjectSummary() {
 
   if (items.length === 0) {
     return (
-      <div className="space-y-6">
-        <aside className="overflow-hidden rounded-2xl border border-border bg-card">
-          <div className="px-6 py-5">
-            <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
-              Your Project
-            </div>
-            <div className="mt-1 text-lg font-semibold tracking-tight">
-              Start Building Your Project
-            </div>
-            <ol className="mt-4 space-y-2.5 text-sm">
-              {[
-                "Configure your first window",
-                "Enter approximate dimensions",
-                "Add windows to your quote",
-                "Get your exact project estimate",
-              ].map((step, i) => (
-                <li key={step} className="flex items-start gap-3">
-                  <span className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border border-border bg-muted/40 text-[10px] font-semibold text-muted-foreground tabular-nums">
-                    {i + 1}
-                  </span>
-                  <span className="text-foreground/80">{step}</span>
-                </li>
-              ))}
-            </ol>
+      <aside className="overflow-hidden rounded-2xl border border-border bg-card">
+        <div className="px-6 py-5">
+          <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+            Your Project
           </div>
-        </aside>
-        <TypicalProjectsCard />
-        <TrustCard />
-      </div>
+          <div className="mt-1 text-lg font-semibold tracking-tight">
+            Start Building Your Project
+          </div>
+          <ol className="mt-4 space-y-2.5 text-sm">
+            {[
+              "Configure your first window",
+              "Enter approximate dimensions",
+              "Add windows to your quote",
+              "Get your exact project estimate",
+            ].map((step, i) => (
+              <li key={step} className="flex items-start gap-3">
+                <span className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border border-border bg-muted/40 text-[10px] font-semibold text-muted-foreground tabular-nums">
+                  {i + 1}
+                </span>
+                <span className="text-foreground/80">{step}</span>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </aside>
     );
   }
 
@@ -50,154 +46,91 @@ export function ProjectSummary() {
   const monthly = Math.round(mid * 0.0125);
 
   return (
-    <div className="space-y-6">
-      <aside className="overflow-hidden rounded-2xl border border-border bg-card">
-        <div className="flex items-baseline justify-between px-6 py-4">
-          <div>
-            <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
-              Your Project
-            </div>
-            <div className="mt-1 text-sm font-semibold">
-              Windows Added: <span className="tabular-nums">{count}</span>
-            </div>
-          </div>
-          <button
-            className="text-[11px] uppercase tracking-wider text-muted-foreground hover:text-foreground"
-            onClick={() => clearCart()}
-          >
-            Clear
-          </button>
-        </div>
-
-        <ul className="divide-y divide-border border-t border-border">
-          {items.map((it) => (
-            <li key={it.id} className="flex items-center justify-between gap-3 px-6 py-3">
-              <div className="min-w-0">
-                <div className="truncate text-sm font-medium">
-                  {itemTitle(it)}
-                  {it.qty > 1 && (
-                    <span className="ml-1 text-muted-foreground">× {it.qty}</span>
-                  )}
-                </div>
-                <div className="truncate text-[11px] text-muted-foreground">
-                  {it.config.width}″ × {it.config.height}″
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="text-right text-xs tabular-nums">
-                  <div>{formatUSD(it.price.low * it.qty)}</div>
-                  <div className="text-muted-foreground">{formatUSD(it.price.high * it.qty)}</div>
-                </div>
-                <button
-                  className="text-muted-foreground hover:text-destructive"
-                  aria-label="Remove"
-                  onClick={() => removeFromCart(it.id)}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
-              </div>
-            </li>
-          ))}
-        </ul>
-
-        <div className="border-t border-border px-6 py-5">
+    <aside className="overflow-hidden rounded-2xl border border-border bg-card">
+      <div className="flex items-baseline justify-between px-6 py-4">
+        <div>
           <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
-            Estimated Project Total
+            Your Project
           </div>
-          <div className="mt-1 text-2xl font-semibold tabular-nums">
-            {formatUSD(low)} – {formatUSD(high)}
+          <div className="mt-1 text-sm font-semibold">
+            Windows Added: <span className="tabular-nums">{count}</span>
           </div>
-          <div className="mt-0.5 text-[11px] text-muted-foreground">
-            Midpoint {formatUSD(mid)} · Installed
-          </div>
-          <div className="mt-4 flex items-center gap-2 rounded-xl border border-border bg-muted/30 px-3 py-2.5">
-            <Wallet className="h-4 w-4 flex-shrink-0 text-foreground/70" />
+        </div>
+        <button
+          className="text-[11px] uppercase tracking-wider text-muted-foreground hover:text-foreground"
+          onClick={() => clearCart()}
+        >
+          Clear
+        </button>
+      </div>
+
+      <ul className="divide-y divide-border border-t border-border">
+        {items.map((it) => (
+          <li key={it.id} className="flex items-center justify-between gap-3 px-6 py-3">
             <div className="min-w-0">
-              <div className="text-[13px] font-medium">
-                Est. <span className="tabular-nums">{formatUSD(monthly)}</span>/mo
+              <div className="truncate text-sm font-medium">
+                {itemTitle(it)}
+                {it.qty > 1 && <span className="ml-1 text-muted-foreground">× {it.qty}</span>}
               </div>
-              <div className="text-[11px] text-muted-foreground">
-                Financing options available. Ask about payment options during your quote review.
+              <div className="truncate text-[11px] text-muted-foreground">
+                {it.config.width}″ × {it.config.height}″
               </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="text-right text-xs tabular-nums">
+                <div>{formatUSD(it.price.low * it.qty)}</div>
+                <div className="text-muted-foreground">{formatUSD(it.price.high * it.qty)}</div>
+              </div>
+              <button
+                className="text-muted-foreground hover:text-destructive"
+                aria-label="Remove"
+                onClick={() => removeFromCart(it.id)}
+              >
+                <Trash2 className="h-4 w-4" />
+              </button>
+            </div>
+          </li>
+        ))}
+      </ul>
+
+      <div className="border-t border-border px-6 py-5">
+        <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+          Estimated Project Total
+        </div>
+        <div className="mt-1 text-2xl font-semibold tabular-nums">
+          {formatUSD(low)} – {formatUSD(high)}
+        </div>
+        <div className="mt-0.5 text-[11px] text-muted-foreground">
+          Midpoint {formatUSD(mid)} · Installed
+        </div>
+        <div className="mt-4 flex items-center gap-2 rounded-xl border border-border bg-muted/30 px-3 py-2.5">
+          <Wallet className="h-4 w-4 flex-shrink-0 text-foreground/70" />
+          <div className="min-w-0">
+            <div className="text-[13px] font-medium">
+              Est. <span className="tabular-nums">{formatUSD(monthly)}</span>/mo
+            </div>
+            <div className="text-[11px] text-muted-foreground">
+              Financing options available. Ask about payment options during your quote review.
             </div>
           </div>
         </div>
+      </div>
 
-        <div className="border-t border-border bg-foreground/[0.02] px-6 py-5">
-          <Button
-            asChild
-            className="h-12 w-full rounded-full text-sm font-semibold tracking-wide shadow-[var(--shadow-elegant)]"
-          >
-            <Link to="/quote">
-              <Sparkles className="mr-1 h-4 w-4" /> GET MY EXACT QUOTE
-              <ArrowRight className="ml-1 h-4 w-4" />
-            </Link>
-          </Button>
-          <p className="mt-2 text-center text-[11px] text-muted-foreground">
-            Takes less than 60 seconds.
-          </p>
-        </div>
-      </aside>
-
-      <TypicalProjectsCard />
-      <TrustCard />
-    </div>
-  );
-}
-
-function TypicalProjectsCard() {
-  const rows = [
-    { label: "5 Windows", range: "$5,000–$8,000" },
-    { label: "10 Windows", range: "$9,000–$15,000" },
-    { label: "Whole Home", range: "$15,000–$30,000+" },
-  ];
-  return (
-    <div className="overflow-hidden rounded-2xl border border-border bg-card">
-      <div className="px-6 py-5">
-        <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
-          Typical Replacement Projects
-        </div>
-        <ul className="mt-3 divide-y divide-border/70">
-          {rows.map((r) => (
-            <li key={r.label} className="flex items-center justify-between py-2.5 text-sm">
-              <span className="text-foreground/80">{r.label}</span>
-              <span className="tabular-nums font-medium">{r.range}</span>
-            </li>
-          ))}
-        </ul>
-        <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
-          Actual pricing varies based on size, product line, and installation requirements.
+      <div className="border-t border-border bg-foreground/[0.02] px-6 py-5">
+        <Button
+          asChild
+          className="h-12 w-full rounded-full text-sm font-semibold tracking-wide shadow-[var(--shadow-elegant)]"
+        >
+          <Link to="/quote">
+            <Sparkles className="mr-1 h-4 w-4" /> GET MY EXACT QUOTE
+            <ArrowRight className="ml-1 h-4 w-4" />
+          </Link>
+        </Button>
+        <p className="mt-2 text-center text-[11px] text-muted-foreground">
+          Takes less than 60 seconds.
         </p>
       </div>
-    </div>
-  );
-}
-
-function TrustCard() {
-  const items = [
-    "Instant online pricing",
-    "No in-home sales presentation",
-    "Professional measurement verification",
-    "Energy-efficient products",
-    "Professional installation included",
-    "Built for Utah weather",
-  ];
-  return (
-    <div className="overflow-hidden rounded-2xl border border-border bg-card">
-      <div className="px-6 py-5">
-        <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
-          Why Homeowners Choose Pane &amp; Simple
-        </div>
-        <ul className="mt-3 space-y-2 text-[13px]">
-          {items.map((t) => (
-            <li key={t} className="flex items-start gap-2">
-              <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-emerald-600" />
-              <span className="text-foreground/85">{t}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
+    </aside>
   );
 }
 

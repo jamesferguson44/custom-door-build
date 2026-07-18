@@ -4,7 +4,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { ProductTypeTabs } from "@/components/configurator/ProductTypeTabs";
 import { OptionGroup } from "@/components/configurator/OptionGroup";
 import { SizeInputs } from "@/components/configurator/SizeInputs";
-import { PriceSummary } from "@/components/configurator/PriceSummary";
+import { StickyPriceCard, PriceDetails } from "@/components/configurator/PriceSummary";
 import { ProductPreview } from "@/components/configurator/ProductPreview";
 import { ProjectSummary } from "@/components/configurator/ProjectSummary";
 import {
@@ -44,7 +44,15 @@ const WINDOW_STYLE_DESC: Record<string, string> = {
   Specialty: "Custom shapes and architectural designs",
 };
 
-function ProgressBar({ done, active, labels }: { done: Record<number, boolean>; active: number; labels: string[] }) {
+function ProgressBar({
+  done,
+  active,
+  labels,
+}: {
+  done: Record<number, boolean>;
+  active: number;
+  labels: string[];
+}) {
   return (
     <div className="mb-10 overflow-hidden rounded-2xl border border-border bg-card/60 px-4 py-3 backdrop-blur sm:px-6 sm:py-4">
       <ol className="flex items-center gap-2 sm:gap-3">
@@ -60,15 +68,20 @@ function ProgressBar({ done, active, labels }: { done: Record<number, boolean>; 
                   isDone
                     ? "border-foreground bg-foreground text-background"
                     : isActive
-                    ? "border-foreground text-foreground"
-                    : "border-border text-muted-foreground",
+                      ? "border-foreground text-foreground"
+                      : "border-border text-muted-foreground",
                 )}
               >
                 {isDone ? <Check className="h-3 w-3" /> : n}
               </div>
-             <span className={cn(
-  "hidden sm:inline truncate text-xs transition-colors sm:text-[13px]",
-                  isActive ? "font-medium text-foreground" : isDone ? "text-muted-foreground" : "text-muted-foreground/70",
+              <span
+                className={cn(
+                  "hidden sm:inline truncate text-xs transition-colors sm:text-[13px]",
+                  isActive
+                    ? "font-medium text-foreground"
+                    : isDone
+                      ? "text-muted-foreground"
+                      : "text-muted-foreground/70",
                 )}
               >
                 {label}
@@ -94,19 +107,33 @@ const VALID_TYPES: ProductType[] = ["window", "door", "sliding_door"];
 type TemplateId = "best-value" | "most-popular" | "max-efficiency" | "modern-upgrade";
 
 const WINDOW_TEMPLATES: Record<TemplateId, Partial<WindowConfig>> = {
-  "best-value": { productLine: "Good — AMSCO", glassType: "Standard", windowStyle: "Single Hung", color: "White" },
-  "most-popular": { productLine: "Better — ProVia", glassType: "Low-E", windowStyle: "Double Hung", color: "White" },
-  "max-efficiency": { productLine: "Best — ProVia Aeris", glassType: "Triple Pane", windowStyle: "Casement", color: "White" },
-  "modern-upgrade": { productLine: "Better — ProVia", glassType: "Low-E", windowStyle: "Picture", color: "Black" },
+  "best-value": {
+    productLine: "Good — AMSCO",
+    glassType: "Standard",
+    windowStyle: "Single Hung",
+    color: "White",
+  },
+  "most-popular": {
+    productLine: "Better — ProVia",
+    glassType: "Low-E",
+    windowStyle: "Double Hung",
+    color: "White",
+  },
+  "max-efficiency": {
+    productLine: "Best — ProVia Aeris",
+    glassType: "Triple Pane",
+    windowStyle: "Casement",
+    color: "White",
+  },
+  "modern-upgrade": {
+    productLine: "Better — ProVia",
+    glassType: "Low-E",
+    windowStyle: "Picture",
+    color: "Black",
+  },
 };
 
-function CustomBrandRequest({
-  value,
-  onChange,
-}: {
-  value: string;
-  onChange: (v: string) => void;
-}) {
+function CustomBrandRequest({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   const [open, setOpen] = useState<boolean>(Boolean(value));
   return (
     <div className="rounded-xl border border-border bg-muted/30 p-4">
@@ -202,7 +229,7 @@ function Hero({ productType }: { productType: ProductType }) {
         className="h-[44vh] w-full object-cover sm:h-[52vh]"
       />
       <div className="pointer-events-none absolute inset-0 bg-black/40 sm:bg-transparent" />
-<div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/90 via-background/10 to-transparent" />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/90 via-background/10 to-transparent" />
       <div className="absolute inset-x-0 bottom-0">
         <div className="mx-auto max-w-[1400px] px-6 pb-8 sm:pb-12">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -246,9 +273,7 @@ function Shell({
         </div>
       )}
       <div className="mx-auto max-w-[1400px] px-6 py-12 sm:py-16 overflow-x-clip">
-        <div className="grid gap-10 lg:grid-cols-[1fr_400px] lg:gap-12">
-          {children}
-        </div>
+        <div className="grid gap-10 lg:grid-cols-[1fr_400px] lg:gap-12">{children}</div>
       </div>
     </div>
   );
@@ -284,9 +309,7 @@ function MobileBottomBar({
               </div>
             </>
           ) : (
-            <div className="text-xs text-muted-foreground">
-              Complete steps to see pricing
-            </div>
+            <div className="text-xs text-muted-foreground">Complete steps to see pricing</div>
           )}
         </div>
         <Button
@@ -333,7 +356,8 @@ function StepSection({
     <section
       className={cn(
         "border-t border-border pt-10 first:border-t-0 first:pt-0 transition-all duration-300",
-        active && "rounded-2xl border border-foreground/15 bg-muted/30 px-3 py-6 -mx-3 sm:px-5 sm:-mx-5 my-2 first:pt-6 border-l-4 border-l-foreground",
+        active &&
+          "rounded-2xl border border-foreground/15 bg-muted/30 px-3 py-6 -mx-3 sm:px-5 sm:-mx-5 my-2 first:pt-6 border-l-4 border-l-foreground",
       )}
     >
       <div className="mb-4 flex items-start justify-between gap-3">
@@ -343,7 +367,9 @@ function StepSection({
           </span>
           <div className="mt-1 flex items-center gap-2">
             {complete && <Check className="h-4 w-4 text-emerald-600 flex-shrink-0" />}
-            <h2 className={cn("text-2xl font-semibold tracking-tight", active && "text-foreground")}>
+            <h2
+              className={cn("text-2xl font-semibold tracking-tight", active && "text-foreground")}
+            >
               {title}
             </h2>
           </div>
@@ -356,9 +382,7 @@ function StepSection({
         </div>
       </div>
       <div>
-        {description && (
-          <p className="mb-6 -mt-1 text-sm text-muted-foreground">{description}</p>
-        )}
+        {description && <p className="mb-6 -mt-1 text-sm text-muted-foreground">{description}</p>}
         <div className="space-y-8">{children}</div>
       </div>
     </section>
@@ -433,205 +457,217 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
   const handleMobileAdd = () => {
     addToCart({ productType, config, price, location: location.trim() || undefined });
     const count = loadCart().items.reduce((s, i) => s + i.qty, 0);
-    toast.success(`${location.trim() || "Window"} added. ${count} window${count === 1 ? "" : "s"} in your project.`);
+    toast.success(
+      `${location.trim() || "Window"} added. ${count} window${count === 1 ? "" : "s"} in your project.`,
+    );
     setConfig({ ...config, width: 0, height: 0 });
     setLocation("");
   };
 
   return (
     <>
-    <Shell
-      productType={productType}
-      mobilePreview={<ProductPreview productType={productType} config={config} id="mobile-preview" />}
-    >
-      <div className="min-w-0 w-full pb-24 lg:pb-0">
-  <ProgressBar done={stepDone} active={activeStep} labels={STEP_LABELS} />
-        <StepSection
-          step={1}
-          title="Window Style"
-          description="Choose how your window opens. Change it anytime."
-          summary={config.windowStyle}
-          complete={stepDone[1]}
-          active={activeStep === 1}
-        >
-          <OptionGroup
-            label="Window Style"
-            value={config.windowStyle}
-            options={WINDOW_STYLES}
-            onChange={(v) => {
-              setConfig({ ...config, windowStyle: v });
-              mark(1);
-            }}
-            descriptions={WINDOW_STYLE_DESC as Partial<Record<typeof config.windowStyle, string>>}
-          />
-        </StepSection>
+      <Shell
+        productType={productType}
+        mobilePreview={
+          <ProductPreview productType={productType} config={config} id="mobile-preview" />
+        }
+      >
+        <div className="min-w-0 w-full pb-24 lg:pb-0">
+          <ProgressBar done={stepDone} active={activeStep} labels={STEP_LABELS} />
+          <StepSection
+            step={1}
+            title="Window Style"
+            description="Choose how your window opens. Change it anytime."
+            summary={config.windowStyle}
+            complete={stepDone[1]}
+            active={activeStep === 1}
+          >
+            <OptionGroup
+              label="Window Style"
+              value={config.windowStyle}
+              options={WINDOW_STYLES}
+              onChange={(v) => {
+                setConfig({ ...config, windowStyle: v });
+                mark(1);
+              }}
+              descriptions={WINDOW_STYLE_DESC as Partial<Record<typeof config.windowStyle, string>>}
+            />
+          </StepSection>
 
-        <StepSection
-          step={2}
-          title="Product Line"
-          description="Most homeowners choose Better — premium vinyl with Low-E glass."
-          summary={config.productLine}
-          complete={stepDone[2]}
-          active={activeStep === 2}
-        >
-          <OptionGroup
-            label="Product Line"
-            value={config.productLine}
-            options={PRODUCT_LINES}
-            onChange={(v) => {
-              setConfig({ ...config, productLine: v });
-              mark(2);
-            }}
-            descriptions={{
-              "Good — AMSCO": "Affordable · Energy efficient · Best budget option",
-              "Better — ProVia": "Better efficiency · Premium vinyl construction · Recommended",
-              "Best — ProVia Aeris": "Maximum efficiency · Real wood interior · Premium upgrade",
-            }}
-            badges={{
-              "Better — ProVia": "Most Popular",
-            }}
-          />
-          <CustomBrandRequest
-            value={config.customRequest ?? ""}
-            onChange={(v) => setConfig({ ...config, customRequest: v })}
-          />
-        </StepSection>
+          <StepSection
+            step={2}
+            title="Product Line"
+            description="Most homeowners choose Better — premium vinyl with Low-E glass."
+            summary={config.productLine}
+            complete={stepDone[2]}
+            active={activeStep === 2}
+          >
+            <OptionGroup
+              label="Product Line"
+              value={config.productLine}
+              options={PRODUCT_LINES}
+              onChange={(v) => {
+                setConfig({ ...config, productLine: v });
+                mark(2);
+              }}
+              descriptions={{
+                "Good — AMSCO": "Affordable · Energy efficient · Best budget option",
+                "Better — ProVia": "Better efficiency · Premium vinyl construction · Recommended",
+                "Best — ProVia Aeris": "Maximum efficiency · Real wood interior · Premium upgrade",
+              }}
+              badges={{
+                "Better — ProVia": "Most Popular",
+              }}
+            />
+            <CustomBrandRequest
+              value={config.customRequest ?? ""}
+              onChange={(v) => setConfig({ ...config, customRequest: v })}
+            />
+          </StepSection>
 
-        <StepSection
-          step={3}
-          title="Glass"
-          description="Low-E is recommended for Utah's climate and the most common pick."
-          summary={config.glassType}
-          complete={stepDone[3]}
-          active={activeStep === 3}
-        >
-          <OptionGroup
-            label="Glass Type"
-            value={config.glassType}
-            options={["Standard", "Low-E", "Triple Pane"] as const}
-            onChange={(v) => {
-              setConfig({ ...config, glassType: v });
-              mark(3);
-            }}
-            descriptions={{
-              Standard: "Dual pane",
-              "Low-E": "Energy efficient",
-              "Triple Pane": "Maximum insulation",
-            }}
-            badges={{
-              "Low-E": "Recommended",
-            }}
-          />
-        </StepSection>
+          <StepSection
+            step={3}
+            title="Glass"
+            description="Low-E is recommended for Utah's climate and the most common pick."
+            summary={config.glassType}
+            complete={stepDone[3]}
+            active={activeStep === 3}
+          >
+            <OptionGroup
+              label="Glass Type"
+              value={config.glassType}
+              options={["Standard", "Low-E", "Triple Pane"] as const}
+              onChange={(v) => {
+                setConfig({ ...config, glassType: v });
+                mark(3);
+              }}
+              descriptions={{
+                Standard: "Dual pane",
+                "Low-E": "Energy efficient",
+                "Triple Pane": "Maximum insulation",
+              }}
+              badges={{
+                "Low-E": "Recommended",
+              }}
+            />
+          </StepSection>
 
-        <StepSection
-          step={4}
-          title="Style & Color"
-          description="Personalize the finish. Easy to change later."
-          summary={`${config.color} Exterior · ${config.gridStyle === "None" ? "No Grids" : `${config.gridStyle} Grids`}`}
-          complete={stepDone[4]}
-          active={activeStep === 4}
-        >
-          <OptionGroup
-            label="Grid Style"
-            value={config.gridStyle}
-            options={["None", "Colonial", "Prairie"] as const}
-            onChange={(v) => {
-              setConfig({ ...config, gridStyle: v });
-              mark(4);
-            }}
-          />
-          <OptionGroup
-            label="Color"
-            value={config.color}
-            options={["White", "Black", "Custom"] as const}
-            onChange={(v) => {
-              setConfig({ ...config, color: v });
-              mark(4);
-            }}
-          />
-        </StepSection>
+          <StepSection
+            step={4}
+            title="Style & Color"
+            description="Personalize the finish. Easy to change later."
+            summary={`${config.color} Exterior · ${config.gridStyle === "None" ? "No Grids" : `${config.gridStyle} Grids`}`}
+            complete={stepDone[4]}
+            active={activeStep === 4}
+          >
+            <OptionGroup
+              label="Grid Style"
+              value={config.gridStyle}
+              options={["None", "Colonial", "Prairie"] as const}
+              onChange={(v) => {
+                setConfig({ ...config, gridStyle: v });
+                mark(4);
+              }}
+            />
+            <OptionGroup
+              label="Color"
+              value={config.color}
+              options={["White", "Black", "Custom"] as const}
+              onChange={(v) => {
+                setConfig({ ...config, color: v });
+                mark(4);
+              }}
+            />
+          </StepSection>
 
-        <StepSection
-          step={5}
-          title="Measurements"
-          description="Approximate measurements are completely fine — a professional verifies exact numbers before production."
-          complete={stepDone[5]}
-          active={activeStep === 5}
-          summary={valid ? `${config.width}″ × ${config.height}″` : undefined}
-        >
-          <div className="flex items-start gap-3 rounded-xl border border-sky-200 bg-sky-50/70 px-4 py-3 text-sm text-sky-900 dark:border-sky-900/40 dark:bg-sky-950/30 dark:text-sky-100">
-            <Info className="mt-0.5 h-4 w-4 flex-shrink-0" />
-            <div>
-              <div className="font-medium">Don't worry if your measurements aren't perfect.</div>
-              <div className="mt-0.5 text-[13px] opacity-80">
-                Most homeowners enter approximate sizes. We verify exact measurements before ordering.
+          <StepSection
+            step={5}
+            title="Measurements"
+            description="Approximate measurements are completely fine — a professional verifies exact numbers before production."
+            complete={stepDone[5]}
+            active={activeStep === 5}
+            summary={valid ? `${config.width}″ × ${config.height}″` : undefined}
+          >
+            <div className="flex items-start gap-3 rounded-xl border border-sky-200 bg-sky-50/70 px-4 py-3 text-sm text-sky-900 dark:border-sky-900/40 dark:bg-sky-950/30 dark:text-sky-100">
+              <Info className="mt-0.5 h-4 w-4 flex-shrink-0" />
+              <div>
+                <div className="font-medium">Don't worry if your measurements aren't perfect.</div>
+                <div className="mt-0.5 text-[13px] opacity-80">
+                  Most homeowners enter approximate sizes. We verify exact measurements before
+                  ordering.
+                </div>
               </div>
             </div>
-          </div>
-          <SizeInputs
-            width={config.width}
-            height={config.height}
-            onChange={(width, height) => setConfig({ ...config, width, height })}
-          />
-        </StepSection>
-
-        <StepSection
-          step={6}
-          title="Room or Location"
-          description="Name this window's room so we can organize your quote and installation."
-          summary={locationValid ? location.trim() : undefined}
-          complete={stepDone[6]}
-          active={activeStep === 6}
-        >
-          <div className="space-y-2">
-            <Label htmlFor="room-location-step" className="text-sm font-medium">
-              Room or location name <span className="text-foreground">*</span>
-            </Label>
-            <Input
-              id="room-location-step"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              placeholder="e.g. Living Room, Kitchen, Master Bedroom..."
+            <SizeInputs
+              width={config.width}
+              height={config.height}
+              onChange={(width, height) => setConfig({ ...config, width, height })}
             />
-            <p className="text-[12px] text-muted-foreground">
-              This helps us organize your quote and schedule installation by room.
-            </p>
-          </div>
-        </StepSection>
+          </StepSection>
 
-      </div>
-      <div className="hidden lg:block min-w-0 w-full space-y-6 pb-6">
-        <div className="lg:sticky lg:top-20">
-          <ProductPreview productType={productType} config={config} id="desktop-preview" />
+          <StepSection
+            step={6}
+            title="Room or Location"
+            description="Name this window's room so we can organize your quote and installation."
+            summary={locationValid ? location.trim() : undefined}
+            complete={stepDone[6]}
+            active={activeStep === 6}
+          >
+            <div className="space-y-2">
+              <Label htmlFor="room-location-step" className="text-sm font-medium">
+                Room or location name <span className="text-foreground">*</span>
+              </Label>
+              <Input
+                id="room-location-step"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                placeholder="e.g. Living Room, Kitchen, Master Bedroom..."
+              />
+              <p className="text-[12px] text-muted-foreground">
+                This helps us organize your quote and schedule installation by room.
+              </p>
+            </div>
+          </StepSection>
         </div>
-        <PriceSummary
-          productType={productType}
-          config={config}
-          price={price}
-          valid={valid}
-          completeness={completeness}
-          location={location}
-          locationValid={locationValid}
-          onAddedToProject={() => {
-            setConfig({ ...config, width: 0, height: 0 });
-            setLocation("");
-          }}
-        />
-        <ProjectSummary />
-        <div className="flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
-          <Save className="h-3 w-3" /> Project automatically saved.
+        <div className="hidden lg:block min-w-0 w-full space-y-6 pb-6">
+          <div className="lg:sticky lg:top-20 space-y-4">
+            <ProductPreview productType={productType} config={config} id="desktop-preview" />
+            <StickyPriceCard
+              productType={productType}
+              config={config}
+              price={price}
+              valid={valid}
+              location={location}
+              locationValid={locationValid}
+              onAddedToProject={() => {
+                setConfig({ ...config, width: 0, height: 0 });
+                setLocation("");
+              }}
+            />
+          </div>
+          <PriceDetails
+            productType={productType}
+            config={config}
+            price={price}
+            valid={valid}
+            completeness={completeness}
+            location={location}
+            locationValid={locationValid}
+          />
+          <ProjectSummary />
+          <div className="flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
+            <Save className="h-3 w-3" /> Project automatically saved.
+          </div>
         </div>
-      </div>
-    </Shell>
-    <MobileBottomBar
-      price={price}
-      valid={valid}
-      locationValid={locationValid}
-      addLabel={addLabel}
-      onAdd={handleMobileAdd}
-      onReview={() => navigate({ to: "/quote" })}
-    />
+      </Shell>
+      <MobileBottomBar
+        price={price}
+        valid={valid}
+        locationValid={locationValid}
+        addLabel={addLabel}
+        onAdd={handleMobileAdd}
+        onReview={() => navigate({ to: "/quote" })}
+      />
     </>
   );
 }
@@ -681,7 +717,9 @@ function SlidingDoorConfigurator({ productType }: { productType: ProductType }) 
   const handleMobileAdd = () => {
     addToCart({ productType, config, price, location: location.trim() || undefined });
     const count = loadCart().items.reduce((s, i) => s + i.qty, 0);
-    toast.success(`${location.trim() || "Sliding door"} added. ${count} item${count === 1 ? "" : "s"} in your project.`);
+    toast.success(
+      `${location.trim() || "Sliding door"} added. ${count} item${count === 1 ? "" : "s"} in your project.`,
+    );
     setConfig({
       material: "Vinyl",
       panelCount: 2,
@@ -698,191 +736,213 @@ function SlidingDoorConfigurator({ productType }: { productType: ProductType }) 
 
   return (
     <>
-    <Shell
-      productType={productType}
-      mobilePreview={<ProductPreview productType={productType} config={config} id="mobile-preview" />}
-    >
-      <div className="min-w-0 w-full pb-24 lg:pb-0">
-        <ProgressBar done={stepDone} active={activeStep} labels={SLIDING_STEP_LABELS} />
+      <Shell
+        productType={productType}
+        mobilePreview={
+          <ProductPreview productType={productType} config={config} id="mobile-preview" />
+        }
+      >
+        <div className="min-w-0 w-full pb-24 lg:pb-0">
+          <ProgressBar done={stepDone} active={activeStep} labels={SLIDING_STEP_LABELS} />
 
-        <StepSection
-          step={1}
-          title="Material"
-          description="Vinyl is the most popular and affordable choice for sliding patio doors. Fiberglass offers better insulation and a more premium look."
-          summary={config.material}
-          complete={stepDone[1]}
-          active={activeStep === 1}
-        >
-          <OptionGroup
-            label="Material"
-            value={config.material as "Vinyl" | "Fiberglass"}
-            options={["Vinyl", "Fiberglass"] as const}
-            onChange={(v) => { setConfig({ ...config, material: v }); mark(1); }}
-            descriptions={{
-              Vinyl: "Most popular · Durable and low maintenance · Best value",
-              Fiberglass: "Premium insulation · Superior strength · Contemporary look",
-            }}
-            badges={{ Vinyl: "Most Popular" }}
-          />
-        </StepSection>
+          <StepSection
+            step={1}
+            title="Material"
+            description="Vinyl is the most popular and affordable choice for sliding patio doors. Fiberglass offers better insulation and a more premium look."
+            summary={config.material}
+            complete={stepDone[1]}
+            active={activeStep === 1}
+          >
+            <OptionGroup
+              label="Material"
+              value={config.material as "Vinyl" | "Fiberglass"}
+              options={["Vinyl", "Fiberglass"] as const}
+              onChange={(v) => {
+                setConfig({ ...config, material: v });
+                mark(1);
+              }}
+              descriptions={{
+                Vinyl: "Most popular · Durable and low maintenance · Best value",
+                Fiberglass: "Premium insulation · Superior strength · Contemporary look",
+              }}
+              badges={{ Vinyl: "Most Popular" }}
+            />
+          </StepSection>
 
-        <StepSection
-          step={2}
-          title="Panel Configuration"
-          description="Choose how many panels your sliding door will have. 2-panel is standard for most openings."
-          summary={config.panelCount ? `${config.panelCount}-Panel` : undefined}
-          complete={stepDone[2]}
-          active={activeStep === 2}
-        >
-          <OptionGroup
-            label="Panel Configuration"
-            value={String(config.panelCount ?? 2)}
-            options={["2", "3", "4"] as const}
-            onChange={(v) => { setConfig({ ...config, panelCount: Number(v) as 2 | 3 | 4 }); mark(2); }}
-            descriptions={{
-              "2": "One sliding panel, one fixed · Standard opening · Most common",
-              "3": "Two sliding panels, one fixed center · Wider openings",
-              "4": "Two sliding, two fixed · Large openings and expansive views",
-            }}
-            badges={{ "2": "Most Common" }}
-          />
-        </StepSection>
+          <StepSection
+            step={2}
+            title="Panel Configuration"
+            description="Choose how many panels your sliding door will have. 2-panel is standard for most openings."
+            summary={config.panelCount ? `${config.panelCount}-Panel` : undefined}
+            complete={stepDone[2]}
+            active={activeStep === 2}
+          >
+            <OptionGroup
+              label="Panel Configuration"
+              value={String(config.panelCount ?? 2)}
+              options={["2", "3", "4"] as const}
+              onChange={(v) => {
+                setConfig({ ...config, panelCount: Number(v) as 2 | 3 | 4 });
+                mark(2);
+              }}
+              descriptions={{
+                "2": "One sliding panel, one fixed · Standard opening · Most common",
+                "3": "Two sliding panels, one fixed center · Wider openings",
+                "4": "Two sliding, two fixed · Large openings and expansive views",
+              }}
+              badges={{ "2": "Most Common" }}
+            />
+          </StepSection>
 
-        <StepSection
-          step={3}
-          title="Glass"
-          description="Low-E dual pane is the standard choice for Utah's climate. Triple pane is the premium upgrade for maximum insulation."
-          summary={config.glassEfficiency ?? "Low-E"}
-          complete={stepDone[3]}
-          active={activeStep === 3}
-        >
-          <OptionGroup
-            label="Glass Efficiency"
-            value={config.glassEfficiency ?? "Low-E"}
-            options={["Low-E", "Triple Pane"] as const}
-            onChange={(v) => {
-              setConfig({ ...config, glassEfficiency: v as "Low-E" | "Triple Pane" });
-              mark(3);
-            }}
-            descriptions={{
-              "Low-E": "Dual pane with Low-E coating · Energy efficient · Standard choice for Utah",
-              "Triple Pane": "Three panes · Maximum insulation · Best for extreme temperature zones",
-            }}
-            badges={{ "Low-E": "Recommended" }}
-          />
-        </StepSection>
+          <StepSection
+            step={3}
+            title="Glass"
+            description="Low-E dual pane is the standard choice for Utah's climate. Triple pane is the premium upgrade for maximum insulation."
+            summary={config.glassEfficiency ?? "Low-E"}
+            complete={stepDone[3]}
+            active={activeStep === 3}
+          >
+            <OptionGroup
+              label="Glass Efficiency"
+              value={config.glassEfficiency ?? "Low-E"}
+              options={["Low-E", "Triple Pane"] as const}
+              onChange={(v) => {
+                setConfig({ ...config, glassEfficiency: v as "Low-E" | "Triple Pane" });
+                mark(3);
+              }}
+              descriptions={{
+                "Low-E":
+                  "Dual pane with Low-E coating · Energy efficient · Standard choice for Utah",
+                "Triple Pane":
+                  "Three panes · Maximum insulation · Best for extreme temperature zones",
+              }}
+              badges={{ "Low-E": "Recommended" }}
+            />
+          </StepSection>
 
-        <StepSection
-          step={4}
-          title="Frame Color"
-          description="Choose the exterior frame color. All options include a white interior finish."
-          summary={config.frameColor}
-          complete={stepDone[4]}
-          active={activeStep === 4}
-        >
-          <OptionGroup
-            label="Frame Color"
-            value={config.frameColor ?? "White"}
-            options={["White", "Bronze", "Black"] as const}
-            onChange={(v) => { setConfig({ ...config, frameColor: v as "White" | "Bronze" | "Black" }); mark(4); }}
-            descriptions={{
-              White: "Classic · Matches most home exteriors",
-              Bronze: "Warm tone · Popular with brick and earth tones",
-              Black: "Modern and bold · Contemporary look",
-            }}
-          />
-        </StepSection>
+          <StepSection
+            step={4}
+            title="Frame Color"
+            description="Choose the exterior frame color. All options include a white interior finish."
+            summary={config.frameColor}
+            complete={stepDone[4]}
+            active={activeStep === 4}
+          >
+            <OptionGroup
+              label="Frame Color"
+              value={config.frameColor ?? "White"}
+              options={["White", "Bronze", "Black"] as const}
+              onChange={(v) => {
+                setConfig({ ...config, frameColor: v as "White" | "Bronze" | "Black" });
+                mark(4);
+              }}
+              descriptions={{
+                White: "Classic · Matches most home exteriors",
+                Bronze: "Warm tone · Popular with brick and earth tones",
+                Black: "Modern and bold · Contemporary look",
+              }}
+            />
+          </StepSection>
 
-        <StepSection
-          step={5}
-          title="Measurements"
-          description="Approximate measurements are completely fine — a professional verifies exact numbers before production."
-          complete={stepDone[5]}
-          active={activeStep === 5}
-          summary={valid ? `${config.width}″ × ${config.height}″` : undefined}
-        >
-          <div className="flex items-start gap-3 rounded-xl border border-sky-200 bg-sky-50/70 px-4 py-3 text-sm text-sky-900 dark:border-sky-900/40 dark:bg-sky-950/30 dark:text-sky-100">
-            <Info className="mt-0.5 h-4 w-4 flex-shrink-0" />
-            <div>
-              <div className="font-medium">Don't worry if your measurements aren't perfect.</div>
-              <div className="mt-0.5 text-[13px] opacity-80">
-                Most homeowners enter approximate sizes. We verify exact measurements before ordering.
+          <StepSection
+            step={5}
+            title="Measurements"
+            description="Approximate measurements are completely fine — a professional verifies exact numbers before production."
+            complete={stepDone[5]}
+            active={activeStep === 5}
+            summary={valid ? `${config.width}″ × ${config.height}″` : undefined}
+          >
+            <div className="flex items-start gap-3 rounded-xl border border-sky-200 bg-sky-50/70 px-4 py-3 text-sm text-sky-900 dark:border-sky-900/40 dark:bg-sky-950/30 dark:text-sky-100">
+              <Info className="mt-0.5 h-4 w-4 flex-shrink-0" />
+              <div>
+                <div className="font-medium">Don't worry if your measurements aren't perfect.</div>
+                <div className="mt-0.5 text-[13px] opacity-80">
+                  Most homeowners enter approximate sizes. We verify exact measurements before
+                  ordering.
+                </div>
               </div>
             </div>
-          </div>
-          <SizeInputs
-            width={config.width}
-            height={config.height}
-            onChange={(width, height) => setConfig({ ...config, width, height })}
-          />
-        </StepSection>
-
-        <StepSection
-          step={6}
-          title="Door Location"
-          description="Tell us where this door is so we can organize your quote and installation."
-          summary={locationValid ? location : undefined}
-          complete={locationValid}
-          active={stepDone[5] && !locationValid}
-        >
-          <div className="space-y-2">
-            <Label htmlFor="sliding-location" className="text-sm text-muted-foreground">
-              Door location <span className="text-foreground">*</span>
-            </Label>
-            <Input
-              id="sliding-location"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              placeholder="e.g. Back Patio, Living Room, Master Bedroom..."
+            <SizeInputs
+              width={config.width}
+              height={config.height}
+              onChange={(width, height) => setConfig({ ...config, width, height })}
             />
-            <p className="text-[11px] text-muted-foreground">
-              This helps us organize your quote and schedule installation by location.
-            </p>
-          </div>
-        </StepSection>
-      </div>
+          </StepSection>
 
-      <div className="hidden lg:block min-w-0 w-full space-y-6 pb-6">
-        <div className="lg:sticky lg:top-20">
-          <ProductPreview productType={productType} config={config} id="desktop-preview" />
+          <StepSection
+            step={6}
+            title="Door Location"
+            description="Tell us where this door is so we can organize your quote and installation."
+            summary={locationValid ? location : undefined}
+            complete={locationValid}
+            active={stepDone[5] && !locationValid}
+          >
+            <div className="space-y-2">
+              <Label htmlFor="sliding-location" className="text-sm text-muted-foreground">
+                Door location <span className="text-foreground">*</span>
+              </Label>
+              <Input
+                id="sliding-location"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                placeholder="e.g. Back Patio, Living Room, Master Bedroom..."
+              />
+              <p className="text-[11px] text-muted-foreground">
+                This helps us organize your quote and schedule installation by location.
+              </p>
+            </div>
+          </StepSection>
         </div>
-        <PriceSummary
-          productType={productType}
-          config={config}
-          price={price}
-          valid={valid}
-          completeness={completeness}
-          location={location}
-          locationValid={locationValid}
-          onAddedToProject={() => {
-            setConfig({
-              material: "Vinyl",
-              panelCount: 2,
-              glassOption: "Full",
-              glassEfficiency: "Low-E",
-              frameColor: "White",
-              finish: "Painted",
-              hardware: "Basic",
-              width: 0,
-              height: 0,
-            });
-            setLocation("");
-          }}
-        />
-        <ProjectSummary />
-        <div className="flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
-          <Save className="h-3 w-3" /> Project automatically saved.
+
+        <div className="hidden lg:block min-w-0 w-full space-y-6 pb-6">
+          <div className="lg:sticky lg:top-20 space-y-4">
+            <ProductPreview productType={productType} config={config} id="desktop-preview" />
+            <StickyPriceCard
+              productType={productType}
+              config={config}
+              price={price}
+              valid={valid}
+              location={location}
+              locationValid={locationValid}
+              onAddedToProject={() => {
+                setConfig({
+                  material: "Vinyl",
+                  panelCount: 2,
+                  glassOption: "Full",
+                  glassEfficiency: "Low-E",
+                  frameColor: "White",
+                  finish: "Painted",
+                  hardware: "Basic",
+                  width: 0,
+                  height: 0,
+                });
+                setLocation("");
+              }}
+            />
+          </div>
+          <PriceDetails
+            productType={productType}
+            config={config}
+            price={price}
+            valid={valid}
+            completeness={completeness}
+            location={location}
+            locationValid={locationValid}
+          />
+          <ProjectSummary />
+          <div className="flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
+            <Save className="h-3 w-3" /> Project automatically saved.
+          </div>
         </div>
-      </div>
-    </Shell>
-    <MobileBottomBar
-      price={price}
-      valid={valid}
-      locationValid={locationValid}
-      addLabel="Add Sliding Door"
-      onAdd={handleMobileAdd}
-      onReview={() => navigate({ to: "/quote" })}
-    />
+      </Shell>
+      <MobileBottomBar
+        price={price}
+        valid={valid}
+        locationValid={locationValid}
+        addLabel="Add Sliding Door"
+        onAdd={handleMobileAdd}
+        onReview={() => navigate({ to: "/quote" })}
+      />
     </>
   );
 }
@@ -905,7 +965,10 @@ function CurrentConfigCard({
     { label: config.productLine, on: !!config.productLine },
     { label: `${config.glassType} Glass`, on: !!config.glassType },
     { label: `${config.color} Exterior`, on: !!config.color },
-    { label: config.gridStyle === "None" ? "No Grids" : `${config.gridStyle} Grids`, on: !!config.gridStyle },
+    {
+      label: config.gridStyle === "None" ? "No Grids" : `${config.gridStyle} Grids`,
+      on: !!config.gridStyle,
+    },
   ];
   return (
     <div className="overflow-hidden rounded-2xl border border-border bg-card">
@@ -942,10 +1005,16 @@ function CurrentConfigCard({
         </div>
         <div className="mt-1 text-2xl font-semibold tracking-tight tabular-nums">
           {valid
-            ? new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(price.low)
+            ? new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "USD",
+                maximumFractionDigits: 0,
+              }).format(price.low)
             : "—"}
         </div>
-        <div className="text-[11px] text-muted-foreground">Installed, before measurement verification</div>
+        <div className="text-[11px] text-muted-foreground">
+          Installed, before measurement verification
+        </div>
       </div>
     </div>
   );
@@ -985,197 +1054,213 @@ function DoorConfiguratorInner({ productType }: { productType: ProductType }) {
   const handleMobileAdd = () => {
     addToCart({ productType, config, price, location: location.trim() || undefined });
     const count = loadCart().items.reduce((s, i) => s + i.qty, 0);
-    toast.success(`${location.trim() || "Door"} added. ${count} item${count === 1 ? "" : "s"} in your project.`);
+    toast.success(
+      `${location.trim() || "Door"} added. ${count} item${count === 1 ? "" : "s"} in your project.`,
+    );
     setConfig({ ...DEFAULT_DOOR, material: "Fiberglass" });
     setLocation("");
   };
 
   return (
     <>
-    <Shell
-      productType={productType}
-      mobilePreview={<ProductPreview productType={productType} config={config} id="mobile-preview" />}
-    >
-      <div className="min-w-0 w-full pb-24 lg:pb-0">
-        <ProgressBar done={stepDone} active={activeStep} labels={DOOR_STEP_LABELS} />
+      <Shell
+        productType={productType}
+        mobilePreview={
+          <ProductPreview productType={productType} config={config} id="mobile-preview" />
+        }
+      >
+        <div className="min-w-0 w-full pb-24 lg:pb-0">
+          <ProgressBar done={stepDone} active={activeStep} labels={DOOR_STEP_LABELS} />
 
-        <StepSection
-          step={1}
-          title="Material"
-          description="Choose the door construction. Style details are refined during your free design consultation."
-          summary={config.material}
-          complete={stepDone[1]}
-          active={activeStep === 1}
-        >
-          <OptionGroup
-            label="Material"
-            value={config.material as "Fiberglass" | "Steel"}
-            options={["Fiberglass", "Steel"] as const}
-            onChange={(v) => {
-              setConfig({ ...config, material: v });
-              mark(1);
-            }}
-            descriptions={{
-              Fiberglass: isDoor
-                ? "ProVia fiberglass · Best insulation · Most style options"
-                : "Best insulation · Low maintenance · Most popular",
-              Steel: isDoor
-                ? "ProVia Legacy Steel · Secure and affordable"
-                : "Strong and secure · Great value",
-            }}
-            badges={{ Fiberglass: "Most Popular" }}
-          />
-          <div className="flex items-start gap-3 rounded-xl border border-sky-200 bg-sky-50/70 px-4 py-3 text-sm text-sky-900 dark:border-sky-900/40 dark:bg-sky-950/30 dark:text-sky-100">
-            <Info className="mt-0.5 h-4 w-4 flex-shrink-0" />
-            <div>
-              <div className="font-medium">Final style chosen during your free design consultation.</div>
-              <div className="mt-0.5 text-[13px] opacity-80">
-                We bring ProVia sample books so you can see panel styles, glass designs, and hardware in person before anything is ordered.
-              </div>
-            </div>
-          </div>
-        </StepSection>
-
-        <StepSection
-          step={2}
-          title="Glass"
-          description="How much natural light do you want?"
-          summary={config.glassOption === "None" ? "No glass" : `${config.glassOption} glass`}
-          complete={stepDone[2]}
-          active={activeStep === 2}
-        >
-          <OptionGroup
-            label="Glass Option"
-            value={config.glassOption}
-            options={["None", "Half", "Full"] as const}
-            onChange={(v) => {
-              setConfig({ ...config, glassOption: v });
-              mark(2);
-            }}
-            descriptions={{
-              None: "Maximum privacy and insulation",
-              Half: "Natural light with privacy on the lower half",
-              Full: "Maximum natural light",
-            }}
-          />
-        </StepSection>
-
-        <StepSection
-          step={3}
-          title="Finish & Hardware"
-          description="Personalize the look. Easy to change later."
-          summary={`${config.finish} · ${config.hardware}`}
-          complete={stepDone[3]}
-          active={activeStep === 3}
-        >
-          <OptionGroup
-            label="Finish"
-            value={config.finish}
-            options={["Painted", "Stained"] as const}
-            onChange={(v) => {
-              setConfig({ ...config, finish: v });
-              mark(3);
-            }}
-            descriptions={{
-              Painted: "Clean, modern look — most popular choice",
-              Stained: "Warm, natural wood appearance",
-            }}
-            badges={{ Painted: "Most Popular" }}
-          />
-          <OptionGroup
-            label="Hardware"
-            value={config.hardware}
-            options={["Basic", "Premium"] as const}
-            onChange={(v) => {
-              setConfig({ ...config, hardware: v });
-              mark(3);
-            }}
-            descriptions={{
-              Basic: "Standard lockset and handle",
-              Premium: "Designer handle and deadbolt set",
-            }}
-          />
-        </StepSection>
-
-        <StepSection
-          step={4}
-          title="Measurements"
-          description="Approximate measurements are completely fine — a professional verifies exact numbers before production."
-          complete={stepDone[4]}
-          active={activeStep === 4}
-          summary={valid ? `${config.width}″ × ${config.height}″` : undefined}
-        >
-          <div className="flex items-start gap-3 rounded-xl border border-sky-200 bg-sky-50/70 px-4 py-3 text-sm text-sky-900 dark:border-sky-900/40 dark:bg-sky-950/30 dark:text-sky-100">
-            <Info className="mt-0.5 h-4 w-4 flex-shrink-0" />
-            <div>
-              <div className="font-medium">Don't worry if your measurements aren't perfect.</div>
-              <div className="mt-0.5 text-[13px] opacity-80">
-                Most homeowners enter approximate sizes. We verify exact measurements before ordering.
-              </div>
-            </div>
-          </div>
-          <SizeInputs
-            width={config.width}
-            height={config.height}
-            onChange={(width, height) => setConfig({ ...config, width, height })}
-          />
-        </StepSection>
-
-        <StepSection
-          step={5}
-          title="Door Location"
-          description="Name where this door is going so we can organize your quote and installation."
-          summary={locationValid ? location.trim() : undefined}
-          complete={stepDone[5]}
-          active={activeStep === 5}
-        >
-          <div className="space-y-2">
-            <Label htmlFor="door-location-step" className="text-sm font-medium">
-              Door location <span className="text-foreground">*</span>
-            </Label>
-            <Input
-              id="door-location-step"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              placeholder="e.g. Front Entry, Back Door, Garage Entry..."
+          <StepSection
+            step={1}
+            title="Material"
+            description="Choose the door construction. Style details are refined during your free design consultation."
+            summary={config.material}
+            complete={stepDone[1]}
+            active={activeStep === 1}
+          >
+            <OptionGroup
+              label="Material"
+              value={config.material as "Fiberglass" | "Steel"}
+              options={["Fiberglass", "Steel"] as const}
+              onChange={(v) => {
+                setConfig({ ...config, material: v });
+                mark(1);
+              }}
+              descriptions={{
+                Fiberglass: isDoor
+                  ? "ProVia fiberglass · Best insulation · Most style options"
+                  : "Best insulation · Low maintenance · Most popular",
+                Steel: isDoor
+                  ? "ProVia Legacy Steel · Secure and affordable"
+                  : "Strong and secure · Great value",
+              }}
+              badges={{ Fiberglass: "Most Popular" }}
             />
-            <p className="text-[12px] text-muted-foreground">
-              This helps us organize your quote and schedule installation by location.
-            </p>
+            <div className="flex items-start gap-3 rounded-xl border border-sky-200 bg-sky-50/70 px-4 py-3 text-sm text-sky-900 dark:border-sky-900/40 dark:bg-sky-950/30 dark:text-sky-100">
+              <Info className="mt-0.5 h-4 w-4 flex-shrink-0" />
+              <div>
+                <div className="font-medium">
+                  Final style chosen during your free design consultation.
+                </div>
+                <div className="mt-0.5 text-[13px] opacity-80">
+                  We bring ProVia sample books so you can see panel styles, glass designs, and
+                  hardware in person before anything is ordered.
+                </div>
+              </div>
+            </div>
+          </StepSection>
+
+          <StepSection
+            step={2}
+            title="Glass"
+            description="How much natural light do you want?"
+            summary={config.glassOption === "None" ? "No glass" : `${config.glassOption} glass`}
+            complete={stepDone[2]}
+            active={activeStep === 2}
+          >
+            <OptionGroup
+              label="Glass Option"
+              value={config.glassOption}
+              options={["None", "Half", "Full"] as const}
+              onChange={(v) => {
+                setConfig({ ...config, glassOption: v });
+                mark(2);
+              }}
+              descriptions={{
+                None: "Maximum privacy and insulation",
+                Half: "Natural light with privacy on the lower half",
+                Full: "Maximum natural light",
+              }}
+            />
+          </StepSection>
+
+          <StepSection
+            step={3}
+            title="Finish & Hardware"
+            description="Personalize the look. Easy to change later."
+            summary={`${config.finish} · ${config.hardware}`}
+            complete={stepDone[3]}
+            active={activeStep === 3}
+          >
+            <OptionGroup
+              label="Finish"
+              value={config.finish}
+              options={["Painted", "Stained"] as const}
+              onChange={(v) => {
+                setConfig({ ...config, finish: v });
+                mark(3);
+              }}
+              descriptions={{
+                Painted: "Clean, modern look — most popular choice",
+                Stained: "Warm, natural wood appearance",
+              }}
+              badges={{ Painted: "Most Popular" }}
+            />
+            <OptionGroup
+              label="Hardware"
+              value={config.hardware}
+              options={["Basic", "Premium"] as const}
+              onChange={(v) => {
+                setConfig({ ...config, hardware: v });
+                mark(3);
+              }}
+              descriptions={{
+                Basic: "Standard lockset and handle",
+                Premium: "Designer handle and deadbolt set",
+              }}
+            />
+          </StepSection>
+
+          <StepSection
+            step={4}
+            title="Measurements"
+            description="Approximate measurements are completely fine — a professional verifies exact numbers before production."
+            complete={stepDone[4]}
+            active={activeStep === 4}
+            summary={valid ? `${config.width}″ × ${config.height}″` : undefined}
+          >
+            <div className="flex items-start gap-3 rounded-xl border border-sky-200 bg-sky-50/70 px-4 py-3 text-sm text-sky-900 dark:border-sky-900/40 dark:bg-sky-950/30 dark:text-sky-100">
+              <Info className="mt-0.5 h-4 w-4 flex-shrink-0" />
+              <div>
+                <div className="font-medium">Don't worry if your measurements aren't perfect.</div>
+                <div className="mt-0.5 text-[13px] opacity-80">
+                  Most homeowners enter approximate sizes. We verify exact measurements before
+                  ordering.
+                </div>
+              </div>
+            </div>
+            <SizeInputs
+              width={config.width}
+              height={config.height}
+              onChange={(width, height) => setConfig({ ...config, width, height })}
+            />
+          </StepSection>
+
+          <StepSection
+            step={5}
+            title="Door Location"
+            description="Name where this door is going so we can organize your quote and installation."
+            summary={locationValid ? location.trim() : undefined}
+            complete={stepDone[5]}
+            active={activeStep === 5}
+          >
+            <div className="space-y-2">
+              <Label htmlFor="door-location-step" className="text-sm font-medium">
+                Door location <span className="text-foreground">*</span>
+              </Label>
+              <Input
+                id="door-location-step"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                placeholder="e.g. Front Entry, Back Door, Garage Entry..."
+              />
+              <p className="text-[12px] text-muted-foreground">
+                This helps us organize your quote and schedule installation by location.
+              </p>
+            </div>
+          </StepSection>
+        </div>
+        <div className="hidden lg:block min-w-0 w-full space-y-6 pb-6">
+          <div className="lg:sticky lg:top-20 space-y-4">
+            <ProductPreview productType={productType} config={config} id="desktop-preview" />
+            <StickyPriceCard
+              productType={productType}
+              config={config}
+              price={price}
+              valid={valid}
+              location={location}
+              locationValid={locationValid}
+              onAddedToProject={() => {
+                setConfig({ ...DEFAULT_DOOR, material: "Fiberglass" });
+                setLocation("");
+              }}
+            />
           </div>
-        </StepSection>
-      </div>
-      <div className="hidden lg:block min-w-0 w-full space-y-6 pb-6">
-        <div className="lg:sticky lg:top-20">
-          <ProductPreview productType={productType} config={config} id="desktop-preview" />
+          <PriceDetails
+            productType={productType}
+            config={config}
+            price={price}
+            valid={valid}
+            completeness={completeness}
+            location={location}
+            locationValid={locationValid}
+          />
+          <ProjectSummary />
+          <div className="flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
+            <Save className="h-3 w-3" /> Project automatically saved.
+          </div>
         </div>
-        <PriceSummary
-          productType={productType}
-          config={config}
-          price={price}
-          valid={valid}
-          completeness={completeness}
-          location={location}
-          locationValid={locationValid}
-          onAddedToProject={() => {
-            setConfig({ ...DEFAULT_DOOR, material: "Fiberglass" });
-            setLocation("");
-          }}
-        />
-        <ProjectSummary />
-        <div className="flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
-          <Save className="h-3 w-3" /> Project automatically saved.
-        </div>
-      </div>
-    </Shell>
-    <MobileBottomBar
-      price={price}
-      valid={valid}
-      locationValid={locationValid}
-      addLabel="Add Door"
-      onAdd={handleMobileAdd}
-      onReview={() => navigate({ to: "/quote" })}
-    />
+      </Shell>
+      <MobileBottomBar
+        price={price}
+        valid={valid}
+        locationValid={locationValid}
+        addLabel="Add Door"
+        onAdd={handleMobileAdd}
+        onReview={() => navigate({ to: "/quote" })}
+      />
     </>
   );
 }
