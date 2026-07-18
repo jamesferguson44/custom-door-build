@@ -299,7 +299,7 @@ function PaneGrid({
         y={y}
         width={t}
         height={h}
-        fill={color}
+        fill={stroke}
         stroke={stroke}
         strokeWidth={0.5}
       />
@@ -308,7 +308,7 @@ function PaneGrid({
         y={y}
         width={t}
         height={h}
-        fill={color}
+        fill={stroke}
         stroke={stroke}
         strokeWidth={0.5}
       />
@@ -317,7 +317,7 @@ function PaneGrid({
         y={y + inset}
         width={w}
         height={t}
-        fill={color}
+        fill={stroke}
         stroke={stroke}
         strokeWidth={0.5}
       />
@@ -326,10 +326,11 @@ function PaneGrid({
         y={y + h - inset - t}
         width={w}
         height={t}
-        fill={color}
+        fill={stroke}
         stroke={stroke}
         strokeWidth={0.5}
       />
+
     </g>
   );
 }
