@@ -65,10 +65,17 @@ function WindowPreview({ config }: { config: WindowConfig }) {
       ? "#1a1a1a"
       : config.color === "Custom"
       ? "#6b5b4a"
-      : "#f4f4f2";
-  const frameStroke = config.color === "Black" ? "#000" : "#b0b0aa";
-  const frameInner = config.color === "Black" ? "#0d0d0d" : "#e9e9e4";
+      : "#f0f0ee";
+  const frameStroke =
+    config.color === "Black" ? "#000" :
+    config.color === "Custom" ? "#5a4a3a" :
+    "#8a8a84";
+  const frameInner =
+    config.color === "Black" ? "#0d0d0d" :
+    config.color === "Custom" ? "#7a6a5a" :
+    "#d0d0ca";
   const overlayStroke = config.color === "White" ? "#888888" : frameStroke;
+
 
   // Glass tint based on glass type
   const glassFill =
@@ -150,15 +157,18 @@ function WindowPreview({ config }: { config: WindowConfig }) {
       <rect x={gx} y={gy} width={gw} height={gh} fill="url(#shine)" />
 
       {/* Style-specific sash overlays */}
-      <StyleOverlay
-        style={config.windowStyle}
-        x={gx}
-        y={gy}
-        w={gw}
-        h={gh}
-        frameColor={frameColor}
-        frameStroke={overlayStroke}
-      />
+      {config.gridStyle === "None" && (
+        <StyleOverlay
+          style={config.windowStyle}
+          x={gx}
+          y={gy}
+          w={gw}
+          h={gh}
+          frameColor={frameColor}
+          frameStroke={overlayStroke}
+        />
+      )}
+
 
       {/* Extra sheen for Low-E / Triple Pane */}
       {config.glassType !== "Standard" && (
@@ -274,11 +284,12 @@ function PaneGrid({
     const h2 = y + (2 * h) / 3 - t / 2;
     return (
       <g>
-        <rect x={v1} y={y} width={t} height={h} fill={color} stroke={stroke} strokeWidth={0.5} />
-        <rect x={v2} y={y} width={t} height={h} fill={color} stroke={stroke} strokeWidth={0.5} />
-        <rect x={x} y={h1} width={w} height={t} fill={color} stroke={stroke} strokeWidth={0.5} />
-        <rect x={x} y={h2} width={w} height={t} fill={color} stroke={stroke} strokeWidth={0.5} />
+        <rect x={v1} y={y} width={t} height={h} fill={stroke} stroke={stroke} strokeWidth={0.5} />
+        <rect x={v2} y={y} width={t} height={h} fill={stroke} stroke={stroke} strokeWidth={0.5} />
+        <rect x={x} y={h1} width={w} height={t} fill={stroke} stroke={stroke} strokeWidth={0.5} />
+        <rect x={x} y={h2} width={w} height={t} fill={stroke} stroke={stroke} strokeWidth={0.5} />
       </g>
+
     );
   }
 
@@ -291,7 +302,7 @@ function PaneGrid({
         y={y}
         width={t}
         height={h}
-        fill={color}
+        fill={stroke}
         stroke={stroke}
         strokeWidth={0.5}
       />
@@ -300,7 +311,7 @@ function PaneGrid({
         y={y}
         width={t}
         height={h}
-        fill={color}
+        fill={stroke}
         stroke={stroke}
         strokeWidth={0.5}
       />
@@ -309,7 +320,7 @@ function PaneGrid({
         y={y + inset}
         width={w}
         height={t}
-        fill={color}
+        fill={stroke}
         stroke={stroke}
         strokeWidth={0.5}
       />
@@ -318,10 +329,11 @@ function PaneGrid({
         y={y + h - inset - t}
         width={w}
         height={t}
-        fill={color}
+        fill={stroke}
         stroke={stroke}
         strokeWidth={0.5}
       />
+
     </g>
   );
 }
