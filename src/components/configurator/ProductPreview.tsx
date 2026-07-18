@@ -9,13 +9,14 @@ import { productLabel } from "@/lib/pricing";
 type Props = {
   productType: ProductType;
   config: AnyConfig;
+  id?: string;
 };
 
 /**
  * Dynamic visual preview of the configured window/door.
  * Pure SVG — re-renders instantly on any config change.
  */
-export function ProductPreview({ productType, config }: Props) {
+export function ProductPreview({ productType, config, id = "preview" }: Props) {
   return (
     <div className="overflow-hidden rounded-2xl border border-border bg-gradient-to-b from-muted/40 to-muted/10">
       <div className="hidden lg:flex items-center justify-between border-b border-border px-5 py-3">
@@ -28,9 +29,9 @@ export function ProductPreview({ productType, config }: Props) {
       </div>
       <div className="flex aspect-[16/9] lg:aspect-[4/3] items-center justify-center p-2 lg:p-6">
         {productType === "window" ? (
-          <WindowPreview config={config as WindowConfig} />
+          <WindowPreview config={config as WindowConfig} id={id} />
         ) : (
-          <DoorPreview config={config as DoorConfig} isSliding={productType === "sliding_door"} />
+          <DoorPreview config={config as DoorConfig} isSliding={productType === "sliding_door"} id={id} />
         )}
       </div>
       <div className="hidden lg:block border-t border-border bg-card/50 px-5 py-3 text-[11px] text-muted-foreground">
