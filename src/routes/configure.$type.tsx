@@ -4,7 +4,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { ProductTypeTabs } from "@/components/configurator/ProductTypeTabs";
 import { OptionGroup } from "@/components/configurator/OptionGroup";
 import { SizeInputs } from "@/components/configurator/SizeInputs";
-import { StickyPriceCard, PriceDetails } from "@/components/configurator/PriceSummary";
+import { StickyPriceCard } from "@/components/configurator/PriceSummary";
 import { ProductPreview } from "@/components/configurator/ProductPreview";
 import { ProjectSummary } from "@/components/configurator/ProjectSummary";
 import {
@@ -473,6 +473,9 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
         }
       >
         <div className="min-w-0 w-full pb-24 lg:pb-0">
+          <div className="hidden lg:block mb-8">
+            <ProjectSummary />
+          </div>
           <ProgressBar done={stepDone} active={activeStep} labels={STEP_LABELS} />
           <StepSection
             step={1}
@@ -629,7 +632,7 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
             </div>
           </StepSection>
         </div>
-        <div className="hidden lg:block min-w-0 w-full space-y-6 pb-6">
+        <div className="hidden lg:block min-w-0 w-full">
           <div className="lg:sticky lg:top-20 space-y-4">
             <ProductPreview productType={productType} config={config} id="desktop-preview" />
             <StickyPriceCard
@@ -637,6 +640,7 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
               config={config}
               price={price}
               valid={valid}
+              completeness={completeness}
               location={location}
               locationValid={locationValid}
               onAddedToProject={() => {
@@ -644,19 +648,9 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
                 setLocation("");
               }}
             />
-          </div>
-          <PriceDetails
-            productType={productType}
-            config={config}
-            price={price}
-            valid={valid}
-            completeness={completeness}
-            location={location}
-            locationValid={locationValid}
-          />
-          <ProjectSummary />
-          <div className="flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
-            <Save className="h-3 w-3" /> Project automatically saved.
+            <div className="flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
+              <Save className="h-3 w-3" /> Project automatically saved.
+            </div>
           </div>
         </div>
       </Shell>
@@ -743,6 +737,9 @@ function SlidingDoorConfigurator({ productType }: { productType: ProductType }) 
         }
       >
         <div className="min-w-0 w-full pb-24 lg:pb-0">
+          <div className="hidden lg:block mb-8">
+            <ProjectSummary />
+          </div>
           <ProgressBar done={stepDone} active={activeStep} labels={SLIDING_STEP_LABELS} />
 
           <StepSection
@@ -894,7 +891,7 @@ function SlidingDoorConfigurator({ productType }: { productType: ProductType }) 
           </StepSection>
         </div>
 
-        <div className="hidden lg:block min-w-0 w-full space-y-6 pb-6">
+        <div className="hidden lg:block min-w-0 w-full">
           <div className="lg:sticky lg:top-20 space-y-4">
             <ProductPreview productType={productType} config={config} id="desktop-preview" />
             <StickyPriceCard
@@ -902,6 +899,7 @@ function SlidingDoorConfigurator({ productType }: { productType: ProductType }) 
               config={config}
               price={price}
               valid={valid}
+              completeness={completeness}
               location={location}
               locationValid={locationValid}
               onAddedToProject={() => {
@@ -919,19 +917,9 @@ function SlidingDoorConfigurator({ productType }: { productType: ProductType }) 
                 setLocation("");
               }}
             />
-          </div>
-          <PriceDetails
-            productType={productType}
-            config={config}
-            price={price}
-            valid={valid}
-            completeness={completeness}
-            location={location}
-            locationValid={locationValid}
-          />
-          <ProjectSummary />
-          <div className="flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
-            <Save className="h-3 w-3" /> Project automatically saved.
+            <div className="flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
+              <Save className="h-3 w-3" /> Project automatically saved.
+            </div>
           </div>
         </div>
       </Shell>
@@ -1070,6 +1058,9 @@ function DoorConfiguratorInner({ productType }: { productType: ProductType }) {
         }
       >
         <div className="min-w-0 w-full pb-24 lg:pb-0">
+          <div className="hidden lg:block mb-8">
+            <ProjectSummary />
+          </div>
           <ProgressBar done={stepDone} active={activeStep} labels={DOOR_STEP_LABELS} />
 
           <StepSection
@@ -1222,7 +1213,7 @@ function DoorConfiguratorInner({ productType }: { productType: ProductType }) {
             </div>
           </StepSection>
         </div>
-        <div className="hidden lg:block min-w-0 w-full space-y-6 pb-6">
+        <div className="hidden lg:block min-w-0 w-full">
           <div className="lg:sticky lg:top-20 space-y-4">
             <ProductPreview productType={productType} config={config} id="desktop-preview" />
             <StickyPriceCard
@@ -1230,6 +1221,7 @@ function DoorConfiguratorInner({ productType }: { productType: ProductType }) {
               config={config}
               price={price}
               valid={valid}
+              completeness={completeness}
               location={location}
               locationValid={locationValid}
               onAddedToProject={() => {
@@ -1237,19 +1229,9 @@ function DoorConfiguratorInner({ productType }: { productType: ProductType }) {
                 setLocation("");
               }}
             />
-          </div>
-          <PriceDetails
-            productType={productType}
-            config={config}
-            price={price}
-            valid={valid}
-            completeness={completeness}
-            location={location}
-            locationValid={locationValid}
-          />
-          <ProjectSummary />
-          <div className="flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
-            <Save className="h-3 w-3" /> Project automatically saved.
+            <div className="flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
+              <Save className="h-3 w-3" /> Project automatically saved.
+            </div>
           </div>
         </div>
       </Shell>
