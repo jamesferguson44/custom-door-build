@@ -281,11 +281,12 @@ function PaneGrid({
     const h2 = y + (2 * h) / 3 - t / 2;
     return (
       <g>
-        <rect x={v1} y={y} width={t} height={h} fill={color} stroke={stroke} strokeWidth={0.5} />
-        <rect x={v2} y={y} width={t} height={h} fill={color} stroke={stroke} strokeWidth={0.5} />
-        <rect x={x} y={h1} width={w} height={t} fill={color} stroke={stroke} strokeWidth={0.5} />
-        <rect x={x} y={h2} width={w} height={t} fill={color} stroke={stroke} strokeWidth={0.5} />
+        <rect x={v1} y={y} width={t} height={h} fill={stroke} stroke={stroke} strokeWidth={0.5} />
+        <rect x={v2} y={y} width={t} height={h} fill={stroke} stroke={stroke} strokeWidth={0.5} />
+        <rect x={x} y={h1} width={w} height={t} fill={stroke} stroke={stroke} strokeWidth={0.5} />
+        <rect x={x} y={h2} width={w} height={t} fill={stroke} stroke={stroke} strokeWidth={0.5} />
       </g>
+
     );
   }
 
