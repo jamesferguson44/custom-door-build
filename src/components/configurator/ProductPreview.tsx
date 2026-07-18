@@ -65,10 +65,17 @@ function WindowPreview({ config }: { config: WindowConfig }) {
       ? "#1a1a1a"
       : config.color === "Custom"
       ? "#6b5b4a"
-      : "#f4f4f2";
-  const frameStroke = config.color === "Black" ? "#000" : "#b0b0aa";
-  const frameInner = config.color === "Black" ? "#0d0d0d" : "#e9e9e4";
+      : "#f0f0ee";
+  const frameStroke =
+    config.color === "Black" ? "#000" :
+    config.color === "Custom" ? "#5a4a3a" :
+    "#8a8a84";
+  const frameInner =
+    config.color === "Black" ? "#0d0d0d" :
+    config.color === "Custom" ? "#7a6a5a" :
+    "#d0d0ca";
   const overlayStroke = config.color === "White" ? "#888888" : frameStroke;
+
 
   // Glass tint based on glass type
   const glassFill =
