@@ -21,6 +21,7 @@ import {
   type WindowConfig,
 } from "@/lib/pricing";
 import { addToCart, loadCart } from "@/lib/quote-storage";
+import { useCart } from "@/hooks/use-cart";
 import { toast } from "sonner";
 import heroWindow from "@/assets/hero-window.jpg";
 import heroDoor from "@/assets/hero-door.jpg";
@@ -54,7 +55,7 @@ function ProgressBar({
   labels: string[];
 }) {
   return (
-    <div className="mb-10 overflow-hidden rounded-2xl border border-border bg-card/60 px-4 py-3 backdrop-blur sm:px-6 sm:py-4">
+    <div className="mb-6 overflow-hidden rounded-2xl border border-border bg-card/60 px-4 py-3 backdrop-blur sm:px-6 sm:py-4">
       <ol className="flex items-center gap-2 sm:gap-3">
         {labels.map((label, i) => {
           const n = i + 1;
@@ -226,21 +227,21 @@ function Hero({ productType }: { productType: ProductType }) {
         alt={`${productLabel(productType)} preview`}
         width={1920}
         height={1080}
-        className="h-[44vh] w-full object-cover sm:h-[52vh]"
+        className="h-[22vh] w-full object-cover sm:h-[26vh]"
       />
       <div className="pointer-events-none absolute inset-0 bg-black/40 sm:bg-transparent" />
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/90 via-background/10 to-transparent" />
       <div className="absolute inset-x-0 bottom-0">
-        <div className="mx-auto max-w-[1400px] px-6 pb-8 sm:pb-12">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div className="mx-auto max-w-[1400px] px-6 pb-5 sm:pb-7">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-white/80 sm:text-muted-foreground">
                 {HERO_EYEBROW[productType]}
               </div>
-              <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-5xl text-white sm:text-foreground">
+              <h1 className="mt-1.5 text-2xl font-semibold tracking-tight sm:text-4xl text-white sm:text-foreground">
                 {HERO_TITLE[productType]}
               </h1>
-              <p className="mt-2 max-w-xl text-sm text-white/80 sm:text-muted-foreground sm:text-base">
+              <p className="mt-1.5 max-w-xl text-sm text-white/80 sm:text-muted-foreground">
                 {TAGLINE[productType]}
               </p>
             </div>
@@ -272,7 +273,7 @@ function Shell({
           </div>
         </div>
       )}
-      <div className="mx-auto max-w-[1400px] px-6 py-12 sm:py-16 overflow-x-clip">
+      <div className="mx-auto max-w-[1400px] px-6 py-8 sm:py-10 overflow-x-clip">
         <div className="grid gap-10 lg:grid-cols-[1fr_400px] lg:gap-12">{children}</div>
       </div>
     </div>
@@ -434,6 +435,7 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
   const price = useMemo(() => calculatePrice("window", config), [config]);
   const [location, setLocation] = useState("");
   const locationValid = location.trim().length > 0;
+  const cart = useCart();
 
   const stepDone: Record<number, boolean> = {
     1: !!touched[1],
@@ -473,9 +475,11 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
         }
       >
         <div className="min-w-0 w-full pb-24 lg:pb-0">
-          <div className="hidden lg:block mb-8">
-            <ProjectSummary />
-          </div>
+          {cart.items.length > 0 && (
+            <div className="hidden lg:block mb-8">
+              <ProjectSummary />
+            </div>
+          )}
           <ProgressBar done={stepDone} active={activeStep} labels={STEP_LABELS} />
           <StepSection
             step={1}
@@ -684,6 +688,7 @@ function SlidingDoorConfigurator({ productType }: { productType: ProductType }) 
   const [touched, setTouched] = useState<Record<number, boolean>>({});
   const [location, setLocation] = useState("");
   const locationValid = location.trim().length > 0;
+  const cart = useCart();
 
   const mark = (n: number) => setTouched((t) => (t[n] ? t : { ...t, [n]: true }));
   const valid = isValidSize(config.width, config.height);
@@ -737,9 +742,11 @@ function SlidingDoorConfigurator({ productType }: { productType: ProductType }) 
         }
       >
         <div className="min-w-0 w-full pb-24 lg:pb-0">
-          <div className="hidden lg:block mb-8">
-            <ProjectSummary />
-          </div>
+          {cart.items.length > 0 && (
+            <div className="hidden lg:block mb-8">
+              <ProjectSummary />
+            </div>
+          )}
           <ProgressBar done={stepDone} active={activeStep} labels={SLIDING_STEP_LABELS} />
 
           <StepSection
@@ -1017,6 +1024,7 @@ function DoorConfiguratorInner({ productType }: { productType: ProductType }) {
   const [touched, setTouched] = useState<Record<number, boolean>>({});
   const [location, setLocation] = useState("");
   const locationValid = location.trim().length > 0;
+  const cart = useCart();
 
   const mark = (n: number) => setTouched((t) => (t[n] ? t : { ...t, [n]: true }));
   const valid = isValidSize(config.width, config.height);
@@ -1058,9 +1066,11 @@ function DoorConfiguratorInner({ productType }: { productType: ProductType }) {
         }
       >
         <div className="min-w-0 w-full pb-24 lg:pb-0">
-          <div className="hidden lg:block mb-8">
-            <ProjectSummary />
-          </div>
+          {cart.items.length > 0 && (
+            <div className="hidden lg:block mb-8">
+              <ProjectSummary />
+            </div>
+          )}
           <ProgressBar done={stepDone} active={activeStep} labels={DOOR_STEP_LABELS} />
 
           <StepSection
