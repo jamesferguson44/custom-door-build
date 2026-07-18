@@ -477,6 +477,7 @@ function DoorPreview({ config, isSliding, id }: { config: DoorConfig; isSliding:
           handleColor={handleColor}
           glassOption={config.glassOption}
           panelCount={config.panelCount ?? 2}
+          id={id}
         />
       ) : (
         <SingleDoorBody
@@ -488,6 +489,7 @@ function DoorPreview({ config, isSliding, id }: { config: DoorConfig; isSliding:
           stroke={stroke}
           handleColor={handleColor}
           glassOption={config.glassOption}
+          id={id}
         />
       )}
     </svg>
@@ -503,6 +505,7 @@ function SingleDoorBody({
   stroke,
   handleColor,
   glassOption,
+  id,
 }: {
   x: number;
   y: number;
@@ -512,6 +515,7 @@ function SingleDoorBody({
   stroke: string;
   handleColor: string;
   glassOption: DoorConfig["glassOption"];
+  id: string;
 }) {
   const pad = 8;
   const innerX = x + pad;
@@ -524,7 +528,7 @@ function SingleDoorBody({
       {/* Door slab */}
       <rect x={x} y={y} width={w} height={h} rx={2} fill={doorColor} stroke={stroke} />
       {/* Subtle vertical shading */}
-      <rect x={x} y={y} width={w} height={h} rx={2} fill="url(#door-shine)" />
+      <rect x={x} y={y} width={w} height={h} rx={2} fill={`url(#${id}-door-shine)`} />
 
       {glassOption === "Full" && (
         <rect
@@ -532,7 +536,7 @@ function SingleDoorBody({
           y={innerY}
           width={innerW}
           height={innerH}
-          fill="url(#door-glass)"
+          fill={`url(#${id}-door-glass)`}
           stroke={stroke}
         />
       )}
@@ -544,7 +548,7 @@ function SingleDoorBody({
             y={innerY}
             width={innerW}
             height={innerH * 0.5}
-            fill="url(#door-glass)"
+            fill={`url(#${id}-door-glass)`}
             stroke={stroke}
           />
           {/* Lower panels */}
@@ -605,6 +609,7 @@ function SlidingDoorBody({
   handleColor,
   glassOption,
   panelCount = 2,
+  id,
 }: {
   x: number;
   y: number;
@@ -615,6 +620,7 @@ function SlidingDoorBody({
   handleColor: string;
   glassOption: DoorConfig["glassOption"];
   panelCount?: number;
+  id: string;
 }) {
   void glassOption;
   const panelW = w / panelCount;
@@ -648,7 +654,7 @@ function SlidingDoorBody({
         y={y + frame}
         width={panelW - frame * 2}
         height={h - frame * 2}
-        fill="url(#door-glass)"
+        fill={`url(#${id}-door-glass)`}
         stroke={stroke}
         strokeWidth={0.5}
       />
