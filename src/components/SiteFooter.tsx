@@ -1,11 +1,8 @@
 import { Link } from "@tanstack/react-router";
 
-/**
- * TODO before launch: replace the placeholder phone number below with your
- * real business line. It's intentionally an obvious placeholder so it can't
- * accidentally look real to a customer if missed.
- */
-const PHONE_PLACEHOLDER = "(801) 555-0100";
+const BUSINESS_PHONE = "(385) 240-4790";
+const BUSINESS_PHONE_TEL = "+13852404790";
+const BUSINESS_EMAIL = "hello@paneandsimplewindows.com";
 
 export function SiteFooter() {
   return (
@@ -74,7 +71,18 @@ export function SiteFooter() {
             <div className="mb-3 text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
               Contact
             </div>
-            <p className="text-sm text-muted-foreground">{PHONE_PLACEHOLDER}</p>
+            <a
+              href={`tel:${BUSINESS_PHONE_TEL}`}
+              className="block text-sm text-muted-foreground transition-colors hover:text-foreground"
+            >
+              {BUSINESS_PHONE}
+            </a>
+            <a
+              href={`mailto:${BUSINESS_EMAIL}`}
+              className="mt-1 block text-sm text-muted-foreground transition-colors hover:text-foreground"
+            >
+              {BUSINESS_EMAIL}
+            </a>
             <p className="mt-1 text-xs text-muted-foreground">Utah-licensed window &amp; door contractor</p>
             <p className="mt-3 text-xs text-muted-foreground">We respond within 1 business day.</p>
           </div>

@@ -470,7 +470,7 @@ function QuotePage() {
                       type="tel"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
-                      placeholder="(801) 555-0100"
+                      placeholder="(385) 240-4790"
                       className="mt-1.5"
                       disabled={submitting}
                     />
