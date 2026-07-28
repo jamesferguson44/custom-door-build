@@ -1,27 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  TODO before launch: replace https://your-domain.example.com with your real
-  production domain in every <loc> below (and in robots.txt).
--->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://your-domain.example.com/</loc>
+    <loc>https://www.paneandsimplewindows.com/</loc>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://your-domain.example.com/configure/window</loc>
+    <loc>https://www.paneandsimplewindows.com/configure/window</loc>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://your-domain.example.com/configure/door</loc>
+    <loc>https://www.paneandsimplewindows.com/configure/door</loc>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://your-domain.example.com/configure/sliding_door</loc>
+    <loc>https://www.paneandsimplewindows.com/configure/sliding_door</loc>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://your-domain.example.com/privacy-policy</loc>
+    <loc>https://www.paneandsimplewindows.com/privacy-policy</loc>
     <priority>0.3</priority>
   </url>
 </urlset>
