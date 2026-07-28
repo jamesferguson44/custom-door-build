@@ -82,25 +82,34 @@ function SignIn() {
   const [password, setPassword] = useState("");
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState<{ type: "ok" | "error"; text: string } | null>(null);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setBusy(true);
+    setMessage(null);
     try {
       if (mode === "signin") {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
       } else {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: { emailRedirectTo: window.location.origin + "/admin" },
         });
         if (error) throw error;
-        toast.success("Account created. You may need an admin to grant you access.");
+        const needsConfirm = !data.session;
+        const text = needsConfirm
+          ? "Account created. Check your email for a confirmation link, then sign in."
+          : "Account created. You may need an admin to grant you access.";
+        setMessage({ type: "ok", text });
+        toast.success(text);
+        setMode("signin");
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Authentication failed";
+      setMessage({ type: "error", text: msg });
       toast.error(msg);
     } finally {
       setBusy(false);
@@ -112,7 +121,9 @@ function SignIn() {
       <SiteHeader />
       <div className="container mx-auto max-w-md px-4 py-16">
         <div className="rounded-2xl border bg-card p-8 shadow-[var(--shadow-card)]">
-          <h1 className="text-2xl font-bold tracking-tight">Admin Sign In</h1>
+          <h1 className="text-2xl font-bold tracking-tight">
+            {mode === "signin" ? "Admin Sign In" : "Create Admin Account"}
+          </h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Manage incoming quotes and customer requests.
           </p>
@@ -138,13 +149,25 @@ function SignIn() {
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
+            {message && (
+              <p
+                className={`text-sm ${
+                  message.type === "ok" ? "text-emerald-700" : "text-destructive"
+                }`}
+              >
+                {message.text}
+              </p>
+            )}
             <Button type="submit" className="w-full" disabled={busy}>
-              {mode === "signin" ? "Sign In" : "Create Account"}
+              {busy ? "Please wait…" : mode === "signin" ? "Sign In" : "Create Account"}
             </Button>
             <button
               type="button"
               className="w-full text-center text-xs text-muted-foreground hover:text-foreground"
-              onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
+              onClick={() => {
+                setMode(mode === "signin" ? "signup" : "signin");
+                setMessage(null);
+              }}
             >
               {mode === "signin"
                 ? "Need an account? Sign up"
