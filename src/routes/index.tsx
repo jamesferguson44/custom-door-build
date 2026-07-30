@@ -6,7 +6,7 @@ import { ArrowRight, Shield, PencilRuler, DollarSign, ClipboardCheck, Hammer, Ch
 import { cn } from "@/lib/utils";
 import heroWindow from "@/assets/hero-window.jpg";
 import windowPicture from "@/assets/window-picture.jpg";
-import windowDoubleHung from "@/assets/window-double-hung.jpg";
+import windowSliderPopular from "@/assets/window-slider-popular.jpg";
 import windowCasement from "@/assets/window-casement.jpg";
 import windowSingleHung from "@/assets/window-single-hung.jpg";
 
@@ -32,7 +32,7 @@ const templates: {
   image: string;
 }[] = [
   { id: "best-value", title: "Best Value", blurb: "Energy-efficient vinyl windows at our most accessible price.", priceHint: "Typically $650–$900 per window installed", image: windowSingleHung },
-  { id: "most-popular", title: "Most Popular", blurb: "Premium ProVia frames with Low-E glass — the sweet spot.", priceHint: "Typically $800–$1,200 per window installed", image: windowDoubleHung },
+  { id: "most-popular", title: "Most Popular", blurb: "Premium ProVia sliding windows with Low-E glass — the sweet spot.", priceHint: "Typically $800–$1,200 per window installed", image: windowSliderPopular },
   { id: "max-efficiency", title: "Maximum Efficiency", blurb: "Triple pane glass and our highest-performing frames.", priceHint: "Typically $1,100–$1,600 per window installed", image: windowCasement },
   { id: "modern-upgrade", title: "Modern Upgrade", blurb: "Sleek black picture windows for a contemporary look.", priceHint: "Typically $950–$1,500 per window installed", image: windowPicture },
 ];
