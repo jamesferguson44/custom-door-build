@@ -24,6 +24,19 @@ export const PRODUCT_LINES = [
 ] as const;
 export type ProductLine = (typeof PRODUCT_LINES)[number];
 
+export const EXTERIOR_MATERIALS = [
+  "Vinyl / Lap Siding",
+  "Brick / Stone",
+  "Fiber Cement",
+  "Stucco",
+  "Other / Not sure",
+] as const;
+export type ExteriorMaterial = (typeof EXTERIOR_MATERIALS)[number];
+
+/** Only used when exterior is Stucco. Flange = standard price; Refresh = add-on. */
+export const STUCCO_INSTALL_OPTIONS = ["Flange", "Refresh"] as const;
+export type StuccoInstall = (typeof STUCCO_INSTALL_OPTIONS)[number];
+
 export type WindowConfig = {
   width: number | null;
   height: number | null;
@@ -32,6 +45,9 @@ export type WindowConfig = {
   glassType: "Standard" | "Low-E" | "Triple Pane";
   gridStyle: "None" | "Colonial" | "Prairie";
   color: "White" | "Black" | "Custom";
+  exterior: ExteriorMaterial;
+  /** Defaults to Flange when exterior is Stucco. Ignored for other exteriors. */
+  stuccoInstall: StuccoInstall;
   customRequest?: string;
 };
 
@@ -57,6 +73,8 @@ export const DEFAULT_WINDOW: WindowConfig = {
   glassType: "Standard",
   gridStyle: "None",
   color: "White",
+  exterior: "Vinyl / Lap Siding",
+  stuccoInstall: "Flange",
   customRequest: "",
 };
 
@@ -166,10 +184,13 @@ export function calculateWindow(c: WindowConfig): PriceBreakdown {
   if (!isValidSize(c.width, c.height)) return EMPTY_PRICE;
   const tier = PRODUCT_LINE_TIER[c.productLine];
   const styleMult = WINDOW_STYLE_MULTIPLIER[c.windowStyle];
+  const stuccoRefresh =
+    c.exterior === "Stucco" && c.stuccoInstall === "Refresh" ? "stucco-refresh" : null;
   const addOnIds = [
     WINDOW_GLASS_ADDON[c.glassType],
     WINDOW_GRID_ADDON[c.gridStyle],
     c.color === "Custom" ? "custom-color" : null,
+    stuccoRefresh,
   ].filter((x): x is string => Boolean(x));
 
   const q = calculateQuote({

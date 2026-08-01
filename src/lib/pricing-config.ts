@@ -150,6 +150,18 @@ export const ADDONS: AddOn[] = [
   // Sliding doors
   { id: "screen-door",     label: "Screen Door",        kind: "flat",    amount: 140, appliesTo: ["sliding_door"] },
   { id: "blinds-between",  label: "Blinds Between Glass", kind: "flat",  amount: 320, appliesTo: ["sliding_door"] },
+
+  // Exterior / install (windows)
+  // Stucco flange is included in standard install — no add-on.
+  // Refresh covers cutting back, waterproofing, and restucco around the opening.
+  // Edit this amount anytime; quotes pull from here automatically.
+  {
+    id: "stucco-refresh",
+    label: "Stucco Refresh (cut, waterproof & restucco)",
+    kind: "flat",
+    amount: 450,
+    appliesTo: ["window"],
+  },
 ];
 
 /* -------------------------------------------------------------------------- */

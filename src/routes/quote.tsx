@@ -306,6 +306,14 @@ function QuotePage() {
                               "None"
                               ? ` · ${(item.config as { gridStyle?: string }).gridStyle} grids`
                               : ""}
+                            {(item.config as { exterior?: string }).exterior
+                              ? ` · ${(item.config as { exterior?: string }).exterior}${
+                                  (item.config as { exterior?: string }).exterior === "Stucco" &&
+                                  (item.config as { stuccoInstall?: string }).stuccoInstall
+                                    ? ` (${(item.config as { stuccoInstall?: string }).stuccoInstall})`
+                                    : ""
+                                }`
+                              : ""}
                           </div>
                           {item.qty > 1 && (
                             <div className="mt-1 text-xs text-muted-foreground">

@@ -27,12 +27,19 @@ function uniq(values: (string | undefined | null)[]): string[] {
 
 function itemSummary(it: CartItem) {
   const cfg = it.config as Record<string, unknown>;
+  const exterior = (cfg.exterior as string) ?? "";
+  const stuccoInstall = (cfg.stuccoInstall as string) ?? "";
+  const exteriorLabel =
+    exterior === "Stucco" && stuccoInstall
+      ? `Stucco (${stuccoInstall})`
+      : exterior;
   return {
     style: (cfg.windowStyle as string) ?? productLabel(it.productType),
     productLine: (cfg.productLine as string) ?? "",
     glass: (cfg.glassType as string) ?? "",
     color: (cfg.color as string) ?? "",
     grid: (cfg.gridStyle as string) ?? "",
+    exterior: exteriorLabel,
   };
 }
 
@@ -123,7 +130,13 @@ export function generateQuotePdf(data: QuotePdfData): jsPDF {
     doc.setTextColor(90);
     doc.text(`${it.config.width}″ × ${it.config.height}″`, W - M, y, { align: "right" });
     y += 13;
-    const detail = [s.productLine, s.glass, s.color, s.grid !== "None" ? `Grid: ${s.grid}` : ""]
+    const detail = [
+      s.productLine,
+      s.glass,
+      s.color,
+      s.grid !== "None" ? `Grid: ${s.grid}` : "",
+      s.exterior ? `Exterior: ${s.exterior}` : "",
+    ]
       .filter(Boolean).join("  •  ");
     doc.text(detail, M + 14, y);
     doc.setTextColor(40);

@@ -17,10 +17,14 @@ import {
   productLabel,
   WINDOW_STYLES,
   PRODUCT_LINES,
+  EXTERIOR_MATERIALS,
+  STUCCO_INSTALL_OPTIONS,
   type DoorConfig,
   type ProductType,
   type WindowConfig,
   type WindowStyle,
+  type ExteriorMaterial,
+  type StuccoInstall,
 } from "@/lib/pricing";
 import { addToCart, loadCart } from "@/lib/quote-storage";
 import { useCart } from "@/hooks/use-cart";
@@ -35,7 +39,15 @@ import { Button } from "@/components/ui/button";
 import { Check, Save, Info, ShieldCheck, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const STEP_LABELS = ["Style", "Product Line", "Glass", "Style & Color", "Measurements", "Location"];
+const STEP_LABELS = [
+  "Style",
+  "Product Line",
+  "Glass",
+  "Style & Color",
+  "Exterior",
+  "Measurements",
+  "Location",
+];
 
 const WINDOW_STYLE_DESC: Record<string, string> = {
   "Single Hung": "Traditional and affordable",
@@ -456,16 +468,18 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
     2: !!touched[2],
     3: !!touched[3],
     4: !!touched[4],
-    5: valid,
-    6: locationValid,
+    5: !!touched[5],
+    6: valid,
+    7: locationValid,
   };
-  const activeStep = [1, 2, 3, 4, 5, 6].find((n) => !stepDone[n]) ?? 0;
+  const activeStep = [1, 2, 3, 4, 5, 6, 7].find((n) => !stepDone[n]) ?? 0;
   const completeness =
-    (stepDone[1] ? 0.13 : 0) +
-    (stepDone[2] ? 0.13 : 0) +
-    (stepDone[3] ? 0.12 : 0) +
-    (stepDone[4] ? 0.12 : 0) +
-    (stepDone[5] ? 0.4 : 0) +
+    (stepDone[1] ? 0.1 : 0) +
+    (stepDone[2] ? 0.1 : 0) +
+    (stepDone[3] ? 0.1 : 0) +
+    (stepDone[4] ? 0.1 : 0) +
+    (stepDone[5] ? 0.1 : 0) +
+    (stepDone[6] ? 0.4 : 0) +
     (locationValid ? 0.1 : 0);
 
   const addLabel = config.windowStyle ? `Add ${config.windowStyle}` : "Add Window";
@@ -603,10 +617,90 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
 
           <StepSection
             step={5}
-            title="Measurements"
-            description="Approximate measurements are completely fine — a professional verifies exact numbers before production."
+            title="Exterior Wall"
+            description="Tell us what’s around the window outside. Most materials are the same price — stucco has two install options."
+            summary={
+              config.exterior === "Stucco"
+                ? `Stucco · ${config.stuccoInstall === "Refresh" ? "Refresh (recommended)" : "Flange"}`
+                : config.exterior
+            }
             complete={stepDone[5]}
             active={activeStep === 5}
+          >
+            <OptionGroup
+              label="Exterior Material"
+              value={config.exterior}
+              options={EXTERIOR_MATERIALS}
+              onChange={(v: ExteriorMaterial) => {
+                setConfig({
+                  ...config,
+                  exterior: v,
+                  stuccoInstall: v === "Stucco" ? config.stuccoInstall || "Flange" : config.stuccoInstall,
+                });
+                mark(5);
+              }}
+              descriptions={{
+                "Vinyl / Lap Siding": "Standard install — no extra charge",
+                "Brick / Stone": "Standard install — no extra charge",
+                "Fiber Cement": "Standard install — no extra charge",
+                Stucco: "Choose flange or a full stucco refresh below",
+                "Other / Not sure": "We’ll confirm on-site — priced as standard for now",
+              }}
+            />
+            {config.exterior === "Stucco" && (
+              <div className="mt-5 space-y-3">
+                <OptionGroup
+                  label="Stucco Install Method"
+                  value={config.stuccoInstall}
+                  options={STUCCO_INSTALL_OPTIONS}
+                  onChange={(v: StuccoInstall) => {
+                    setConfig({ ...config, stuccoInstall: v });
+                    mark(5);
+                  }}
+                  descriptions={{
+                    Flange:
+                      "Window installs with a stucco flange. Existing stucco stays — included in standard price.",
+                    Refresh:
+                      "We cut back, waterproof, and restucco around the opening for a sealed, finished look.",
+                  }}
+                  badges={{
+                    Refresh: "Recommended",
+                  }}
+                />
+                <div className="flex items-start gap-3 rounded-xl border border-border bg-muted/40 px-4 py-3 text-sm text-muted-foreground">
+                  <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-foreground/70" />
+                  <div>
+                    <p className="font-medium text-foreground">Why we recommend a stucco refresh</p>
+                    <ul className="mt-2 space-y-1.5 text-[13px]">
+                      <li className="flex gap-2">
+                        <span className="text-foreground/50">·</span>
+                        <span>Proper waterproofing and flashing so water doesn’t get behind the stucco</span>
+                      </li>
+                      <li className="flex gap-2">
+                        <span className="text-foreground/50">·</span>
+                        <span>A clean, finished look around the new window instead of a visible flange line</span>
+                      </li>
+                      <li className="flex gap-2">
+                        <span className="text-foreground/50">·</span>
+                        <span>Better long-term seal — flange-only installs can leave old cracks and gaps</span>
+                      </li>
+                      <li className="flex gap-2">
+                        <span className="text-foreground/50">·</span>
+                        <span>Scope is confirmed on-site so you’re not surprised later</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            )}
+          </StepSection>
+
+          <StepSection
+            step={6}
+            title="Measurements"
+            description="Approximate measurements are completely fine — a professional verifies exact numbers before production."
+            complete={stepDone[6]}
+            active={activeStep === 6}
             summary={valid ? `${config.width}″ × ${config.height}″` : undefined}
           >
             <div className="flex items-start gap-3 rounded-xl border border-sky-200 bg-sky-50/70 px-4 py-3 text-sm text-sky-900 dark:border-sky-900/40 dark:bg-sky-950/30 dark:text-sky-100">
@@ -627,12 +721,12 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
           </StepSection>
 
           <StepSection
-            step={6}
+            step={7}
             title="Room or Location"
             description="Name this window's room so we can organize your quote and installation."
             summary={locationValid ? location.trim() : undefined}
-            complete={stepDone[6]}
-            active={activeStep === 6}
+            complete={stepDone[7]}
+            active={activeStep === 7}
           >
             <div className="space-y-2">
               <Label htmlFor="room-location-step" className="text-sm font-medium">
@@ -977,6 +1071,13 @@ function CurrentConfigCard({
     {
       label: config.gridStyle === "None" ? "No Grids" : `${config.gridStyle} Grids`,
       on: !!config.gridStyle,
+    },
+    {
+      label:
+        config.exterior === "Stucco"
+          ? `Stucco · ${config.stuccoInstall === "Refresh" ? "Refresh" : "Flange"}`
+          : config.exterior || "Exterior pending",
+      on: !!config.exterior,
     },
   ];
   return (
