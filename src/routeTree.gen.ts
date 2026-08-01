@@ -9,13 +9,20 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WindowTypesRouteImport } from './routes/window-types'
 import { Route as QuoteRouteImport } from './routes/quote'
 import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
+import { Route as MeasureGuideRouteImport } from './routes/measure-guide'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as QuoteSuccessRouteImport } from './routes/quote.success'
 import { Route as ConfigureTypeRouteImport } from './routes/configure.$type'
 
+const WindowTypesRoute = WindowTypesRouteImport.update({
+  id: '/window-types',
+  path: '/window-types',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const QuoteRoute = QuoteRouteImport.update({
   id: '/quote',
   path: '/quote',
@@ -24,6 +31,11 @@ const QuoteRoute = QuoteRouteImport.update({
 const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
   id: '/privacy-policy',
   path: '/privacy-policy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MeasureGuideRoute = MeasureGuideRouteImport.update({
+  id: '/measure-guide',
+  path: '/measure-guide',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRoute = AdminRouteImport.update({
@@ -50,16 +62,20 @@ const ConfigureTypeRoute = ConfigureTypeRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/measure-guide': typeof MeasureGuideRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/quote': typeof QuoteRouteWithChildren
+  '/window-types': typeof WindowTypesRoute
   '/configure/$type': typeof ConfigureTypeRoute
   '/quote/success': typeof QuoteSuccessRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/measure-guide': typeof MeasureGuideRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/quote': typeof QuoteRouteWithChildren
+  '/window-types': typeof WindowTypesRoute
   '/configure/$type': typeof ConfigureTypeRoute
   '/quote/success': typeof QuoteSuccessRoute
 }
@@ -67,8 +83,10 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/measure-guide': typeof MeasureGuideRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/quote': typeof QuoteRouteWithChildren
+  '/window-types': typeof WindowTypesRoute
   '/configure/$type': typeof ConfigureTypeRoute
   '/quote/success': typeof QuoteSuccessRoute
 }
@@ -77,24 +95,30 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
+    | '/measure-guide'
     | '/privacy-policy'
     | '/quote'
+    | '/window-types'
     | '/configure/$type'
     | '/quote/success'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/admin'
+    | '/measure-guide'
     | '/privacy-policy'
     | '/quote'
+    | '/window-types'
     | '/configure/$type'
     | '/quote/success'
   id:
     | '__root__'
     | '/'
     | '/admin'
+    | '/measure-guide'
     | '/privacy-policy'
     | '/quote'
+    | '/window-types'
     | '/configure/$type'
     | '/quote/success'
   fileRoutesById: FileRoutesById
@@ -102,13 +126,22 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
+  MeasureGuideRoute: typeof MeasureGuideRoute
   PrivacyPolicyRoute: typeof PrivacyPolicyRoute
   QuoteRoute: typeof QuoteRouteWithChildren
+  WindowTypesRoute: typeof WindowTypesRoute
   ConfigureTypeRoute: typeof ConfigureTypeRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/window-types': {
+      id: '/window-types'
+      path: '/window-types'
+      fullPath: '/window-types'
+      preLoaderRoute: typeof WindowTypesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/quote': {
       id: '/quote'
       path: '/quote'
@@ -121,6 +154,13 @@ declare module '@tanstack/react-router' {
       path: '/privacy-policy'
       fullPath: '/privacy-policy'
       preLoaderRoute: typeof PrivacyPolicyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/measure-guide': {
+      id: '/measure-guide'
+      path: '/measure-guide'
+      fullPath: '/measure-guide'
+      preLoaderRoute: typeof MeasureGuideRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin': {
@@ -167,8 +207,10 @@ const QuoteRouteWithChildren = QuoteRoute._addFileChildren(QuoteRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
+  MeasureGuideRoute: MeasureGuideRoute,
   PrivacyPolicyRoute: PrivacyPolicyRoute,
   QuoteRoute: QuoteRouteWithChildren,
+  WindowTypesRoute: WindowTypesRoute,
   ConfigureTypeRoute: ConfigureTypeRoute,
 }
 export const routeTree = rootRouteImport

@@ -20,6 +20,7 @@ import {
   type DoorConfig,
   type ProductType,
   type WindowConfig,
+  type WindowStyle,
 } from "@/lib/pricing";
 import { addToCart, loadCart } from "@/lib/quote-storage";
 import { useCart } from "@/hooks/use-cart";
@@ -193,9 +194,17 @@ export const Route = createFileRoute("/configure/$type")({
   beforeLoad: ({ params }) => {
     if (!VALID_TYPES.includes(params.type as ProductType)) throw notFound();
   },
-  validateSearch: (s: Record<string, unknown>) => ({
-    template: typeof s.template === "string" ? (s.template as TemplateId) : undefined,
-  }),
+  validateSearch: (s: Record<string, unknown>) => {
+    const styleRaw = typeof s.style === "string" ? s.style : undefined;
+    const style =
+      styleRaw && (WINDOW_STYLES as readonly string[]).includes(styleRaw)
+        ? (styleRaw as WindowStyle)
+        : undefined;
+    return {
+      template: typeof s.template === "string" ? (s.template as TemplateId) : undefined,
+      style,
+    };
+  },
   head: ({ params }) => {
     const t = params.type as ProductType;
     const label = productLabel(t);
@@ -394,11 +403,12 @@ function StepSection({
 }
 
 function WindowConfigurator({ productType }: { productType: ProductType }) {
-  const { template } = Route.useSearch();
+  const { template, style } = Route.useSearch();
   const navigate = useNavigate();
   const [config, setConfig] = useState<WindowConfig>(() => {
     const preset = template ? WINDOW_TEMPLATES[template as TemplateId] : undefined;
-    if (!template && typeof window !== "undefined") {
+    const styleOverride = style ? { windowStyle: style } : undefined;
+    if (!template && !style && typeof window !== "undefined") {
       try {
         const raw = localStorage.getItem("uwd_window_config_v1");
         if (raw) {
@@ -409,10 +419,11 @@ function WindowConfigurator({ productType }: { productType: ProductType }) {
         /* ignore */
       }
     }
-    return { ...DEFAULT_WINDOW, ...(preset ?? {}) };
+    return { ...DEFAULT_WINDOW, ...(preset ?? {}), ...(styleOverride ?? {}) };
   });
   const [touched, setTouched] = useState<Record<number, boolean>>(() => {
     if (template) return { 1: true, 2: true, 3: true, 4: true };
+    if (style) return { 1: true };
     if (typeof window !== "undefined") {
       try {
         const raw = localStorage.getItem("uwd_window_touched_v1");

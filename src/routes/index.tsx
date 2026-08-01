@@ -199,10 +199,17 @@ function Home() {
             );
           })}
         </div>
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm">
+          <Link to="/window-types" className="font-medium text-foreground underline-offset-4 hover:underline">
+            Browse all window types
+          </Link>
+          <span className="hidden text-muted-foreground sm:inline">·</span>
+          <Link to="/measure-guide" className="font-medium text-foreground underline-offset-4 hover:underline">
+            How to measure for a quote
+          </Link>
+        </div>
         </div>
       </section>
-
-      {/* Typical project pricing */}
       <section className="border-t border-border">
         <div className="mx-auto max-w-[1400px] px-6 py-20">
           <div className="mb-10 text-center">

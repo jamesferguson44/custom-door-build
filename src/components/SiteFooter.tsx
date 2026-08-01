@@ -34,6 +34,22 @@ export function SiteFooter() {
               </li>
               <li>
                 <Link
+                  to="/window-types"
+                  className="text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  Window Types
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/measure-guide"
+                  className="text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  Measure Guide
+                </Link>
+              </li>
+              <li>
+                <Link
                   to="/configure/$type"
                   params={{ type: "window" }}
                   className="text-muted-foreground transition-colors hover:text-foreground"

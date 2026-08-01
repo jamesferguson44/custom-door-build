@@ -18,16 +18,36 @@ export function SiteHeader() {
           </span>
         </Link>
         <nav className="flex items-center gap-1 text-[13px]">
-          <NavItem to="/">Home</NavItem>
+          <Link
+            to="/"
+            className="hidden rounded-full px-4 py-1.5 text-muted-foreground transition hover:text-foreground sm:inline"
+            activeOptions={{ exact: true }}
+            activeProps={{ className: "hidden rounded-full px-4 py-1.5 text-foreground font-medium sm:inline" }}
+          >
+            Home
+          </Link>
+          <Link
+            to="/window-types"
+            className="rounded-full px-3 py-1.5 text-muted-foreground transition hover:text-foreground sm:px-4"
+            activeProps={{ className: "rounded-full px-3 py-1.5 text-foreground font-medium sm:px-4" }}
+          >
+            Styles
+          </Link>
+          <Link
+            to="/measure-guide"
+            className="hidden rounded-full px-4 py-1.5 text-muted-foreground transition hover:text-foreground sm:inline"
+            activeProps={{ className: "hidden rounded-full px-4 py-1.5 text-foreground font-medium sm:inline" }}
+          >
+            Measure
+          </Link>
           <Link
             to="/configure/$type"
             params={{ type: "window" }}
-            className="rounded-full px-4 py-1.5 text-muted-foreground transition hover:text-foreground"
-            activeProps={{ className: "rounded-full px-4 py-1.5 text-foreground font-medium" }}
+            className="rounded-full px-3 py-1.5 text-muted-foreground transition hover:text-foreground sm:px-4"
+            activeProps={{ className: "rounded-full px-3 py-1.5 text-foreground font-medium sm:px-4" }}
           >
             Configure
           </Link>
-          {/* <NavItem to="/admin">Admin</NavItem> */}
           <Link
             to="/quote"
             className="ml-1 inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-muted-foreground transition hover:border-foreground hover:text-foreground"
@@ -39,18 +59,5 @@ export function SiteHeader() {
         </nav>
       </div>
     </header>
-  );
-}
-
-function NavItem({ to, children }: { to: "/" | "/admin"; children: React.ReactNode }) {
-  return (
-    <Link
-      to={to}
-      className="rounded-full px-4 py-1.5 text-muted-foreground transition hover:text-foreground"
-      activeOptions={to === "/" ? { exact: true } : undefined}
-      activeProps={{ className: "rounded-full px-4 py-1.5 text-foreground font-medium" }}
-    >
-      {children}
-    </Link>
   );
 }
