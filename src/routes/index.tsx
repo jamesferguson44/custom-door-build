@@ -173,7 +173,7 @@ function Home() {
                   <Sparkles className="h-3 w-3" /> Most Homeowners Choose This
                 </div>
               )}
-              <div className={`aspect-[4/5] overflow-hidden ${t.id === "modern-upgrade" ? "bg-[#f5f5f5]" : "bg-muted"}`}>
+              <div className={`aspect-[4/5] overflow-hidden ${t.id === "modern-upgrade" || t.id === "max-efficiency" ? "bg-[#f5f5f5]" : "bg-muted"}`}>
                 <img
                   src={t.image}
                   alt={t.title}
@@ -181,7 +181,7 @@ function Home() {
                   height={1500}
                   loading="lazy"
                   className={`h-full w-full transition duration-700 group-hover:scale-[1.03] ${
-                    t.id === "modern-upgrade" ? "object-contain" : "object-cover"
+                    t.id === "modern-upgrade" || t.id === "max-efficiency" ? "object-contain" : "object-cover"
                   }`}
                 />
               </div>

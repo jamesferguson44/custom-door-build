@@ -65,6 +65,7 @@ const styles: {
       "Cranks open outward like a door. Excellent seal when closed and strong airflow when open.",
     bestFor: "Hard-to-reach spots, bathrooms, and high-efficiency upgrades",
     image: windowCasement,
+    imageContain: true,
   },
   {
     style: "Awning",
