@@ -168,7 +168,7 @@ function Home() {
               search={{ template: t.id }}
               className={`group flex flex-col overflow-hidden rounded-2xl border bg-[#f5f5f5] transition hover:shadow-[var(--shadow-elegant)] ${featured ? "border-2 border-foreground shadow-[var(--shadow-elegant)]" : "border-border"}`}
             >
-              <div className="relative aspect-[4/5] w-full shrink-0 overflow-hidden bg-[#f5f5f5]">
+              <div className="relative aspect-[4/5] w-full shrink-0 overflow-hidden bg-[#f5f5f5] p-6">
                 {featured && (
                   <div className="absolute left-3 top-3 z-10 inline-flex items-center gap-1 rounded-full bg-foreground px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-background">
                     <Sparkles className="h-3 w-3" /> Most Homeowners Choose This
@@ -180,7 +180,7 @@ function Home() {
                   width={800}
                   height={1000}
                   loading="lazy"
-                  className="absolute inset-0 block h-full w-full object-cover object-center transition duration-700 group-hover:scale-[1.03]"
+                  className="block h-full w-full object-contain object-center transition duration-700 group-hover:scale-[1.03]"
                 />
               </div>
               <div className="bg-background p-5">
