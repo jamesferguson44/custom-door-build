@@ -160,16 +160,15 @@ function Home() {
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {templates.map((t) => {
             const featured = t.id === "most-popular";
-            const containImage = t.id === "modern-upgrade" || t.id === "max-efficiency";
             return (
             <Link
               key={t.id}
               to="/configure/$type"
               params={{ type: "window" }}
               search={{ template: t.id }}
-              className={`group flex flex-col overflow-hidden rounded-2xl border bg-background transition hover:shadow-[var(--shadow-elegant)] ${featured ? "border-2 border-foreground shadow-[var(--shadow-elegant)]" : "border-border"}`}
+              className={`group flex flex-col overflow-hidden rounded-2xl border bg-[#f5f5f5] transition hover:shadow-[var(--shadow-elegant)] ${featured ? "border-2 border-foreground shadow-[var(--shadow-elegant)]" : "border-border"}`}
             >
-              <div className="relative aspect-[4/5] w-full overflow-hidden bg-[#f5f5f5]">
+              <div className="relative aspect-[4/5] w-full shrink-0 overflow-hidden bg-[#f5f5f5]">
                 {featured && (
                   <div className="absolute left-3 top-3 z-10 inline-flex items-center gap-1 rounded-full bg-foreground px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-background">
                     <Sparkles className="h-3 w-3" /> Most Homeowners Choose This
@@ -178,15 +177,13 @@ function Home() {
                 <img
                   src={t.image}
                   alt={t.title}
-                  width={1200}
-                  height={1500}
+                  width={800}
+                  height={1000}
                   loading="lazy"
-                  className={`absolute inset-0 h-full w-full transition duration-700 group-hover:scale-[1.03] ${
-                    containImage ? "object-contain" : "object-cover"
-                  }`}
+                  className="absolute inset-0 block h-full w-full object-cover object-center transition duration-700 group-hover:scale-[1.03]"
                 />
               </div>
-              <div className="p-5">
+              <div className="bg-background p-5">
                 <div className="flex items-center justify-between">
                   <div className="text-base font-semibold tracking-tight">{t.title}</div>
                   <ArrowRight className="h-4 w-4 text-muted-foreground transition group-hover:translate-x-0.5 group-hover:text-foreground" />
