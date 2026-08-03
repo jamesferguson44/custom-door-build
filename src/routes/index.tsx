@@ -160,28 +160,29 @@ function Home() {
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {templates.map((t) => {
             const featured = t.id === "most-popular";
+            const containImage = t.id === "modern-upgrade" || t.id === "max-efficiency";
             return (
             <Link
               key={t.id}
               to="/configure/$type"
               params={{ type: "window" }}
               search={{ template: t.id }}
-              className={`group relative overflow-hidden rounded-2xl border bg-background transition hover:shadow-[var(--shadow-elegant)] ${featured ? "border-foreground ring-2 ring-foreground/10 shadow-[var(--shadow-elegant)]" : "border-border"}`}
+              className={`group flex flex-col overflow-hidden rounded-2xl border bg-background transition hover:shadow-[var(--shadow-elegant)] ${featured ? "border-2 border-foreground shadow-[var(--shadow-elegant)]" : "border-border"}`}
             >
-              {featured && (
-                <div className="absolute left-3 top-3 z-10 inline-flex items-center gap-1 rounded-full bg-foreground px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-background">
-                  <Sparkles className="h-3 w-3" /> Most Homeowners Choose This
-                </div>
-              )}
-              <div className={`aspect-[4/5] overflow-hidden ${t.id === "modern-upgrade" || t.id === "max-efficiency" ? "bg-[#f5f5f5]" : "bg-muted"}`}>
+              <div className="relative aspect-[4/5] w-full overflow-hidden bg-[#f5f5f5]">
+                {featured && (
+                  <div className="absolute left-3 top-3 z-10 inline-flex items-center gap-1 rounded-full bg-foreground px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-background">
+                    <Sparkles className="h-3 w-3" /> Most Homeowners Choose This
+                  </div>
+                )}
                 <img
                   src={t.image}
                   alt={t.title}
                   width={1200}
                   height={1500}
                   loading="lazy"
-                  className={`h-full w-full transition duration-700 group-hover:scale-[1.03] ${
-                    t.id === "modern-upgrade" || t.id === "max-efficiency" ? "object-contain" : "object-cover"
+                  className={`absolute inset-0 h-full w-full transition duration-700 group-hover:scale-[1.03] ${
+                    containImage ? "object-contain" : "object-cover"
                   }`}
                 />
               </div>
