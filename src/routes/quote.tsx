@@ -124,15 +124,25 @@ function QuotePage() {
     forceUpdate((n) => n + 1);
   };
 
-  const canSubmit =
-    firstName.trim().length > 0 &&
-    lastName.trim().length > 0 &&
-    phone.trim().length > 0 &&
-    email.trim().length > 0 &&
-    (!turnstileConfigured || !!turnstileToken);
+  const missingFields: string[] = [];
+  if (!firstName.trim()) missingFields.push("first name");
+  if (!lastName.trim()) missingFields.push("last name");
+  if (!phone.trim()) missingFields.push("phone");
+  if (!email.trim()) missingFields.push("email");
+  if (turnstileConfigured && !turnstileToken) missingFields.push("spam check");
+
+  const canSubmit = missingFields.length === 0;
 
   const handleSubmit = async () => {
-    if (!canSubmit || submitting) return;
+    if (submitting) return;
+    if (!canSubmit) {
+      toast.error(
+        missingFields.length === 1
+          ? `Please fill in your ${missingFields[0]}.`
+          : `Please fill in: ${missingFields.join(", ")}.`,
+      );
+      return;
+    }
     setSubmitting(true);
 
     try {
@@ -563,7 +573,7 @@ function QuotePage() {
                   )}
                   <Button
                     className="h-12 w-full rounded-full text-sm font-semibold"
-                    disabled={!canSubmit || submitting}
+                    disabled={submitting}
                     onClick={handleSubmit}
                   >
                     {submitting ? (
@@ -576,7 +586,9 @@ function QuotePage() {
                   </Button>
                   <p className="text-center text-[11px] text-muted-foreground">
                     {!canSubmit
-                      ? "Please enter your name, phone, and email."
+                      ? missingFields.includes("spam check")
+                        ? "Complete the security check above, then submit."
+                        : "Type your name, phone, and email in the fields above (placeholders don’t count)."
                       : "No commitment required. We'll confirm your project details before scheduling."}
                   </p>
                   <div className="flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
