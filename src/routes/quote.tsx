@@ -4,10 +4,8 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { Turnstile } from "@/components/Turnstile";
 import { loadCart, clearCart, removeFromCart } from "@/lib/quote-storage";
 import { formatUSD, productLabel } from "@/lib/pricing";
-import { supabase } from "@/integrations/supabase/client";
-import type { Json } from "@/integrations/supabase/types";
 import { downloadQuotePdf } from "@/lib/quote-pdf";
-import { notifyNewQuote } from "@/lib/quote-notify";
+import { submitQuote } from "@/lib/submit-quote";
 import { verifyTurnstile } from "@/lib/turnstile-verify";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -166,8 +164,6 @@ function QuotePage() {
 
     try {
       const customerName = `${firstName.trim()} ${lastName.trim()}`.trim();
-      // Client-generated IDs so we don't need .select() after insert.
-      // Anon users can INSERT quotes but cannot SELECT them (admin-only RLS).
       const referenceId =
         typeof crypto !== "undefined" && "randomUUID" in crypto
           ? crypto.randomUUID()
@@ -177,7 +173,7 @@ function QuotePage() {
         // First row carries the reference id used for success page / notify.
         ...(index === 0 ? { id: referenceId } : {}),
         product_type: item.productType,
-        configuration: item.config as unknown as Json,
+        configuration: item.config as unknown as Record<string, unknown>,
         width_inches: item.config.width ?? 0,
         height_inches: item.config.height ?? 0,
         base_price: item.price.basePrice,
@@ -195,36 +191,33 @@ function QuotePage() {
         project_timeline: timeline || null,
       }));
 
-      // Prefer: don't return rows (anon has no SELECT policy). Timeout hard so UX never spins forever.
-      const insertPromise = supabase.from("quotes").insert(rows);
-      const timeoutPromise = new Promise<{ data: null; error: { message: string } }>((resolve) =>
-        setTimeout(
-          () =>
-            resolve({
-              data: null,
-              error: {
-                message:
-                  "Request timed out talking to the database. Check that VITE_SUPABASE_URL is the live project and that the network can reach Supabase.",
-              },
-            }),
-          15000,
-        ),
-      );
-      const { error } = await Promise.race([insertPromise, timeoutPromise]);
-      if (error) {
-        console.error("[quote submit] insert failed:", error);
-        toast.error(
-          error.message?.includes("timed out")
-            ? "Request timed out. Please try again or call us at (385) 240-4790."
-            : "Something went wrong submitting your request. Please try again or call us at (385) 240-4790.",
-        );
+      // Server path: Supabase and/or email. Succeeds if any channel works
+      // (critical while the old Supabase project is offline).
+      const result = await submitQuote({
+        data: {
+          referenceId,
+          customerName,
+          customerEmail: email.trim(),
+          customerPhone: phone.trim(),
+          itemCount: items.reduce((s, i) => s + i.qty, 0),
+          totalLow,
+          totalHigh,
+          productSummary: summarizeItems(items),
+          notes: notes.trim() || undefined,
+          rows,
+        },
+      });
+
+      if (!result.ok) {
+        console.error("[quote submit] failed:", result);
+        toast.error(result.error);
         setSubmitting(false);
         return;
       }
 
       try {
         downloadQuotePdf({
-          referenceId,
+          referenceId: result.referenceId,
           customer: {
             firstName: firstName.trim(),
             lastName: lastName.trim(),
@@ -245,24 +238,9 @@ function QuotePage() {
         console.error("[quote submit] PDF generation failed (non-blocking):", pdfErr);
       }
 
-      // Fire-and-forget — never block success navigation on email.
-      notifyNewQuote({
-        data: {
-          quoteId: referenceId,
-          customerName,
-          customerEmail: email.trim(),
-          customerPhone: phone.trim(),
-          itemCount: items.reduce((s, i) => s + i.qty, 0),
-          totalLow,
-          totalHigh,
-          productSummary: summarizeItems(items),
-          notes: notes.trim() || undefined,
-        },
-      }).catch((err) => console.error("[quote submit] notify failed (non-blocking):", err));
-
       clearCart();
       setSubmitting(false);
-      navigate({ to: "/quote/success", search: { id: referenceId } });
+      navigate({ to: "/quote/success", search: { id: result.referenceId } });
     } catch (err) {
       console.error("[quote submit] unexpected error:", err);
       toast.error("Something went wrong submitting your request. Please try again or call us at (385) 240-4790.");
