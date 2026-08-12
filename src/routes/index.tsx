@@ -5,10 +5,13 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Shield, PencilRuler, DollarSign, ClipboardCheck, Hammer, CheckCircle2, Eye, Ruler, Award, Sparkles, Mountain, Star, Quote } from "lucide-react";
 import { cn } from "@/lib/utils";
 import heroWindow from "@/assets/hero-window.jpg";
-import windowPicture from "@/assets/window-picture.jpg";
-import windowSliderPopular from "@/assets/window-slider-popular.jpg";
-import windowCasement from "@/assets/window-casement.jpg";
-import windowSingleHung from "@/assets/window-single-hung.jpg";
+// Cut out to transparent PNGs via scripts/cutout-window-photos.mjs so all four
+// starting-point photos sit on one identical card background instead of each
+// carrying its own slightly different studio backdrop/vignette.
+import windowPicture from "@/assets/window-picture.png";
+import windowSliderPopular from "@/assets/window-slider-popular.png";
+import windowCasement from "@/assets/window-casement.png";
+import windowSingleHung from "@/assets/window-single-hung.png";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -180,7 +183,7 @@ function Home() {
                   width={800}
                   height={1000}
                   loading="lazy"
-                  className="block h-full w-full object-contain object-center transition duration-700 group-hover:scale-[1.03]"
+                  className="block h-full w-full object-contain object-center [filter:drop-shadow(0_14px_20px_rgba(15,15,15,0.12))] transition duration-700 group-hover:scale-[1.03]"
                 />
               </div>
               <div className="bg-background p-5">
