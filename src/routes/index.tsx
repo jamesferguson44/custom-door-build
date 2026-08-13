@@ -45,17 +45,19 @@ function Home() {
     <div className="min-h-screen bg-background overflow-x-hidden">
       <SiteHeader />
 
-      {/* Hero — SLC mountain view through a window. Container matches the
-          photo's real aspect ratio so the whole frame (top sill to bottom
-          sill) always shows — no cropping like object-cover would do. */}
+      {/* Hero — SLC mountain view through a window. Height is capped (not
+          driven by the photo's aspect ratio) so header + hero fit in one
+          viewport on typical screens; object-contain keeps the whole frame
+          visible (letterboxing on black, same as the original mockup) rather
+          than stretching tall and pushing the fold below the screen. */}
       <section className="relative overflow-hidden bg-black">
-        <div className="relative aspect-[2400/1254] w-full">
+        <div className="relative h-[56vh] max-h-[560px] min-h-[480px] w-full">
           <img
             src={heroWindow}
             alt="Salt Lake City skyline and Wasatch mountains through a window"
             width={2400}
             height={1254}
-            className="absolute inset-0 h-full w-full object-cover object-center"
+            className="absolute inset-0 h-full w-full object-contain object-center"
           />
           {/* Light touch only — a bottom-anchored fade so the text block stays
               readable without dulling the photo itself. */}
