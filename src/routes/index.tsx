@@ -45,13 +45,14 @@ function Home() {
     <div className="min-h-screen bg-background overflow-x-hidden">
       <SiteHeader />
 
-      {/* Hero — SLC mountain view through a window. Container matches the
-          photo's real aspect ratio so the whole frame (top sill to bottom
-          sill) always shows — no cropping like object-cover would do.
-          Text block spacing below is trimmed tighter than a typical hero so
-          the header + hero fit in one view without scrolling. */}
+      {/* Hero — SLC mountain view through a window. On sm+ screens the
+          container matches the photo's real aspect ratio so the whole frame
+          (top sill to bottom sill) always shows with no cropping. That ratio
+          is far too short on mobile to hold the text below, so phones get
+          their own taller box instead (image crops left/right there, which
+          is fine — it's the top/bottom sill cropping that looks bad). */}
       <section className="relative overflow-hidden bg-black">
-        <div className="relative aspect-[2400/1254] w-full">
+        <div className="relative h-[72vh] min-h-[540px] w-full sm:aspect-[2400/1254] sm:h-auto sm:min-h-0">
           <img
             src={heroWindow}
             alt="Salt Lake City skyline and Wasatch mountains through a window"
@@ -61,16 +62,16 @@ function Home() {
           />
           {/* Light touch only — a bottom-anchored fade so the text block stays
               readable without dulling the photo itself. */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/35" />
-          <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 mx-auto max-w-[1400px] px-6 text-center text-white">
-            <h1 className="text-3xl font-semibold tracking-tight [text-shadow:0_2px_28px_rgba(0,0,0,0.75),0_1px_6px_rgba(0,0,0,0.6)] sm:text-5xl lg:text-6xl">
+          <div className="absolute inset-0 bg-gradient-to-b from-black/15 via-transparent to-black/40" />
+          <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 mx-auto max-w-[1400px] px-5 text-center text-white sm:px-6">
+            <h1 className="text-[26px] font-semibold leading-tight tracking-tight [text-shadow:0_2px_28px_rgba(0,0,0,0.75),0_1px_6px_rgba(0,0,0,0.6)] sm:text-5xl sm:leading-tight lg:text-6xl">
               Skip the Sales Pitch.<br className="hidden sm:block" /> Design Your Windows and See Pricing Instantly.
             </h1>
-            <p className="mx-auto mt-4 max-w-2xl text-sm text-white [text-shadow:0_1px_16px_rgba(0,0,0,0.7)] sm:text-lg">
+            <p className="mx-auto mt-3 max-w-2xl text-[13px] leading-snug text-white [text-shadow:0_1px_16px_rgba(0,0,0,0.7)] sm:mt-4 sm:text-lg sm:leading-normal">
               Customize your windows online, see transparent pricing in real time, and let our team handle measurement and installation.
             </p>
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-              <Button asChild size="lg" className="h-12 rounded-full bg-white px-8 text-sm font-semibold text-black shadow-lg hover:bg-white/90">
+            <div className="mt-5 flex flex-wrap items-center justify-center gap-2.5 sm:mt-6 sm:gap-3">
+              <Button asChild size="lg" className="h-11 rounded-full bg-white px-6 text-sm font-semibold text-black shadow-lg hover:bg-white/90 sm:h-12 sm:px-8">
                 <Link to="/configure/$type" params={{ type: "window" }}>
                   See My Window Price
                 </Link>
@@ -78,7 +79,7 @@ function Home() {
               <Button
                 size="lg"
                 variant="outline"
-                className="h-12 rounded-full border-white/60 bg-white/10 px-8 text-sm font-semibold text-white backdrop-blur-sm hover:bg-white/20 hover:text-white"
+                className="h-11 rounded-full border-white/60 bg-white/10 px-6 text-sm font-semibold text-white backdrop-blur-sm hover:bg-white/20 hover:text-white sm:h-12 sm:px-8"
                 onClick={() => {
                   document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth", block: "start" });
                 }}
@@ -86,21 +87,21 @@ function Home() {
                 How It Works
               </Button>
             </div>
-            <p className="mx-auto mt-5 max-w-xl text-xs text-white [text-shadow:0_1px_10px_rgba(0,0,0,0.6)] sm:text-sm">
+            <p className="mx-auto mt-4 max-w-xl text-xs text-white [text-shadow:0_1px_10px_rgba(0,0,0,0.6)] sm:mt-5 sm:text-sm">
               Installed replacement windows typically start around <span className="font-semibold">$650 per window</span>.
             </p>
-            <div className="mx-auto mt-6 flex max-w-3xl flex-wrap items-center justify-center gap-x-3 gap-y-2 text-xs sm:text-sm">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1 font-semibold text-black shadow-sm">
-                <CheckCircle2 className="h-4 w-4" /> See Pricing Instantly
+            <div className="mx-auto mt-5 flex max-w-3xl flex-wrap items-center justify-center gap-x-2 gap-y-1.5 text-[11px] sm:mt-6 sm:gap-x-3 sm:gap-y-2 sm:text-sm">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-2.5 py-1 font-semibold text-black shadow-sm sm:px-3">
+                <CheckCircle2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" /> See Pricing Instantly
               </span>
               <span className="inline-flex items-center gap-1.5 text-white [text-shadow:0_1px_10px_rgba(0,0,0,0.6)]">
-                <CheckCircle2 className="h-4 w-4" /> No Sales Appointments
+                <CheckCircle2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" /> No Sales Appointments
               </span>
               <span className="inline-flex items-center gap-1.5 text-white [text-shadow:0_1px_10px_rgba(0,0,0,0.6)]">
-                <CheckCircle2 className="h-4 w-4" /> Professional Installation
+                <CheckCircle2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" /> Professional Installation
               </span>
             </div>
-            <p className="mt-2 text-xs text-white/90 [text-shadow:0_1px_10px_rgba(0,0,0,0.55)]">
+            <p className="mt-2 text-[11px] text-white/90 [text-shadow:0_1px_10px_rgba(0,0,0,0.55)] sm:text-xs">
               Serving Salt Lake County · Utah County · Davis County
             </p>
           </div>
