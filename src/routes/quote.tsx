@@ -251,7 +251,7 @@ function QuotePage() {
   return (
     <div className="min-h-screen overflow-x-hidden bg-background">
       <SiteHeader />
-      <div className="mx-auto max-w-6xl px-6 py-12">
+      <div className="mx-auto max-w-6xl overflow-x-clip px-6 py-12">
         {/* Page header */}
         <div className="mb-10">
           <Link
@@ -291,7 +291,7 @@ function QuotePage() {
         ) : (
           <div className="grid gap-8 lg:grid-cols-[1fr_380px]">
             {/* LEFT — Project breakdown */}
-            <div className="space-y-6">
+            <div className="min-w-0 w-full space-y-6">
               {/* Line items */}
               <div className="rounded-2xl border border-border bg-card">
                 <div className="border-b border-border px-6 py-4">
@@ -307,12 +307,12 @@ function QuotePage() {
                     >
                       <div className="flex items-start justify-between gap-4">
                         <div className="min-w-0 flex-1">
-                          <div className="font-medium">
+                          <div className="font-medium break-words">
                             {item.location
                               ? `${item.location}`
                               : productLabel(item.productType)}
                           </div>
-                          <div className="mt-0.5 text-sm text-muted-foreground">
+                          <div className="mt-0.5 break-words text-sm text-muted-foreground">
                             {productLabel(item.productType)}
                             {item.config.width && item.config.height
                               ? ` · ${item.config.width}″ × ${item.config.height}″`
@@ -435,7 +435,7 @@ function QuotePage() {
             </div>
 
             {/* RIGHT — What happens next + callback form */}
-            <div className="space-y-6">
+            <div className="min-w-0 w-full space-y-6">
               {/* What happens next */}
               <div className="rounded-2xl border border-border bg-card p-6">
                 <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
@@ -590,7 +590,9 @@ function QuotePage() {
                     />
                   </div>
                   {turnstileConfigured && (
-                    <Turnstile onVerify={setTurnstileToken} />
+                    <div className="flex justify-center overflow-x-auto">
+                      <Turnstile onVerify={setTurnstileToken} />
+                    </div>
                   )}
                   <Button
                     className="h-12 w-full rounded-full text-sm font-semibold"
