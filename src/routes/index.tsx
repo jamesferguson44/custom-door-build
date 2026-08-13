@@ -45,19 +45,19 @@ function Home() {
     <div className="min-h-screen bg-background overflow-x-hidden">
       <SiteHeader />
 
-      {/* Hero — SLC mountain view through a window. Height is capped (not
-          driven by the photo's aspect ratio) so header + hero fit in one
-          viewport on typical screens; object-contain keeps the whole frame
-          visible (letterboxing on black, same as the original mockup) rather
-          than stretching tall and pushing the fold below the screen. */}
+      {/* Hero — SLC mountain view through a window. Container matches the
+          photo's real aspect ratio so the whole frame (top sill to bottom
+          sill) always shows — no cropping like object-cover would do.
+          Text block spacing below is trimmed tighter than a typical hero so
+          the header + hero fit in one view without scrolling. */}
       <section className="relative overflow-hidden bg-black">
-        <div className="relative h-[56vh] max-h-[560px] min-h-[480px] w-full">
+        <div className="relative aspect-[2400/1254] w-full">
           <img
             src={heroWindow}
             alt="Salt Lake City skyline and Wasatch mountains through a window"
             width={2400}
             height={1254}
-            className="absolute inset-0 h-full w-full object-contain object-center"
+            className="absolute inset-0 h-full w-full object-cover object-center"
           />
           {/* Light touch only — a bottom-anchored fade so the text block stays
               readable without dulling the photo itself. */}
@@ -66,10 +66,10 @@ function Home() {
             <h1 className="text-3xl font-semibold tracking-tight [text-shadow:0_2px_28px_rgba(0,0,0,0.75),0_1px_6px_rgba(0,0,0,0.6)] sm:text-5xl lg:text-6xl">
               Skip the Sales Pitch.<br className="hidden sm:block" /> Design Your Windows and See Pricing Instantly.
             </h1>
-            <p className="mx-auto mt-5 max-w-2xl text-sm text-white [text-shadow:0_1px_16px_rgba(0,0,0,0.7)] sm:text-lg">
+            <p className="mx-auto mt-4 max-w-2xl text-sm text-white [text-shadow:0_1px_16px_rgba(0,0,0,0.7)] sm:text-lg">
               Customize your windows online, see transparent pricing in real time, and let our team handle measurement and installation.
             </p>
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
               <Button asChild size="lg" className="h-12 rounded-full bg-white px-8 text-sm font-semibold text-black shadow-lg hover:bg-white/90">
                 <Link to="/configure/$type" params={{ type: "window" }}>
                   See My Window Price
@@ -86,10 +86,10 @@ function Home() {
                 How It Works
               </Button>
             </div>
-            <p className="mx-auto mt-6 max-w-xl text-xs text-white [text-shadow:0_1px_10px_rgba(0,0,0,0.6)] sm:text-sm">
+            <p className="mx-auto mt-5 max-w-xl text-xs text-white [text-shadow:0_1px_10px_rgba(0,0,0,0.6)] sm:text-sm">
               Installed replacement windows typically start around <span className="font-semibold">$650 per window</span>.
             </p>
-            <div className="mx-auto mt-8 flex max-w-3xl flex-wrap items-center justify-center gap-x-3 gap-y-2 text-xs sm:text-sm">
+            <div className="mx-auto mt-6 flex max-w-3xl flex-wrap items-center justify-center gap-x-3 gap-y-2 text-xs sm:text-sm">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1 font-semibold text-black shadow-sm">
                 <CheckCircle2 className="h-4 w-4" /> See Pricing Instantly
               </span>
@@ -100,7 +100,7 @@ function Home() {
                 <CheckCircle2 className="h-4 w-4" /> Professional Installation
               </span>
             </div>
-            <p className="mt-3 text-xs text-white/90 [text-shadow:0_1px_10px_rgba(0,0,0,0.55)]">
+            <p className="mt-2 text-xs text-white/90 [text-shadow:0_1px_10px_rgba(0,0,0,0.55)]">
               Serving Salt Lake County · Utah County · Davis County
             </p>
           </div>
