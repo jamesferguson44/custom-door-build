@@ -45,23 +45,23 @@ function Home() {
     <div className="min-h-screen bg-background overflow-x-hidden">
       <SiteHeader />
 
-      {/* Hero */}
-      <section className="relative overflow-hidden">
+      {/* Hero — SLC mountain view through a window */}
+      <section className="relative overflow-hidden bg-black">
         <img
           src={heroWindow}
-          alt="Floor-to-ceiling window with mountain view"
-          width={1920}
-          height={1080}
-          className="h-[80vh] w-full object-cover"
+          alt="Salt Lake City skyline and Wasatch mountains through a window"
+          width={2400}
+          height={1254}
+          className="h-[78vh] min-h-[520px] w-full object-cover object-center"
         />
-        {/* Strong overlay for guaranteed contrast */}
-        <div className="absolute inset-0 bg-black/55 sm:bg-black/55 bg-black/70" />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-background" />
+        {/* Soft wash so the view stays visible; text relies on shadows like the mockup */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/30 to-background" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.35)_0%,transparent_70%)]" />
         <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 mx-auto max-w-[1400px] px-6 text-center text-white">
-          <h1 className="text-4xl font-semibold tracking-tight drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)] sm:text-6xl lg:text-7xl">
+          <h1 className="text-4xl font-semibold tracking-tight [text-shadow:0_2px_24px_rgba(0,0,0,0.55),0_1px_4px_rgba(0,0,0,0.4)] sm:text-6xl lg:text-7xl">
             Skip the Sales Pitch.<br className="hidden sm:block" /> Design Your Windows and See Pricing Instantly.
           </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-base text-white/90 drop-shadow-[0_1px_8px_rgba(0,0,0,0.4)] sm:text-lg">
+          <p className="mx-auto mt-6 max-w-2xl text-base text-white/95 [text-shadow:0_1px_12px_rgba(0,0,0,0.5)] sm:text-lg">
             Customize your windows online, see transparent pricing in real time, and let our team handle measurement and installation.
           </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
@@ -73,7 +73,7 @@ function Home() {
             <Button
               size="lg"
               variant="outline"
-              className="h-12 rounded-full border-white/40 bg-white/10 px-8 text-sm font-semibold text-white backdrop-blur hover:bg-white/20 hover:text-white"
+              className="h-12 rounded-full border-white/50 bg-white/10 px-8 text-sm font-semibold text-white backdrop-blur-sm hover:bg-white/20 hover:text-white"
               onClick={() => {
                 document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth", block: "start" });
               }}
@@ -81,15 +81,15 @@ function Home() {
               How It Works
             </Button>
           </div>
-          <p className="mx-auto mt-6 max-w-xl text-xs text-white/80 sm:text-sm">
+          <p className="mx-auto mt-6 max-w-xl text-xs text-white/90 [text-shadow:0_1px_8px_rgba(0,0,0,0.45)] sm:text-sm">
             Installed replacement windows typically start around <span className="font-semibold text-white">$650 per window</span>.
           </p>
-          <div className="mx-auto mt-8 flex max-w-3xl flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-foreground/70 sm:text-sm">
+          <div className="mx-auto mt-8 flex max-w-3xl flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-white/90 [text-shadow:0_1px_8px_rgba(0,0,0,0.45)] sm:text-sm">
             <span className="inline-flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4" /> See Pricing Instantly</span>
             <span className="inline-flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4" /> No Sales Appointments</span>
             <span className="inline-flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4" /> Professional Installation</span>
           </div>
-          <p className="mt-3 text-xs text-white/70">
+          <p className="mt-3 text-xs text-white/80 [text-shadow:0_1px_8px_rgba(0,0,0,0.4)]">
             Serving Salt Lake County · Utah County · Davis County
           </p>
         </div>
