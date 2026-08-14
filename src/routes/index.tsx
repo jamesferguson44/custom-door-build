@@ -12,6 +12,11 @@ import windowPicture from "@/assets/window-picture.png";
 import windowSliderPopular from "@/assets/window-slider-popular.png";
 import windowCasement from "@/assets/window-casement.png";
 import windowSingleHung from "@/assets/window-single-hung.png";
+// Reusing the configurator's existing door hero photos here rather than
+// generating new cutout PNGs — keeps this a same-style banner instead of a
+// full new asset pipeline (see /configure/door and /configure/sliding_door).
+import heroDoor from "@/assets/hero-door.jpg";
+import heroSliding from "@/assets/hero-sliding.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -224,6 +229,79 @@ function Home() {
         </div>
         </div>
       </section>
+
+      {/* Doors CTA — the door and sliding-door configurators have full
+          feature/pricing parity with windows, so give them a visible path
+          in without touching the window cards above. Uses the existing
+          configurator hero photos rather than new cutout assets, styled as
+          a simpler banner instead of a full card mirror. */}
+      <section className="border-t border-border">
+        <div className="mx-auto max-w-[1400px] px-6 py-20">
+          <div className="mb-10 text-center">
+            <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+              Also Available
+            </div>
+            <h2 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
+              Need a Door, Too?
+            </h2>
+            <p className="mx-auto mt-3 max-w-xl text-sm text-muted-foreground">
+              Our door and sliding patio door configurators work just like the one above — same transparent pricing, same no sales pressure.
+            </p>
+          </div>
+          <div className="grid gap-5 sm:grid-cols-2">
+            {(
+              [
+                {
+                  type: "door",
+                  title: "Entry Doors",
+                  blurb: "Design a custom entry door and see transparent installed pricing in minutes.",
+                  image: heroDoor,
+                  cta: "Configure My Door",
+                },
+                {
+                  type: "sliding_door",
+                  title: "Sliding Patio Doors",
+                  blurb: "Smooth-glide patio doors, priced the same instant way as everything else.",
+                  image: heroSliding,
+                  cta: "Configure My Patio Door",
+                },
+              ] as const
+            ).map((d) => (
+              <Link
+                key={d.type}
+                to="/configure/$type"
+                params={{ type: d.type }}
+                className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-background transition hover:shadow-[var(--shadow-elegant)]"
+              >
+                <div className="relative aspect-[16/9] w-full shrink-0 overflow-hidden">
+                  <img
+                    src={d.image}
+                    alt={d.title}
+                    width={1920}
+                    height={1080}
+                    loading="lazy"
+                    className="h-full w-full object-cover transition duration-700 group-hover:scale-[1.05]"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent" />
+                  <div className="absolute inset-x-0 bottom-0 p-5">
+                    <div className="text-lg font-semibold tracking-tight text-white [text-shadow:0_1px_10px_rgba(0,0,0,0.55)]">
+                      {d.title}
+                    </div>
+                  </div>
+                </div>
+                <div className="p-5">
+                  <p className="text-xs text-muted-foreground">{d.blurb}</p>
+                  <div className="mt-3 inline-flex items-center gap-1.5 text-sm font-medium text-foreground">
+                    {d.cta}
+                    <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section className="border-t border-border">
         <div className="mx-auto max-w-[1400px] px-6 py-20">
           <div className="mb-10 text-center">
@@ -354,6 +432,13 @@ function Home() {
               </Link>
             </Button>
           </div>
+          <p className="mx-auto mt-4 max-w-xl text-xs text-muted-foreground">
+            Prefer an in-person visit?{" "}
+            <Link to="/quote" className="font-medium text-foreground underline-offset-4 hover:underline">
+              Request an in-home consultation
+            </Link>{" "}
+            and we&apos;ll bring samples and measure on-site — just mention it in the notes.
+          </p>
         </div>
       </section>
 
