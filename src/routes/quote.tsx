@@ -22,7 +22,7 @@ import { useState } from "react";
 import {
   CheckCircle2,
   ArrowLeft,
-  Phone,
+  MessageSquare,
   Calendar,
   Ruler,
   Package,
@@ -49,16 +49,16 @@ export const Route = createFileRoute("/quote")({
 
 const NEXT_STEPS = [
   {
-    icon: Phone,
-    title: "We call you within 1 business day",
+    icon: MessageSquare,
+    title: "We confirm your appointment within 1 business day",
     description:
-      "A Pane & Simple team member will reach out to confirm your project details and answer any questions.",
+      "We'll email or text you the exact time slot — no sales call required. If you'd rather talk it through, just say so in the notes.",
   },
   {
     icon: Calendar,
-    title: "Schedule your measurement appointment",
+    title: "Your measurement appointment",
     description:
-      "We'll find a time that works for you — most appointments are available within 3–7 days.",
+      "We come out at the confirmed time — most appointments are available within 3–7 days.",
   },
   {
     icon: Ruler,
@@ -81,6 +81,10 @@ const NEXT_STEPS = [
 ];
 
 const TIMELINE_OPTIONS = ["ASAP", "Within 1 month", "1–3 months", "3–6 months", "Just researching"];
+
+const PREFERRED_DAYS_OPTIONS = ["Weekdays", "Weekends", "Either"];
+
+const PREFERRED_TIME_OPTIONS = ["Morning", "Afternoon", "Evening", "Anytime"];
 
 function summarizeItems(items: ReturnType<typeof loadCart>["items"]): string {
   const counts = new Map<string, number>();
@@ -110,6 +114,8 @@ function QuotePage() {
   const [city, setCity] = useState("");
   const [zip, setZip] = useState("");
   const [timeline, setTimeline] = useState("");
+  const [preferredDays, setPreferredDays] = useState("");
+  const [preferredTime, setPreferredTime] = useState("");
   const [notes, setNotes] = useState("");
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -169,6 +175,17 @@ function QuotePage() {
           ? crypto.randomUUID()
           : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
+      // The quotes table has no columns for scheduling preferences, so they
+      // ride along in project_notes with clear labels. The email payload below
+      // still carries them as their own fields.
+      const preferenceLines = [
+        preferredDays ? `Preferred days: ${preferredDays}` : null,
+        preferredTime ? `Preferred time: ${preferredTime}` : null,
+      ].filter(Boolean);
+      const notesForRecord = [notes.trim() || null, ...preferenceLines]
+        .filter(Boolean)
+        .join("\n");
+
       const rows = items.map((item, index) => ({
         // First row carries the reference id used for success page / notify.
         ...(index === 0 ? { id: referenceId } : {}),
@@ -187,7 +204,7 @@ function QuotePage() {
         customer_email: email.trim(),
         customer_city: city.trim() || null,
         customer_zip: zip.trim() || null,
-        project_notes: notes.trim() || null,
+        project_notes: notesForRecord || null,
         project_timeline: timeline || null,
       }));
 
@@ -204,6 +221,9 @@ function QuotePage() {
           totalHigh,
           productSummary: summarizeItems(items),
           notes: notes.trim() || undefined,
+          timeline: timeline || undefined,
+          preferredDays: preferredDays || undefined,
+          preferredTime: preferredTime || undefined,
           rows,
         },
       });
@@ -434,7 +454,7 @@ function QuotePage() {
               </div>
             </div>
 
-            {/* RIGHT — What happens next + callback form */}
+            {/* RIGHT — What happens next + appointment request form */}
             <div className="min-w-0 w-full space-y-6">
               {/* What happens next */}
               <div className="rounded-2xl border border-border bg-card p-6">
@@ -458,16 +478,16 @@ function QuotePage() {
                 </div>
               </div>
 
-              {/* Callback request form */}
+              {/* Measurement appointment request form */}
               <div className="rounded-2xl border border-border bg-card p-6">
                 <div className="mb-4">
                   <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-                    Request a Callback
+                    Request Your Measurement Appointment
                   </h2>
                   <p className="mt-2 text-sm text-muted-foreground">
-                    Leave your info and we'll reach out within 1 business day to
-                    confirm your project and schedule your measurement
-                    appointment.
+                    Tell us when works best and we'll confirm your appointment
+                    time by email or text within 1 business day. No phone call
+                    required.
                   </p>
                 </div>
 
@@ -509,7 +529,7 @@ function QuotePage() {
                       type="tel"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
-                      placeholder="(385) 240-4790"
+                      placeholder="(555) 123-4567"
                       className="mt-1.5"
                       disabled={submitting}
                     />
@@ -573,6 +593,50 @@ function QuotePage() {
                       </SelectContent>
                     </Select>
                   </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="min-w-0">
+                      <Label htmlFor="preferredDays" className="text-xs text-muted-foreground">
+                        Preferred days (optional)
+                      </Label>
+                      <Select
+                        value={preferredDays}
+                        onValueChange={setPreferredDays}
+                        disabled={submitting}
+                      >
+                        <SelectTrigger id="preferredDays" className="mt-1.5">
+                          <SelectValue placeholder="Any day" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {PREFERRED_DAYS_OPTIONS.map((d) => (
+                            <SelectItem key={d} value={d}>
+                              {d}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="min-w-0">
+                      <Label htmlFor="preferredTime" className="text-xs text-muted-foreground">
+                        Preferred time (optional)
+                      </Label>
+                      <Select
+                        value={preferredTime}
+                        onValueChange={setPreferredTime}
+                        disabled={submitting}
+                      >
+                        <SelectTrigger id="preferredTime" className="mt-1.5">
+                          <SelectValue placeholder="Anytime" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {PREFERRED_TIME_OPTIONS.map((t) => (
+                            <SelectItem key={t} value={t}>
+                              {t}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
                   <div>
                     <Label
                       htmlFor="notes"
@@ -584,7 +648,7 @@ function QuotePage() {
                       id="notes"
                       value={notes}
                       onChange={(e) => setNotes(e.target.value)}
-                      placeholder="e.g. Best time to call, access notes, specific questions..."
+                      placeholder="e.g. Gate code or access notes, specific questions, or ask us to call you..."
                       className="mt-1.5 min-h-[80px]"
                       disabled={submitting}
                     />
@@ -604,7 +668,7 @@ function QuotePage() {
                         <Loader2 className="mr-2 h-4 w-4 flex-shrink-0 animate-spin" /> Submitting…
                       </>
                     ) : (
-                      "Request Callback & Measurement Appointment"
+                      "Request My Measurement Appointment"
                     )}
                   </Button>
                   <p className="text-center text-[11px] text-muted-foreground">
@@ -612,7 +676,7 @@ function QuotePage() {
                       ? missingFields.includes("spam check")
                         ? "Complete the security check above, then submit."
                         : "Type your name, phone, and email in the fields above (placeholders don’t count)."
-                      : "No commitment required. We'll confirm your project details before scheduling."}
+                      : "No commitment required. We'll confirm your appointment time by email or text within 1 business day."}
                   </p>
                   <div className="flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
                     <ShieldCheck className="h-3 w-3" />

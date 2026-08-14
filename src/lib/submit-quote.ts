@@ -36,6 +36,9 @@ const submitInput = z.object({
   totalHigh: z.number(),
   productSummary: z.string(),
   notes: z.string().optional(),
+  timeline: z.string().optional(),
+  preferredDays: z.string().optional(),
+  preferredTime: z.string().optional(),
   rows: z.array(quoteRow).min(1),
 });
 
@@ -191,6 +194,11 @@ async function tryResendNotify(
       <p style="margin: 0 0 16px; font-size: 20px; font-weight: 600;">
         ${money(data.totalLow)} – ${money(data.totalHigh)}
       </p>
+      <p style="margin: 0 0 16px;">
+        <strong>Preferred days:</strong> ${escapeHtml(data.preferredDays || "No preference")}<br />
+        <strong>Preferred time:</strong> ${escapeHtml(data.preferredTime || "No preference")}<br />
+        <strong>Project timeline:</strong> ${escapeHtml(data.timeline || "Not specified")}
+      </p>
       ${data.notes ? `<p style="margin: 0 0 16px; color: #555;">"${escapeHtml(data.notes)}"</p>` : ""}
       <p style="margin: 24px 0 0; font-size: 12px; color: #888;">Quote #${data.referenceId.slice(0, 8).toUpperCase()}</p>
     </div>
@@ -207,7 +215,7 @@ async function tryResendNotify(
         from: fromEmail,
         to: toEmail,
         reply_to: data.customerEmail,
-        subject: `New quote: ${data.customerName} — ${data.productSummary}`,
+        subject: `New measurement request: ${data.customerName} — ${data.productSummary}`,
         html,
       }),
     });
@@ -250,6 +258,9 @@ async function tryFormSubmit(
     `Phone: ${data.customerPhone}`,
     `Items: ${data.productSummary}`,
     `Estimate: ${money(data.totalLow)} – ${money(data.totalHigh)}`,
+    `Preferred days: ${data.preferredDays || "No preference"}`,
+    `Preferred time: ${data.preferredTime || "No preference"}`,
+    `Project timeline: ${data.timeline || "Not specified"}`,
     data.notes ? `Notes: ${data.notes}` : null,
     `Reference: ${data.referenceId}`,
   ]
@@ -267,12 +278,15 @@ async function tryFormSubmit(
         name: data.customerName,
         email: data.customerEmail,
         phone: data.customerPhone,
-        _subject: `Pane & Simple quote: ${data.customerName}`,
+        _subject: `Pane & Simple measurement request: ${data.customerName}`,
         _replyto: data.customerEmail,
         _template: "table",
         message,
         product_summary: data.productSummary,
         estimate: `${money(data.totalLow)} – ${money(data.totalHigh)}`,
+        preferred_days: data.preferredDays || "No preference",
+        preferred_time: data.preferredTime || "No preference",
+        project_timeline: data.timeline || "Not specified",
         reference_id: data.referenceId,
       }),
     });
