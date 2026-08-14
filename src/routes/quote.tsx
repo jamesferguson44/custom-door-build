@@ -595,13 +595,13 @@ function QuotePage() {
                     </div>
                   )}
                   <Button
-                    className="h-12 w-full rounded-full text-sm font-semibold"
+                    className="h-auto min-h-12 w-full whitespace-normal rounded-full px-4 py-3 text-center text-sm font-semibold leading-snug"
                     disabled={submitting}
                     onClick={handleSubmit}
                   >
                     {submitting ? (
                       <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Submitting…
+                        <Loader2 className="mr-2 h-4 w-4 flex-shrink-0 animate-spin" /> Submitting…
                       </>
                     ) : (
                       "Request Callback & Measurement Appointment"
