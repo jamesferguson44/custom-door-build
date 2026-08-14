@@ -99,7 +99,7 @@ export function SiteFooter() {
             >
               {BUSINESS_EMAIL}
             </a>
-            <p className="mt-1 text-xs text-muted-foreground">Utah-licensed window &amp; door contractor</p>
+            <p className="mt-1 text-xs text-muted-foreground">Utah-based window &amp; door replacement company</p>
             <p className="mt-3 text-xs text-muted-foreground">We respond within 1 business day.</p>
           </div>
         </div>
