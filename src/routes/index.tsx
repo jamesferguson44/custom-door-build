@@ -188,28 +188,30 @@ function Home() {
               search={{ template: t.id }}
               className={`group flex flex-col overflow-hidden rounded-2xl border bg-background transition hover:shadow-[var(--shadow-elegant)] ${featured ? "border-2 border-foreground shadow-[var(--shadow-elegant)]" : "border-border"}`}
             >
-              <div className="relative aspect-[16/9] w-full shrink-0 overflow-hidden">
+              {/* Taller crop on phones so the window fills more of the frame;
+                  16/9 from sm up matches the door cards below. */}
+              <div className="relative aspect-[4/3] w-full shrink-0 overflow-hidden sm:aspect-[16/9]">
                 <img
                   src={t.image}
                   alt={t.title}
                   width={1024}
                   height={682}
                   loading="lazy"
-                  className="h-full w-full object-cover transition duration-700 group-hover:scale-[1.05]"
+                  className="h-full w-full object-cover object-center transition duration-700 group-hover:scale-[1.05]"
                 />
                 {featured && (
-                  <div className="absolute left-3 top-3 z-10 inline-flex items-center gap-1 rounded-full bg-foreground px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-background shadow-md">
-                    <Sparkles className="h-3 w-3" /> Most Homeowners Choose This
+                  <div className="absolute left-2.5 top-2.5 z-10 inline-flex max-w-[calc(100%-1.25rem)] items-center gap-1 rounded-full bg-foreground px-2.5 py-1 text-[9px] font-semibold uppercase tracking-wider text-background shadow-md sm:left-3 sm:top-3 sm:text-[10px]">
+                    <Sparkles className="h-3 w-3 shrink-0" /> Most Homeowners Choose This
                   </div>
                 )}
               </div>
-              <div className="bg-background p-5">
-                <div className="flex items-center justify-between">
+              <div className="bg-background p-4 sm:p-5">
+                <div className="flex items-center justify-between gap-2">
                   <div className="text-base font-semibold tracking-tight">{t.title}</div>
-                  <ArrowRight className="h-4 w-4 text-muted-foreground transition group-hover:translate-x-0.5 group-hover:text-foreground" />
+                  <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground transition group-hover:translate-x-0.5 group-hover:text-foreground" />
                 </div>
                 <p className="mt-1.5 text-xs text-muted-foreground">{t.blurb}</p>
-                <p className="mt-3 text-[11px] font-medium uppercase tracking-[0.14em] text-foreground/80">
+                <p className="mt-3 text-[11px] font-medium uppercase tracking-[0.1em] text-foreground/80 sm:tracking-[0.14em]">
                   {t.priceHint}
                 </p>
               </div>
