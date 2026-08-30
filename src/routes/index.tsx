@@ -64,26 +64,35 @@ function Home() {
             height={1254}
             className="absolute inset-0 h-full w-full object-cover object-center"
           />
-          {/* Light touch only — a bottom-anchored fade so the text block stays
-              readable without dulling the photo itself. */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/15 via-transparent to-black/40" />
+          {/* Light touch on desktop; stronger fade on mobile so white text
+              stays legible over the bright skyline photo. */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/25 to-black/60 sm:from-black/15 sm:via-transparent sm:to-black/40" />
           <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 mx-auto max-w-[1400px] px-5 text-center text-white sm:px-6">
             <h1 className="text-[26px] font-semibold leading-tight tracking-tight [text-shadow:0_2px_28px_rgba(0,0,0,0.75),0_1px_6px_rgba(0,0,0,0.6)] sm:text-5xl sm:leading-tight lg:text-6xl">
               Skip the Sales Pitch.<br className="hidden sm:block" /> Design Your Windows and See Pricing Instantly.
             </h1>
-            <p className="mx-auto mt-3 max-w-2xl text-[13px] leading-snug text-white [text-shadow:0_1px_16px_rgba(0,0,0,0.7)] sm:mt-4 sm:text-lg sm:leading-normal">
+            <p className="mx-auto mt-3 hidden max-w-2xl text-[13px] leading-snug text-white [text-shadow:0_1px_16px_rgba(0,0,0,0.7)] sm:block sm:mt-4 sm:text-lg sm:leading-normal">
               Customize your windows online, see transparent pricing in real time, and let our team handle measurement and installation.
             </p>
-            <div className="mt-5 flex flex-wrap items-center justify-center gap-2.5 sm:mt-6 sm:gap-3">
+            <div className="mt-5 flex flex-col items-center justify-center gap-2 sm:mt-6 sm:flex-row sm:flex-wrap sm:gap-3">
               <Button asChild size="lg" className="h-11 rounded-full bg-white px-6 text-sm font-semibold text-black shadow-lg hover:bg-white/90 sm:h-12 sm:px-8">
                 <Link to="/configure/$type" params={{ type: "window" }}>
                   See My Window Price
                 </Link>
               </Button>
+              <button
+                type="button"
+                className="text-sm font-medium text-white underline-offset-4 hover:underline [text-shadow:0_1px_10px_rgba(0,0,0,0.6)] sm:hidden"
+                onClick={() => {
+                  document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                }}
+              >
+                How It Works
+              </button>
               <Button
                 size="lg"
                 variant="outline"
-                className="h-11 rounded-full border-white/60 bg-white/10 px-6 text-sm font-semibold text-white backdrop-blur-sm hover:bg-white/20 hover:text-white sm:h-12 sm:px-8"
+                className="hidden h-11 rounded-full border-white/60 bg-white/10 px-6 text-sm font-semibold text-white backdrop-blur-sm hover:bg-white/20 hover:text-white sm:inline-flex sm:h-12 sm:px-8"
                 onClick={() => {
                   document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth", block: "start" });
                 }}
@@ -91,10 +100,16 @@ function Home() {
                 How It Works
               </Button>
             </div>
-            <p className="mx-auto mt-4 max-w-xl text-xs text-white [text-shadow:0_1px_10px_rgba(0,0,0,0.6)] sm:mt-5 sm:text-sm">
+            <p className="mx-auto mt-4 max-w-xl text-xs text-white [text-shadow:0_1px_10px_rgba(0,0,0,0.6)] sm:hidden">
+              Windows start around <span className="font-semibold">$650</span>, installed.
+            </p>
+            <p className="mx-auto mt-4 hidden max-w-xl text-xs text-white [text-shadow:0_1px_10px_rgba(0,0,0,0.6)] sm:mt-5 sm:block sm:text-sm">
               Installed replacement windows typically start around <span className="font-semibold">$650 per window</span>.
             </p>
-            <div className="mx-auto mt-5 flex max-w-3xl flex-wrap items-center justify-center gap-x-2 gap-y-1.5 text-[11px] sm:mt-6 sm:gap-x-3 sm:gap-y-2 sm:text-sm">
+            <p className="mx-auto mt-4 max-w-xl text-[11px] text-white/90 [text-shadow:0_1px_10px_rgba(0,0,0,0.6)] sm:hidden">
+              Transparent pricing · No sales visits · Pro installation
+            </p>
+            <div className="mx-auto mt-5 hidden max-w-3xl flex-wrap items-center justify-center gap-x-2 gap-y-1.5 text-[11px] sm:mt-6 sm:flex sm:gap-x-3 sm:gap-y-2 sm:text-sm">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-2.5 py-1 font-semibold text-black shadow-sm sm:px-3">
                 <CheckCircle2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" /> See Pricing Instantly
               </span>
