@@ -4,11 +4,11 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import type { WindowStyle } from "@/lib/pricing";
-import windowSlider from "@/assets/window-slider-popular.jpg";
-import windowPicture from "@/assets/window-picture.jpg";
-import windowDoubleHung from "@/assets/window-double-hung.jpg";
-import windowCasement from "@/assets/window-casement.jpg";
-import windowAwning from "@/assets/window-awning.jpg";
+import windowSlider from "@/assets/window-slider-catalog.jpg";
+import windowPicture from "@/assets/window-picture-catalog.jpg";
+import windowDoubleHung from "@/assets/window-double-hung-catalog.jpg";
+import windowCasement from "@/assets/window-casement-catalog.jpg";
+import windowAwning from "@/assets/window-awning-catalog.jpg";
 
 export const Route = createFileRoute("/window-types")({
   head: () => ({
@@ -30,7 +30,6 @@ const styles: {
   blurb: string;
   bestFor: string;
   image: string;
-  imageContain?: boolean;
 }[] = [
   {
     style: "Slider",
@@ -39,7 +38,6 @@ const styles: {
       "One sash slides horizontally past the other. Easy to operate and a strong fit for wider openings.",
     bestFor: "Living rooms, kitchens, and wider wall openings",
     image: windowSlider,
-    imageContain: true,
   },
   {
     style: "Picture",
@@ -48,7 +46,6 @@ const styles: {
       "A fixed pane with no moving parts — maximum glass, maximum view, and excellent energy performance.",
     bestFor: "Views, feature walls, and pairing with operable windows nearby",
     image: windowPicture,
-    imageContain: true,
   },
   {
     style: "Double Hung",
@@ -65,7 +62,6 @@ const styles: {
       "Cranks open outward like a door. Excellent seal when closed and strong airflow when open.",
     bestFor: "Hard-to-reach spots, bathrooms, and high-efficiency upgrades",
     image: windowCasement,
-    imageContain: true,
   },
   {
     style: "Awning",
@@ -123,18 +119,14 @@ function WindowTypesPage() {
               search={{ style: s.style }}
               className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-background transition hover:shadow-[var(--shadow-elegant)]"
             >
-              <div
-                className={`aspect-[4/5] overflow-hidden ${s.imageContain ? "bg-[#f5f5f5]" : "bg-muted"}`}
-              >
+              <div className="aspect-[4/5] overflow-hidden bg-muted">
                 <img
                   src={s.image}
                   alt={`${s.title} window`}
                   width={800}
                   height={1000}
                   loading="lazy"
-                  className={`h-full w-full transition duration-700 group-hover:scale-[1.03] ${
-                    s.imageContain ? "object-contain" : "object-cover"
-                  }`}
+                  className="h-full w-full object-cover transition duration-700 group-hover:scale-[1.03]"
                 />
               </div>
               <div className="flex flex-1 flex-col p-5">
