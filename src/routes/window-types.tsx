@@ -30,6 +30,7 @@ const styles: {
   blurb: string;
   bestFor: string;
   image: string;
+  imageContain?: boolean;
 }[] = [
   {
     style: "Slider",
@@ -38,6 +39,7 @@ const styles: {
       "One sash slides horizontally past the other. Easy to operate and a strong fit for wider openings.",
     bestFor: "Living rooms, kitchens, and wider wall openings",
     image: windowSlider,
+    imageContain: true,
   },
   {
     style: "Picture",
@@ -46,6 +48,7 @@ const styles: {
       "A fixed pane with no moving parts — maximum glass, maximum view, and excellent energy performance.",
     bestFor: "Views, feature walls, and pairing with operable windows nearby",
     image: windowPicture,
+    imageContain: true,
   },
   {
     style: "Double Hung",
@@ -70,6 +73,7 @@ const styles: {
       "Hinges at the top and opens outward. You can leave it cracked for airflow even when it rains.",
     bestFor: "Above sinks, basements, and smaller ventilation openings",
     image: windowAwning,
+    imageContain: true,
   },
 ];
 
@@ -119,14 +123,22 @@ function WindowTypesPage() {
               search={{ style: s.style }}
               className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-background transition hover:shadow-[var(--shadow-elegant)]"
             >
-              <div className="aspect-[4/5] overflow-hidden bg-muted">
+              <div
+                className={`relative aspect-[4/5] w-full shrink-0 overflow-hidden ${
+                  s.imageContain ? "bg-[#f5f5f5]" : "bg-muted"
+                }`}
+              >
                 <img
                   src={s.image}
                   alt={`${s.title} window`}
                   width={800}
                   height={1000}
                   loading="lazy"
-                  className="h-full w-full object-cover transition duration-700 group-hover:scale-[1.03]"
+                  className={`absolute inset-0 block h-full w-full object-center transition duration-700 ${
+                    s.imageContain
+                      ? "scale-[1.18] object-contain group-hover:scale-[1.21]"
+                      : "object-cover group-hover:scale-[1.03]"
+                  }`}
                 />
               </div>
               <div className="flex flex-1 flex-col p-5">
